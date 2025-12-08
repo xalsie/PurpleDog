@@ -1,4 +1,4 @@
-import { BaseEntity } from 'src/base.entity';
+import { BaseEntity } from '../../base.entity';
 import { Column, Entity } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -8,6 +8,9 @@ export class User extends BaseEntity {
 
   @Column({ type: 'text', length: 100 })
   password: string;
+
+  @Column({ type: 'text', length: 50 })
+  role: string; //user_role
 
   @Column({ type: 'boolean', default: false })
   isVerfied: boolean;
