@@ -1,0 +1,116 @@
+# docker-compose.yml - Configuration Production Optimale
+# Usage: docker-compose up -d --build
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: purpledog-postgres
+    restart: unless-stopped
+    env_file:
+      - ./api/.env
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      NODE_ENV: production
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - projet-purpledog
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: 1
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U purpledog1_user -d purpledog1_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+      target: production
+    image: purpledog-api:latest
+    container_name: purpledog-api
+    restart: unless-stopped
+    env_file:
+      - ./api/.env
+    environment:
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - projet-purpledog
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: 1
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:3001 || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+
+  front:
+    build:
+      context: .
+      dockerfile: ./front/Dockerfile
+      target: production
+    image: purpledog-nginx:latest
+    container_name: purpledog-nginx
+    restart: unless-stopped
+    env_file:
+      - ./front/.env
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "80:8080"
+    networks:
+      - projet-purpledog
+    mem_limit: 256m
+    memswap_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:8080 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: purpledog-mailhog
+    restart: unless-stopped
+    env_file:
+      - ./api/.env
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - projet-purpledog
+    mem_limit: 128m
+    memswap_limit: 128m
+    cpus: 0.25
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:8025 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+networks:
+  projet-purpledog:
+    driver: bridge
+    name: purpledog-network
+
+volumes:
+  postgres_data:
+    name: purpledog-postgres-data
