@@ -23,4 +23,7 @@ export class User extends BaseEntity {
 
   @Column({ type: 'timestamp', onUpdate: 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  lastLogin: Date | null;
 }

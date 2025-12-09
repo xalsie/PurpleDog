@@ -11,31 +11,15 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
-  async create(createUserDto: CreateUserDto): Promise<User | Error> {
-    try {
-      const foundUser = await this.userRepository.findOne({
-        where: { email: createUserDto.email },
-      });
-      if (foundUser) {
-        return new Error('Already exists');
-      }
-    } catch (error) {
-      return new Error('Error checking for existing user: ' + error);
-    }
-    try {
-      const newUser = this.userRepository.create(createUserDto);
-      await this.userRepository.save(newUser);
-      return newUser;
-    } catch (error) {
-      return new Error('Error creating user: ' + error);
-    }
-  }
 
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
   }
 
-  async findOne(id: string): Promise<User | Error> {
+  async findOne(user: User, id: string): Promise<User | Error> {
+    if (user.id !== id && user.role !== 'admin') {
+      return new Error('Unauthorized');
+    }
     const foundUser = await this.userRepository.findOne({ where: { id } });
     if (!foundUser) {
       return new Error('User not found');
