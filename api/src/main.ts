@@ -1,25 +1,29 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule);
 
-    app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api');
 
-    const config = new DocumentBuilder()
-        .setTitle('PurpleDog API')
-        .setDescription('PurpleDog API description')
-        .setVersion('1.0')
-        .addTag('items')
-        .build();
+  const config = new DocumentBuilder()
+    .setTitle('Purple_Dog API')
+    .setDescription('The Purple_Dog API description')
+    .setVersion('1.0')
+    .addTag('purple_dog')
+    .addSecurity('basic', {
+      type: 'http',
+      scheme: 'basic',
+    })
+    .addBearerAuth()
+    .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, documentFactory);
 
-    const documentFactory = () => SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('docs', app, documentFactory);
+  app.useGlobalPipes(new ValidationPipe());
 
-    app.useGlobalPipes(new ValidationPipe());
-
-    await app.listen(3000);
+  await app.listen(process.env.PORT ?? 3001);
 }
 bootstrap();
