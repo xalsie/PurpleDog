@@ -1,54 +1,83 @@
-export class Item {
-    id: string;
-    name: string;
-    category: ItemCategory;
-    dimensions: { height: number; width: number; depth: number };
-    weight: number;
-    description: string;
-    documents: string[];
-    photos: string[];
-    desiredPrice: number;
-    saleMode: 'auction' | 'quick-sale';
+import { MediaType } from './media.type';
 
-    constructor(
-        id: string,
-        name: string,
-        category: ItemCategory,
-        dimensions: { height: number; width: number; depth: number },
-        weight: number,
-        description: string,
-        documents: string[],
-        photos: string[],
-        desiredPrice: number,
-        saleMode: 'auction' | 'quick-sale',
-    ) {
-        if (photos.length < 10)
-            throw new Error('An item must have at least 10 photos.');
-        this.id = id;
-        this.name = name;
-        this.category = category;
-        this.dimensions = dimensions;
-        this.weight = weight;
-        this.description = description;
-        this.documents = documents;
-        this.photos = photos;
-        this.desiredPrice = desiredPrice;
-        this.saleMode = saleMode;
+export type DimensionsCm = { height: number; width: number; depth: number };
+
+export enum SaleType {
+    AUCTION = 'AUCTION',
+    QUICK_SALE = 'QUICK_SALE',
+}
+
+export enum ItemStatus {
+    DRAFT = 'DRAFT',
+    PUBLISHED = 'PUBLISHED',
+    SOLD = 'SOLD',
+    ARCHIVED = 'ARCHIVED',
+}
+
+export class ItemMedia {
+    id?: string;
+    url: string;
+    type: MediaType;
+    isPrimary?: boolean;
+
+    constructor(url: string, type: MediaType, isPrimary = false, id?: string) {
+        this.url = url;
+        this.type = type;
+        this.isPrimary = isPrimary;
+        if (id) this.id = id;
     }
 }
 
-export enum ItemCategory {
-    JEWELRY_WATCHES = 'Bijoux & montres',
-    ANTIQUE_FURNITURE = 'Meubles anciens',
-    ART_PAINTINGS = 'Objets d’art & tableaux',
-    COLLECTIBLES = 'Objets de collection (jouets, timbres, monnaies…)',
-    WINES_SPIRITS = 'Vins & spiritueux de collection',
-    MUSICAL_INSTRUMENTS = 'Instruments de musique',
-    ANTIQUE_BOOKS_MANUSCRIPTS = 'Livres anciens & manuscrits',
-    FASHION_LUXURY = 'Mode & accessoires de luxe',
-    CLOCKS_ANTIQUE_CLOCKS = 'Horlogerie & pendules anciennes',
-    ANTIQUE_PHOTOGRAPHS_CAMERAS = 'Photographies anciennes & appareils vintage',
-    TABLEWARE_SILVERWARE_CRYSTAL = 'Vaisselle & argenterie & cristallerie',
-    SCULPTURES_DECORATIVE_OBJECTS = 'Sculptures & objets décoratifs',
-    COLLECTOR_VEHICLES = 'Véhicules de collection (auto, moto, nautisme, etc.)',
+export class Item {
+    id?: string;
+    sellerId: number | null;
+    categoryId: number | null;
+    name: string;
+    description: string;
+    dimensions_cm: DimensionsCm;
+    weight_kg?: number;
+    desired_price?: number;
+    ai_estimated_price?: number | null;
+    min_price_accepted?: number | null;
+    sale_type: SaleType;
+    status: ItemStatus;
+    medias: ItemMedia[];
+    created_at?: Date;
+
+    constructor(props: {
+        sellerId: number | null;
+        categoryId: number | null;
+        name: string;
+        description: string;
+        dimensions_cm: DimensionsCm;
+        sale_type: SaleType;
+        medias?: ItemMedia[];
+        weight_kg?: number;
+        desired_price?: number;
+        ai_estimated_price?: number | null;
+        min_price_accepted?: number | null;
+        status?: ItemStatus;
+        id?: string;
+        created_at?: Date;
+    }) {
+        this.id = props.id;
+        this.sellerId = props.sellerId;
+        this.categoryId = props.categoryId;
+        this.name = props.name;
+        this.description = props.description;
+        this.dimensions_cm = props.dimensions_cm;
+        this.weight_kg = props.weight_kg;
+        this.desired_price = props.desired_price;
+        this.ai_estimated_price = props.ai_estimated_price ?? null;
+        this.min_price_accepted = props.min_price_accepted ?? null;
+        this.sale_type = props.sale_type;
+        this.status = props.status ?? ItemStatus.DRAFT;
+        this.medias = props.medias ?? [];
+        this.created_at = props.created_at;
+
+        const images = this.medias.filter((m) => m.type === MediaType.IMAGE);
+        if (images.length < 1) {
+            throw new Error('At least one image is required for an item.');
+        }
+    }
 }

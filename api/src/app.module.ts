@@ -16,6 +16,10 @@ import { ItemsModule } from './items/interface/http/items.module';
     AuthModule,
     SecurityModule,
     ItemsModule,
+    FavoriteModule,
+    QuickOfferModule,
+    BidsModule,
+    PurchasesModule,
     ThrottlerModule.forRoot({
       throttlers: [
         {

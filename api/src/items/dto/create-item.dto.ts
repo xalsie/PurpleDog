@@ -7,10 +7,11 @@ import {
     ArrayMinSize,
     ValidateNested,
     IsUrl,
-    IsIn,
+    IsOptional,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ItemCategory } from '../domain/entities/item.entity';
+import { SaleType } from '../domain/entities/item.entity';
+import { MediaType } from '../domain/entities/media.type';
 import { ApiProperty } from '@nestjs/swagger';
 
 class DimensionsDto {
@@ -27,14 +28,32 @@ class DimensionsDto {
     depth: number;
 }
 
+class MediaDto {
+    @ApiProperty()
+    @IsUrl()
+    url: string;
+
+    @ApiProperty({ enum: MediaType })
+    @IsEnum(MediaType)
+    type: MediaType;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    isPrimary?: boolean;
+}
+
 export class CreateItemDto {
     @ApiProperty()
     @IsString()
     name: string;
 
-    @ApiProperty({ enum: ItemCategory })
-    @IsEnum(ItemCategory)
-    category: ItemCategory;
+    @ApiProperty()
+    @IsNumber()
+    sellerId: number;
+
+    @ApiProperty()
+    @IsNumber()
+    categoryId: number;
 
     @ApiProperty()
     @IsNotEmptyObject()
@@ -42,30 +61,38 @@ export class CreateItemDto {
     @Type(() => DimensionsDto)
     dimensions: DimensionsDto;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
+    @IsOptional()
     @IsNumber()
-    weight: number;
+    weight_kg?: number;
 
     @ApiProperty()
     @IsString()
     description: string;
 
-    @ApiProperty()
+    @ApiProperty({ type: [MediaDto] })
     @IsArray()
-    @IsUrl({}, { each: true })
-    documents: string[];
+    @ArrayMinSize(1)
+    @ValidateNested({ each: true })
+    @Type(() => MediaDto)
+    medias: MediaDto[];
 
-    @ApiProperty()
-    @IsArray()
-    @ArrayMinSize(10)
-    @IsUrl({}, { each: true })
-    photos: string[];
-
-    @ApiProperty()
+    @ApiProperty({ required: false })
+    @IsOptional()
     @IsNumber()
-    desiredPrice: number;
+    desired_price?: number;
 
-    @ApiProperty({ enum: ['auction', 'quick-sale'] })
-    @IsIn(['auction', 'quick-sale'])
-    saleMode: 'auction' | 'quick-sale';
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsNumber()
+    ai_estimated_price?: number;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsNumber()
+    min_price_accepted?: number;
+
+    @ApiProperty({ enum: SaleType })
+    @IsEnum(SaleType)
+    sale_type: SaleType;
 }
