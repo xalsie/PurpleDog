@@ -21,12 +21,15 @@ export class TypeOrmItemRepository implements ItemRepository {
     }
 
     async findAll(): Promise<Item[]> {
-        const all = await this.repo.find();
+        const all = await this.repo.find({ relations: ['medias'] });
         return all.map((s) => ItemMapper.toDomain(s));
     }
 
     async findById(id: string): Promise<Item | null> {
-        const s = await this.repo.findOneBy({ id });
+        const s = await this.repo.findOne({
+            where: { id },
+            relations: ['medias'],
+        });
         return s ? ItemMapper.toDomain(s) : null;
     }
 
@@ -38,7 +41,10 @@ export class TypeOrmItemRepository implements ItemRepository {
             id,
             updateItemDto as QueryDeepPartialEntity<ItemSchema>,
         );
-        const s = await this.repo.findOneBy({ id });
+        const s = await this.repo.findOne({
+            where: { id },
+            relations: ['medias'],
+        });
         return s ? ItemMapper.toDomain(s) : null;
     }
 
