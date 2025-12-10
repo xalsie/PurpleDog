@@ -1,23 +1,26 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cormorant_Garamond, Raleway } from 'next/font/google'
 import "./globals.css";
 import { ReduxProvider } from "@/components/providers/ReduxProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const cormorant = Cormorant_Garamond({
+  weight: ['400', '600', '700'],
+  subsets: ['latin'],
+  variable: '--font-cormorant',
+})
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const raleway = Raleway({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+  variable: '--font-raleway',
+})
 
 export const metadata: Metadata = {
-  title: "Purple Dog",
-  description: "Plateforme de gestion Purple Dog",
-};
+  title: 'Purple Dog - Plateforme de vente d\'objets de valeur',
+  description: 'Vendez et achetez des objets d\'art, antiquités et objets de collection entre particuliers et professionnels',
+  keywords: ['objets d\'art', 'antiquités', 'vente', 'enchères'],
+}
 
 export default function RootLayout({
   children,
@@ -25,12 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <ReduxProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </ReduxProvider>
-      </body>
+    <html lang="fr" className={`${cormorant.variable} ${raleway.variable}`}>
+      <body className="font-raleway">{children}</body>
     </html>
-  );
+  )
 }
