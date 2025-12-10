@@ -1,44 +1,27 @@
-"use client";
+/**
+ * Page d'accueil simple Purple Dog
+ */
 
-import { Button, Input, CategoryCard, ProductCard, Container, Textarea } from "@/components/ui";
-
-export default function Home() {
-  const handleEdit = (id: string) => console.log(`Edit product ${id}`);
-  const handleDelete = (id: string) => console.log(`Delete product ${id}`);
-  const handleBoost = (id: string) => console.log(`Boost product ${id}`);
-
+export default function HomePage({}) {
   return (
-    <Container>
-    <div className="min-h-screen bg-linear-to-b">
-      <main className="container mx-auto px-4 py-16">
-        <h1 className="text-6xl font-bold text-white text-center mb-8">
-          Welcome to PurpleDog
-        </h1>
-        <p className="text-xl text-white text-center">
-          Your hackathon project homepage
+    <main className="min-h-screen flex flex-col items-center justify-center bg-linear-to-br from-purple-900 to-purple-700 text-white">
+      <div className="max-w-lg w-full px-6 py-12 bg-white/10 rounded-xl shadow-lg text-center">
+        <h1 className="text-4xl font-bold mb-4">Bienvenue sur Purple Dog</h1>
+        <p className="text-lg mb-8 text-purple-100">
+          Plateforme de gestion pour particuliers et professionnels.
         </p>
-        <Button variant="primary" size="lg">S'inscrire</Button>
-        <Button variant="secondary" size="lg">S'inscrire</Button>
-        <Button variant="outline" size="lg">S'inscrire</Button>
-    
-<Input variant="light" label="Email" placeholder="Votre adresse email" />
-<CategoryCard image="/path/to/image.jpg" title="Joaillerie" />
-<ProductCard
-  id="1"
-  title="Collier Diamants"
-  price={98000}
-  image="/image.jpg"
-  status="online"
-  viewMode="seller"
-  offersCount={5}
-  onEdit={handleEdit}
-  onDelete={handleDelete}
-  onBoost={handleBoost}
-/>
-<Textarea variant="transparent" label="Votre message" placeholder="Écrivez votre message ici..." />
-
-      </main>
-    </div>
-    </Container>
+        <div className="flex flex-col gap-4">
+          <a href="/login" className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition">
+            Se connecter
+          </a>
+          <a href="/register" className="bg-white/80 hover:bg-white text-purple-700 font-semibold py-2 px-4 rounded-lg transition">
+            S'inscrire
+          </a>
+        </div>
+      </div>
+      <footer className="mt-12 text-xs text-purple-200">
+        &copy; {new Date().getFullYear()} Purple Dog. Tous droits réservés.
+      </footer>
+    </main>
   );
 }

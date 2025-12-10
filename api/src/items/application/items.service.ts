@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { randomUUID } from 'node:crypto'
-import { Item } from '../domain/entities/item.entity';
+import { Item, ItemMedia } from '../domain/entities/item.entity';
 import { ITEM_REPOSITORY } from '../domain/item.repository';
 import type { ItemRepository } from '../domain/item.repository';
 import { CreateItemDto } from '../dto/create-item.dto';
@@ -14,18 +13,30 @@ export class ItemsService {
     ) {}
 
     async create(dto: CreateItemDto): Promise<Item> {
-        const item = new Item(
-            randomUUID(),
-            dto.name,
-            dto.category as any,
-            dto.dimensions as any,
-            dto.weight,
-            dto.description,
-            dto.documents,
-            dto.photos,
-            dto.desiredPrice,
-            dto.saleMode,
-        );
+        const medias: ItemMedia[] = [];
+        if (dto.medias && Array.isArray(dto.medias)) {
+            for (const m of dto.medias) {
+                const url = String(m.url);
+                const type = m.type;
+                const isPrimary = !!m.isPrimary;
+                medias.push(new ItemMedia(url, type, isPrimary));
+            }
+        }
+
+        const item = new Item({
+            sellerId: dto.sellerId,
+            categoryId: dto.categoryId,
+            name: dto.name,
+            description: dto.description,
+            dimensions_cm: dto.dimensions,
+            weight_kg: dto.weight_kg,
+            desired_price: dto.desired_price,
+            ai_estimated_price: dto.ai_estimated_price,
+            min_price_accepted: dto.min_price_accepted,
+            sale_type: dto.sale_type,
+            medias,
+        });
+
         return this.itemRepository.save(item);
     }
 

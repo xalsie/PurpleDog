@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Raleway } from 'next/font/google'
 import "./globals.css";
+import { ReduxProvider } from "@/components/providers/ReduxProvider";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 
 const cormorant = Cormorant_Garamond({
   weight: ['400', '600', '700'],
@@ -22,9 +24,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="fr" className={`${cormorant.variable} ${raleway.variable}`}>
       <body className="font-raleway">{children}</body>
