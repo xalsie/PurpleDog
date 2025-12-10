@@ -23,6 +23,17 @@
   }
 }
 
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-blackC : #020016;
+  --color-VioletC : #2C0E40;
+  --color-WhiteC : #F0EEE9;
+  --color-BeigeC : #e5e2db;
+}
+
 /* Grid Templates pour les ProductCards */
 .grid-categories {
   display: grid;
