@@ -1,20 +1,36 @@
-'use client';
+"use client";
 
-interface InputFieldProps {
-    label: string;
-    name: string;
-    type: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    error?: string;
-    placeHolder : string
+import { InputHTMLAttributes } from "react";
+import { FieldError } from "react-hook-form";
+
+interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  error?: FieldError;
+  helperText?: string;
 }
 
-export default function InputField({ label, name, type, onChange, error, placeHolder } : InputFieldProps) {
-    return (
-        <div>
-        <label className="text-black">{label}</label>
-        <input name={name} type={type} onChange={onChange} placeholder={placeHolder} className="border-solid border-2 border-black text-black"/>
-        {error && <p className="text-red-500">{error}</p>}
-        </div>
-    );
+export default function InputField({
+  label,
+  error,
+  helperText,
+  className,
+  ...props
+}: InputFieldProps) {
+  return (
+    <div>
+      <label htmlFor={props.id} className="block text-sm font-medium text-gray-700 mb-2">
+        {label}
+      </label>
+      <input
+        {...props}
+        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 transition ${
+          error ? "border-red-500" : "border-gray-300"
+        } ${className || ""}`}
+      />
+      {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+      {helperText && !error && (
+        <p className="text-xs text-gray-600 mt-2">{helperText}</p>
+      )}
+    </div>
+  );
 }
