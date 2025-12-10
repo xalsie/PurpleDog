@@ -5,10 +5,10 @@ import { clearAuth } from "@/store/slices/authSlice";
 import { clearUser, setUserRole } from "@/store/slices/userSlice";
 
 
-const fallbackBaseUrl = "http://localhost:3001/api";
+const fallbackBaseUrl = "http://localhost:3001";
 
 export const axiosInstance: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || fallbackBaseUrl,
+  baseURL: (process.env.NEXT_PUBLIC_API_URL || fallbackBaseUrl) + "/api",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
