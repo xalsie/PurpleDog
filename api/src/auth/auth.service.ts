@@ -2,13 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { User, Profile, ProfessionalProfile } from '../user';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import {
-    type IPasswordHasher,
-    IPasswordHasherToken,
-    type ITokenService,
-    ITokenServiceToken,
-} from '../security/entities';
+import { QueryFailedError, Repository } from 'typeorm';
+import { type IPasswordHasher, IPasswordHasherToken, type ITokenService, ITokenServiceToken } from '../security/entities';
 import { btoa } from 'buffer';
 import { RoleEnum } from '../user/entities/role.enum';
 import { parseFrenchDate, calculateAge } from '../common/date.util';
@@ -28,64 +23,94 @@ export class AuthService {
         private readonly hasher: IPasswordHasher,
     ) {}
 
-    async registerUser(dto: RegisterUserDto): Promise<void | Error> {
-        try {
-            const existing = await this.userRepository.findOne({
-                where: { email: dto.email },
-            });
-            if (existing) {
-                return new Error('Already exists');
-            }
-            const hashedPassword = await this.hasher.hash(
-                dto.password.toString(),
-            );
-            const newUser = this.userRepository.create({
-                email: dto.email,
-                password: hashedPassword,
-                role: dto.role,
-            });
-            const savedUser = await this.userRepository.save(newUser);
-
-            // Compute age and adult certification from French date format (JJ/MM/AAAA)
-            const birthDateValue = parseFrenchDate(dto.birthDate);
-            if (!birthDateValue) {
-                return new Error('Invalid birth date format');
-            }
-            const age = calculateAge(birthDateValue);
-            const isAdult = age >= 18 || (dto.ageConfirmed ?? false);
-
-            if (dto.role === RoleEnum.PROFESSIONAL) {
-                const professionalProfile =
-                    this.professionalProfileRepository.create({
-                        userId: savedUser.id,
-                        companyName: dto.companyName!,
-                        siretNumber: dto.siret,
-                        vat: dto.vat,
-                        kbisDocumentUrl: dto.officialDoc || null,
-                        websiteUrl: dto.website || null,
-                        specialties: dto.specialties || [],
-                        interests: dto.researchItems || [],
-                    });
-                await this.professionalProfileRepository.save(
-                    professionalProfile,
-                );
-            }
-            const profile = this.profileRepository.create({
-                userId: savedUser.id,
-                firstName: dto.firstName!,
-                lastName: dto.lastName!,
-                addressLine1: dto.address || null,
-                photoUrl: dto.profilePhoto || null,
-                birthDate: birthDateValue,
-                isAdultCertified: isAdult,
-            });
-            await this.profileRepository.save(profile);
-
-            return;
-        } catch (error) {
-            return new Error('Error creating user: ' + error);
-        }
+  async registerUser(dto: RegisterUserDto): Promise<void | Error> {
+    const birthDateValue = parseFrenchDate(dto.birthDate);
+    if (!birthDateValue) {
+      return new Error('Invalid birth date format');
     }
+
+    const age = calculateAge(birthDateValue);
+    const isAdult = age >= 18 || (dto.ageConfirmed ?? false);
+
+    const queryRunner = this.userRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const userRepo = queryRunner.manager.getRepository(User);
+      const profileRepo = queryRunner.manager.getRepository(Profile);
+      const proRepo = queryRunner.manager.getRepository(ProfessionalProfile);
+
+      const existing = await userRepo.findOne({ where: { email: dto.email } });
+      if (existing) {
+        throw new Error('Already exists');
+      }
+
+      const hashedPassword = await this.hasher.hash(dto.password.toString());
+      const savedUser = await userRepo.save(
+        userRepo.create({
+          email: dto.email,
+          password: hashedPassword,
+          role: dto.role,
+        }),
+      );
+
+      if (dto.role === RoleEnum.PROFESSIONAL) {
+        const professionalProfile = proRepo.create({
+          userId: savedUser.id,
+          companyName: dto.companyName ?? '',
+          siretNumber: dto.siret ?? '',
+          vat: dto.vat ?? '',
+          kbisDocumentUrl: dto.officialDoc || null,
+          websiteUrl: dto.website || null,
+          specialties: dto.specialties || [],
+          interests: dto.researchItems || [],
+        });
+        await proRepo.save(professionalProfile);
+      }
+
+      const profile = profileRepo.create({
+        userId: savedUser.id,
+        firstName: dto.firstName!,
+        lastName: dto.lastName!,
+        addressLine1: dto.address || null,
+        photoUrl: dto.profilePhoto || null,
+        birthDate: birthDateValue,
+        isAdultCertified: isAdult,
+      });
+      await profileRepo.save(profile);
+
+      await queryRunner.commitTransaction();
+      return;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      if (error instanceof QueryFailedError) {
+        const driverError = error.driverError as { code?: string; detail?: string };
+        const code = driverError?.code;
+        const detail = driverError?.detail?.toLowerCase?.() ?? '';
+
+        if (code === '23505') {
+          if (detail.includes('siret')) {
+            return new Error('SIRET already exists');
+          }
+          if (detail.includes('vat')) {
+            return new Error('VAT already exists');
+          }
+          if (detail.includes('email')) {
+            return new Error('Already exists');
+          }
+        }
+      }
+
+      if (error instanceof Error) {
+        return error;
+      }
+
+      return new Error('Error creating user: ' + error);
+    } finally {
+      await queryRunner.release();
+    }
+  }
 
     async checkEmail(
         email: string,

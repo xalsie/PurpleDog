@@ -17,7 +17,7 @@ import {
   StepParticularDetailsData,
   StepProfessionalDetailsData,
 } from "@/lib/validations";
-import { InputField, CheckboxField } from "@/components/UI";
+import { InputField } from "@/components/UI";
 
 interface FormErrorProps {
   message?: string | null;
@@ -97,7 +97,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
 
       if (response.data.exists && response.data.role) {
         setLocalError(
-          `Ce compte existe déjà (type: ${response.data.role === UserRole.PROFESSIONAL ? "Professionnel" : "Particulier"}). Veuillez vous connecter.`
+          `Ce compte existe déjà. Veuillez vous connecter.`
         );
         return;
       }

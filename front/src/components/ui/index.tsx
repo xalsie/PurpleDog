@@ -5,3 +5,6 @@ export { default as Badge } from './Badge';
 export { default as CategoryCard } from './CategoryCard';
 export { default as ProductCard } from './ProductCard';
 export { default as Container } from './Container';
+export { default as InputField } from './InputField/InputField';
+export { default as CheckboxField } from './CheckboxField/CheckboxField';
+export { default as FileField } from './FileField/FileField';
