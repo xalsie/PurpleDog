@@ -8,7 +8,11 @@ import { SecurityModule } from './security/security.module';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ItemsModule } from './items/interface/http/items.module';
+import { ItemsModule } from './items/items.module';
+import { FavoriteModule } from './favorites/favorite.module';
+import { QuickOfferModule } from './quick-offer/quick-offer.module';
+import { BidsModule } from './bids/bids.module';
+import { PurchasesModule } from './purchases/purchases.module';
 
 @Module({
   imports: [
@@ -36,11 +40,11 @@ import { ItemsModule } from './items/interface/http/items.module';
         inject: [ConfigService],
         useFactory: (configService: ConfigService) => ({
             type: 'postgres',
-            host: configService.get<string>('DB_HOST'),
-            port: configService.get<number>('DB_PORT'),
-            username: configService.get<string>('DB_USERNAME'),
-            password: configService.get<string>('DB_PASSWORD'),
-            database: configService.get<string>('DB_DATABASE'),
+            host: configService.get<string>('POSTGRES_HOST'),
+            port: configService.get<number>('POSTGRES_PORT'),
+            username: configService.get<string>('POSTGRES_USER'),
+            password: configService.get<string>('POSTGRES_PASSWORD'),
+            database: configService.get<string>('POSTGRES_DB'),
             autoLoadEntities: true,
             synchronize: true
         }),

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ITokenService } from './entities/security.entity';
-import { User } from '../user/entities/user.entity';
+import { ITokenService } from './entities';
 import { env } from '../env.type';
+import { User } from '../user';
 
 @Injectable()
 export class JwtTokenService implements ITokenService {
