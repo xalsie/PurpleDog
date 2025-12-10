@@ -1,11 +1,11 @@
-import ParticularForm  from "@/components/ParticularForm/ParticularForm";
-import ProForm from "@/components/ProForm/ProForm"
+import NavbarHome from "@/layout/NavBarHome/NavBarHome";
+import NavBarDashboard from "@/layout/NavBarDashboard/NavBarDashboard";
 
 export default function Home({}) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans">
-      <ParticularForm FormMode="login"/>  
-      <ProForm FormMode="login"/>
+    <div className="flex  w-full flex-col bg-zinc-50 font-sans">
+      <NavbarHome/>
+      <NavBarDashboard UserType="Professional"/>
     </div>
   );
 }
