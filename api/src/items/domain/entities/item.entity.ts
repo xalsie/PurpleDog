@@ -17,12 +17,17 @@ export enum ItemStatus {
 export class ItemMedia {
     id?: string;
     url: string;
-    type: MediaType;
+    mediaType: MediaType;
     isPrimary?: boolean;
 
-    constructor(url: string, type: MediaType, isPrimary = false, id?: string) {
+    constructor(
+        url: string,
+        mediaType: MediaType,
+        isPrimary = false,
+        id?: string,
+    ) {
         this.url = url;
-        this.type = type;
+        this.mediaType = mediaType;
         this.isPrimary = isPrimary;
         if (id) this.id = id;
     }
@@ -75,7 +80,9 @@ export class Item {
         this.medias = props.medias ?? [];
         this.created_at = props.created_at;
 
-        const images = this.medias.filter((m) => m.type === MediaType.IMAGE);
+        const images = this.medias.filter(
+            (m) => m.mediaType === MediaType.IMAGE,
+        );
         if (images.length < 1) {
             throw new Error('At least one image is required for an item.');
         }

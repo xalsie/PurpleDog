@@ -6,7 +6,7 @@ import {
     CreateDateColumn,
 } from 'typeorm';
 import { SaleType, ItemStatus } from '../../domain/entities/item.entity';
-import { ItemMediaSchema } from './item-media.schema';
+import { Media } from '../../../medias/entities/media.entity';
 
 @Entity('items')
 export class ItemSchema {
@@ -80,10 +80,10 @@ export class ItemSchema {
     })
     status: ItemStatus;
 
-    @OneToMany(() => ItemMediaSchema, (m: ItemMediaSchema) => m.item, {
+    @OneToMany(() => Media, (m: Media) => m.item, {
         cascade: true,
     })
-    medias: ItemMediaSchema[];
+    medias: Media[];
 
     @CreateDateColumn({ name: 'created_at' })
     created_at: Date;
