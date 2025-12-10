@@ -13,45 +13,49 @@ import { FavoriteModule } from './favorites/favorite.module';
 import { QuickOfferModule } from './quick-offer/quick-offer.module';
 import { BidsModule } from './bids/bids.module';
 import { PurchasesModule } from './purchases/purchases.module';
+import { MediasModule } from './medias/medias.module';
+import { ImageAnalysisModule } from './image-analysis/image-analysis.module';
 
 @Module({
-  imports: [
-    UserModule,
-    AuthModule,
-    SecurityModule,
-    ItemsModule,
-    FavoriteModule,
-    QuickOfferModule,
-    BidsModule,
-    PurchasesModule,
-    ThrottlerModule.forRoot({
-      throttlers: [
-        {
-          ttl: 60000,
-          limit: 10,
-        },
-      ],
-    }),
-    ConfigModule.forRoot({
-        isGlobal: true,
-    }),
-    TypeOrmModule.forRootAsync({
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        useFactory: (configService: ConfigService) => ({
-            type: 'postgres',
-            host: configService.get<string>('POSTGRES_HOST'),
-            port: configService.get<number>('POSTGRES_PORT'),
-            username: configService.get<string>('POSTGRES_USER'),
-            password: configService.get<string>('POSTGRES_PASSWORD'),
-            database: configService.get<string>('POSTGRES_DB'),
-            autoLoadEntities: true,
-            synchronize: true
+    imports: [
+        UserModule,
+        AuthModule,
+        SecurityModule,
+        ItemsModule,
+        FavoriteModule,
+        QuickOfferModule,
+        BidsModule,
+        PurchasesModule,
+        MediasModule,
+        ImageAnalysisModule,
+        ThrottlerModule.forRoot({
+            throttlers: [
+                {
+                    ttl: 60000,
+                    limit: 10,
+                },
+            ],
         }),
-    }),
-  ],
-  controllers: [AppController],
-  providers: [AppService, { provide: 'APP_GUARD', useClass: ThrottlerGuard }],
-  exports: [],
+        ConfigModule.forRoot({
+            isGlobal: true,
+        }),
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => ({
+                type: 'postgres',
+                host: configService.get<string>('POSTGRES_HOST'),
+                port: configService.get<number>('POSTGRES_PORT'),
+                username: configService.get<string>('POSTGRES_USER'),
+                password: configService.get<string>('POSTGRES_PASSWORD'),
+                database: configService.get<string>('POSTGRES_DB'),
+                autoLoadEntities: true,
+                synchronize: true,
+            }),
+        }),
+    ],
+    controllers: [AppController],
+    providers: [AppService, { provide: 'APP_GUARD', useClass: ThrottlerGuard }],
+    exports: [],
 })
 export class AppModule {}
