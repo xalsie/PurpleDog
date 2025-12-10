@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { env } from '../env.type';
 import { AuthGuard } from './auth.guard';
 import { RolesGuard } from './roles.guard';
@@ -8,9 +9,12 @@ import { JwtTokenService } from './jwt-token.service';
 import {
   IPasswordHasherToken,
   ITokenServiceToken,
-} from './entities/security.entity';
+} from './entities';
+import { User } from '../user/entities/user.entity';
+
 @Module({
   imports: [
+    TypeOrmModule.forFeature([User]),
     JwtModule.register({
       secret: env.JWT_SECRET || 'purple_dog_found_a_good_secret',
       signOptions: { expiresIn: parseInt(env.JWT_EXPIRES_IN) || '1h' },
@@ -28,7 +32,7 @@ import {
     {
       provide: ITokenServiceToken,
       useExisting: JwtTokenService,
-    },
+    }
   ],
   exports: [
     BcryptPasswordHasher,

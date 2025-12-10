@@ -12,9 +12,6 @@ export const env: Record<string, string> = process.env as Record<
   string
 >;
 
-// env.MONGO_URI = `mongodb://${env.MONGO_USER}:${env.MONGO_PASSWORD}@${env.MONGO_HOST}:${env.MONGO_PORT}/${env.MONGO_DB}`
-env.MONGO_URI = `mongodb://${env.MONGO_HOST}:${env.MONGO_PORT}/${env.MONGO_DB}`;
-
 export interface IEnv {
   NODE_ENV: NodeEnv;
   PORT: string;
@@ -28,4 +25,6 @@ export interface IEnv {
   POSTGRES_USER: string;
   POSTGRES_PASSWORD: string;
   POSTGRES_DB: string;
+
+  FRONT_URL: string;
 }

@@ -3,9 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   UseGuards,
   Res,
 } from '@nestjs/common';
@@ -13,7 +11,8 @@ import { type Response } from 'express';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler/dist/throttler.guard';
-import { CreateUserDto, CurrentUser, User } from '../user';
+import { CurrentUser, User } from '../user';
+import { RegisterUserDto } from './dto';
 import { AuthGuard } from '../security/auth.guard';
 import { LoginDto } from './dto/login-auth.dto';
 
@@ -21,15 +20,26 @@ import { LoginDto } from './dto/login-auth.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Get('/check-email/:email')
+  @UseGuards(ThrottlerGuard)
+  @ApiOperation({ summary: 'Check if email exists and return user type' })
+  @ApiResponse({ status: 200, description: 'Email check result' })
+  @ApiResponse({ status: 400, description: 'Email invalid' })
+  @ApiResponse({ status: 409, description: 'Email already in use' })
+  async checkEmail(@Param('email') email: string) {
+    const result = await this.authService.checkEmail(email);
+    return result;
+  }
+
   @Post()
   @UseGuards(ThrottlerGuard)
   @ApiOperation({ summary: 'Register a new user' })
   @ApiResponse({ status: 201, description: 'User created successfully' })
   @ApiResponse({ status: 400, description: 'Invalid user data' })
   @ApiResponse({ status: 409, description: 'Email already in use' })
-  async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+  async register(@Body() registerUserDto: RegisterUserDto, @Res() res: Response) {
     try {
-      const result = await this.authService.create(createUserDto);
+      const result = await this.authService.registerUser(registerUserDto);
       if (result instanceof Error) {
         if (
           result.message === 'Invalid email' ||
@@ -45,7 +55,7 @@ export class AuthController {
         }
         return res.status(500).send({ error: result.message });
       }
-      return res.status(201).send(result);
+      return res.status(201).send({ message: 'User registered successfully' });
     } catch (error) {
       console.error('Error in adminRegister:', error);
       return res
@@ -60,7 +70,21 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'User login successfully' })
   @ApiResponse({ status: 400, description: 'Invalid user data' })
   async login(@Body() loginDto: LoginDto) {
-    return await this.authService.login(loginDto);
+    const result = await this.authService.login(loginDto);
+    if (result instanceof Error) {
+      return { error: result.message };
+    }
+    return result;
+  }
+
+  @ApiBearerAuth()
+  @Get('/me')
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get current user' })
+  @ApiResponse({ status: 200, description: 'Current user retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async me(@CurrentUser() user: User) {
+    return this.authService.me(user);
   }
 
   @Get('/forgot/:email')

@@ -11,7 +11,7 @@
     "run:dev:front": "cd front && npm run dev",
     "dev:api": "npm run install:api && npm run dev:up && npm run run:dev:api",
     "dev:front": "npm run install:front && npm run run:dev:front",
-    "dev:down": "docker-compose down",
+    "dev:down": "docker-compose down -v",
     "dev:up": "docker-compose up -d --build",
     "dev:logs": "docker-compose logs -f",
     "prod:build": "docker-compose -f docker-compose.prod.yaml build",

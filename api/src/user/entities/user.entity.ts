@@ -1,16 +1,19 @@
 import { BaseEntity } from '../../base.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToOne } from 'typeorm';
+import { Profile } from './user-profile.entity';
+import { ProfessionalProfile } from './user-professional-profile.entity';
+import { RoleEnum } from './role.enum';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
-  @Column({ type: 'text', length: 100, unique: true })
+  @Column({ type: 'varchar', length: 100, unique: true })
   email: string;
 
-  @Column({ type: 'text', length: 100 })
+  @Column({ type: 'varchar', length: 100 })
   password: string;
 
-  @Column({ type: 'text', length: 50 })
-  role: string; //user_role
+  @Column({ type: 'varchar', length: 50 })
+  role: RoleEnum;
 
   @Column({ type: 'boolean', default: false })
   isVerfied: boolean;
@@ -21,9 +24,15 @@ export class User extends BaseEntity {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({ type: 'timestamp', onUpdate: 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
   @Column({ type: 'timestamp', nullable: true })
   lastLogin: Date | null;
+
+  @OneToOne(() => Profile, (profile) => profile.user)
+  profile: Profile;
+
+  @OneToOne(() => ProfessionalProfile, (pro) => pro.user)
+  professionalProfile?: ProfessionalProfile;
 }
