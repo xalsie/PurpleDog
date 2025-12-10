@@ -21,7 +21,7 @@ export default function Input({
   
   const variantStyles = {
     light: 'bg-white border border-gray-300 text-[var(--color-black-deep)] placeholder:text-gray-400 focus:ring-[var(--color-purple-dark)] focus:border-[var(--color-purple-dark)]',
-    transparent: 'bg-[rgba(var(--color-cream-light),0.1)] border border-[rgba(var(--color-purple-dark),0.2)] text-[rgba(var(--color-cream-light),0.4)] placeholder:text-gray-400 focus:ring-[var(--color-cream-light)] focus:border-[var(--color-cream-light)]',
+    transparent: 'bg-[rgba(240,238,233,0.1)] border border-[rgba(240,238,233,0.2)] text-[rgba(240,238,233,0.4)] placeholder:text-gray-400 focus:ring-[var(--color-cream-light)] focus:border-[var(--color-cream-light)]',
   };
 
   const errorStyles = error ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : '';

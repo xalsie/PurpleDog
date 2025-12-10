@@ -29,11 +29,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+<<<<<<< Updated upstream
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
         <Footer/>
       </body>
+=======
+    <html lang="fr" className={`${cormorant.variable} ${raleway.variable}`}>
+      <body>{children}</body>
+>>>>>>> Stashed changes
     </html>
   )
 }
