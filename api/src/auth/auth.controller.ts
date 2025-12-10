@@ -49,10 +49,8 @@ export class AuthController {
           return res.status(400).send({ error: result.message });
         }
         if (
-          result.message === 'Already exists' ||
-          result.message === 'SIRET already exists' ||
-          result.message === 'VAT already exists'
-        ) {
+          result.message === 'Already exists'
+        ){
           return res.status(409).send({ error: result.message });
         }
         return res.status(500).send({ error: result.message });

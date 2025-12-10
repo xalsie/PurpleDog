@@ -14,10 +14,10 @@ export class ProfessionalProfile extends BaseEntity {
     @Column({ type: 'varchar', length: 255 })
     companyName: string;
 
-    @Column({ type: 'varchar', length: 50, unique: true })
+    @Column({ type: 'varchar', length: 50 })
     siretNumber: string;
 
-    @Column({ type: 'varchar', length: 50, unique: true })
+    @Column({ type: 'varchar', length: 50 })
     vat: string;
 
     @Column({ type: 'text', nullable: true })
