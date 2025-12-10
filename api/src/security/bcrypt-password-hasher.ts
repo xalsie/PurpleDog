@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { IPasswordHasher } from './entities/security.entity';
+import { IPasswordHasher } from './entities';
 import { env } from '../env.type';
 
 @Injectable()
