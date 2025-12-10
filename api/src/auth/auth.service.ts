@@ -90,12 +90,6 @@ export class AuthService {
         const detail = driverError?.detail?.toLowerCase?.() ?? '';
 
         if (code === '23505') {
-          if (detail.includes('siret')) {
-            return new Error('SIRET already exists');
-          }
-          if (detail.includes('vat')) {
-            return new Error('VAT already exists');
-          }
           if (detail.includes('email')) {
             return new Error('Already exists');
           }
