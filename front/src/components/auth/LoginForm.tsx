@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import { loginSchema, LoginFormData } from "@/lib/validations";
-import { InputField } from "@/components/UI";
+import { loginSchema, LoginFormData } from "../../lib/validations";
+import { InputField } from "@/components/ui";
 
 interface FormErrorProps {
   message?: string | null;

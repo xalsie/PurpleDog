@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Raleway } from 'next/font/google'
 import "./globals.css";
-import Footer from "@/layout/Footer/Footer";
+import Footer from "@/components/layout/Footer/Footer";
 import { ReduxProvider } from "@/components/providers/ReduxProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 
@@ -29,16 +29,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-<<<<<<< Updated upstream
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
-        <Footer/>
-      </body>
-=======
     <html lang="fr" className={`${cormorant.variable} ${raleway.variable}`}>
-      <body>{children}</body>
->>>>>>> Stashed changes
+      <body>
+        <ReduxProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ReduxProvider>
+        <Footer />
+      </body>
+      
     </html>
   )
 }

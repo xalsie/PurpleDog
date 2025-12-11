@@ -1,7 +1,7 @@
-"use client";
+ "use client";
 
-import { StepperRegisterForm } from "@/components/auth/StepperRegisterForm";
+ import { StepperRegisterForm } from "@/components/auth/StepperRegisterForm";
 
-export default function RegisterPage() {
-  return <StepperRegisterForm />;
-}
+ export default function RegisterPage() {
+   return <StepperRegisterForm />;
+ }

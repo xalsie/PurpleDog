@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import InputField from "@/components/UI/InputField/InputField";
-import FileField from "@/components/UI/FileField/FileField";
-import CheckboxField from "@/components/UI/CheckboxField/CheckboxField";
-import { validatePassword } from "@/lib/ValidateService";
+import InputField from "@/components/ui/InputField/InputField";
+import FileField from "@/components/ui/FileField/FileField";
+import CheckboxField from "@/components/ui/CheckboxField/CheckboxField";
+import { validatePassword } from "../../../lib/ValidateService";
 
 interface ProFormData {
   email: string;

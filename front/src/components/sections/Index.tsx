@@ -1,6 +1,17 @@
+import MyAuctions from './Users/MyAuctions';
+import ProfileActions from './Users/ProfileActions';
+
 export { default as HeroSection } from './Hero';
 export { default as FeaturedCarousel } from './Carousel';
 export { default as CategoriesSection } from './Categories';
 export { default as ConceptSection } from './Concept';
 export { default as ServicesSection } from './Services';
 export { default as NewsletterForm } from './NewsletterForm';
+export { default as DashboardCTA } from './Users/DashboardCta';
+export { default as ReviewBanner } from './Users/ReviewBanner';
+export { default as MyListings } from './Users/MyListings';
+export { default as DashboardProCta } from './Users/DashboardProCta';
+export { default as MyAuctions } from './Users/MyAuctions';
+export { default as ProfileForm } from './Users/ProfileForm';
+export { default as NotificationsSwitch } from './Users/NotificationsSwitch';
+export { default as ProfileActions } from './Users/ProfileActions';

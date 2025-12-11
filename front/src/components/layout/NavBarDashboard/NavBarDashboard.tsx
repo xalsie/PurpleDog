@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { FaHeart, FaRegClock  } from "react-icons/fa";
-import Notificationlink from "@/components/UI/NotificationLink/NotificationLink";
-import Avatar from "@/components/UI/Avatar/Avatar";
+import Notificationlink from "@/components/ui/NotificationLink/NotificationLink";
+import Avatar from "@/components/ui/Avatar/Avatar";
 import Person from "../../../public/photo-test.jpg"
 
 interface INavBarDashboard {

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { loginSchema } from "@/lib/validations";
+import { loginSchema } from "../lib/validations";
 
 export enum UserRole {
   SELLER = "seller",

@@ -9,11 +9,9 @@ interface ProductCardProps {
   subtitle?: string;
   price: number;
   status?: 'online' | 'auction' | 'sold' | 'draft';
-  auctionInfo?: {
-    currentBid?: number;
-    bidsCount?: number;
-    timeLeft?: string;
-  };
+  currentBid?: number;
+  bidsCount?: number;
+  timeLeft?: string;
   viewMode?: 'buyer' | 'seller'; 
   offersCount?: number; 
   onLike?: (id: string) => void;
@@ -32,7 +30,9 @@ export default function ProductCard({
   subtitle,
   price,
   status,
-  auctionInfo,
+  currentBid,
+  bidsCount,
+  timeLeft,
   viewMode = 'buyer',
   offersCount,
   onLike,
@@ -74,7 +74,7 @@ export default function ProductCard({
   };
 
   const CardContent = (
-    <div className="bg-white overflow-hidden group cursor-pointer">
+    <div className="bg-cream-light overflow-hidden group cursor-pointer">
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden bg-cream-light">
         <Image
@@ -118,8 +118,8 @@ export default function ProductCard({
       </div>
 
       {/* Content */}
-      <div className="pt-4">
-        <h3 className="font-raleway text-lg font-semibold text-purple-dark mb-1">
+      <div className="p-4">
+        <h3 className="font-cormorant text-lg font-light text-purple-dark mb-1">
           {title}
         </h3>
         {subtitle && (
@@ -127,24 +127,24 @@ export default function ProductCard({
         )}
         
         {/* Price or Auction Info */}
-        {status === 'auction' && auctionInfo ? (
+        {status === 'auction' && (currentBid || bidsCount || timeLeft) ? (
           <div className="space-y-1">
-            <p className="font-raleway text-base font-semibold text-purple-dark">
-              {auctionInfo.currentBid?.toLocaleString('fr-FR')} €
+            <p className="font-raleway text-base font-light text-purple-dark">
+              {(currentBid || price).toLocaleString('fr-FR')} €
             </p>
-            {auctionInfo.bidsCount !== undefined && (
+            {bidsCount !== undefined && (
               <p className="font-raleway text-xs text-gray-500">
-                {auctionInfo.bidsCount} enchère{auctionInfo.bidsCount > 1 ? 's' : ''}
+                {bidsCount} enchère{bidsCount > 1 ? 's' : ''}
               </p>
             )}
-            {auctionInfo.timeLeft && (
+            {timeLeft && (
               <p className="font-raleway text-xs text-gray-500">
-                {auctionInfo.timeLeft}
+                {timeLeft}
               </p>
             )}
           </div>
         ) : (
-          <p className="font-raleway text-base font-semibold text-purple-dark">
+          <p className="font-raleway text-base font-light text-purple-dark">
             {price.toLocaleString('fr-FR')} €
           </p>
         )}

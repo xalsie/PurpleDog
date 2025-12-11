@@ -5,7 +5,7 @@ import { useForm, SubmitHandler, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import { axiosInstance } from "@/lib/axios";
+import { axiosInstance } from "../../lib/axios";
 import { UserRole } from "@/types";
 import {
   stepEmailSchema,
@@ -16,8 +16,8 @@ import {
   StepPasswordData,
   StepParticularDetailsData,
   StepProfessionalDetailsData,
-} from "@/lib/validations";
-import { InputField, CheckboxField } from "@/components/UI";
+} from "../../lib/validations";
+import { InputField, CheckboxField } from "@/components/ui";
 
 interface FormErrorProps {
   message?: string | null;
