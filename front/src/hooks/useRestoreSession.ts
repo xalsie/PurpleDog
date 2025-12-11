@@ -9,8 +9,8 @@ import {
   setLoading as setUserLoading,
   setUserRole,
 } from "@/store/slices/userSlice";
-import { storage } from "@/lib/storage";
-import { axiosInstance } from "@/lib/axios";
+import { storage } from "../lib/storage";
+import { axiosInstance } from "../lib/axios";
 import type { User } from "@/types";
 export function useRestoreSession() {
   const dispatch = useDispatch();

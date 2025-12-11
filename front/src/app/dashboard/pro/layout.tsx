@@ -1,7 +1,7 @@
 "use client";
 import { useSession } from "@/hooks/useSession";
 import { useRouter } from "next/navigation";
-import { getDashboardPath } from "@/lib/routes";
+import { getDashboardPath } from "../../../lib/routes";
 import { useEffect } from "react";
 import { UserRole } from "@/types";
 

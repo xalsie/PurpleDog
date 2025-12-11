@@ -30,16 +30,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        
+      <body className={`${cormorant.variable} ${raleway.variable} antialiased`}>
         <ReduxProvider>
           <AuthProvider>
             {children}
+            <Footer />
           </AuthProvider>
         </ReduxProvider>
-      
-        <Footer/>
       </body>
+      
     </html>
   )
 }

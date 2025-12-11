@@ -13,7 +13,7 @@ export default function Badge({
   children,
   className = '',
 }: BadgeProps) {
-  const baseStyles = 'inline-block px-3 py-1 text-xs font-raleway font-semibold uppercase tracking-wide';
+  const baseStyles = 'inline-block px-3 py-1 text-xs font-raleway font-light uppercase tracking-wide';
   
   const variantStyles = {
     online: 'bg-[var(--color-purple-dark)] text-[var(--color-cream-light)]',

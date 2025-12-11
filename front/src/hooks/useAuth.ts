@@ -22,9 +22,9 @@ import {
   LoginResponse,
   UserRole,
 } from "@/types";
-import { storage } from "@/lib/storage";
-import { axiosInstance } from "@/lib/axios";
-import { getDashboardPath } from "@/lib/routes";
+import { storage } from "../lib/storage";
+import { axiosInstance } from "../lib/axios";
+import { getDashboardPath } from "../lib/routes";
 import { RootState, AppDispatch } from "@/store";
 
 export const useAuth = () => {

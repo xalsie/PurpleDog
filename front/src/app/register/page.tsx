@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { StepperRegisterForm } from "@/features/auth/StepperRegisterForm";
 import NavbarHome from "@/components/layout/NavBarHome/NavBarHome";

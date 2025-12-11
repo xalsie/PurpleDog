@@ -2,7 +2,7 @@
 
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { storage } from "@/lib/storage";
+import { storage } from "../lib/storage";
 import { UserRole } from "@/types";
 
 export function useSession() {
