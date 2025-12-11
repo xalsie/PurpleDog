@@ -1,4 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { Subject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { UpdateBidDto } from './dto/update-bid.dto';
 import { Repository } from 'typeorm';
@@ -9,6 +11,8 @@ import { ItemStatus, SaleType } from '../items/domain/entities/item.entity';
 
 @Injectable()
 export class BidsService {
+    private bidStreams: Map<string, Subject<any>> = new Map();
+
     constructor(
         @InjectRepository(Bid)
         private readonly bidRepo: Repository<Bid>,
@@ -66,14 +70,34 @@ export class BidsService {
         }
 
         const b = this.bidRepo.create(createBidDto);
-        return this.bidRepo.save(b);
+        const saved = await this.bidRepo.save(b);
+
+        const subject = this.bidStreams.get(String(createBidDto.itemId));
+        if (subject) {
+            try {
+                subject.next(saved);
+            } catch (err) {
+                console.error('Error emitting bid to stream subscribers:', err);
+            }
+        }
+
+        return saved;
+    }
+
+    getBidStream(itemId: string): Observable<any> {
+        let s = this.bidStreams.get(itemId);
+        if (!s) {
+            s = new Subject<any>();
+            this.bidStreams.set(itemId, s);
+        }
+        return s.asObservable().pipe(map((data) => ({ data })));
     }
 
     findAll(userId: string) {
         const bids = this.bidRepo.find({
             where: { userId },
             relations: ['item'],
-            order: { createdAt: 'DESC' },
+            order: { createDateTime: 'DESC' },
         });
         return bids;
     }
