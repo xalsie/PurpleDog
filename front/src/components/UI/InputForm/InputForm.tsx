@@ -1,0 +1,50 @@
+"use client";
+
+import { InputHTMLAttributes } from "react";
+import { FieldError } from "react-hook-form";
+
+type InputVariant = "light" | "transparent";
+
+interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  error?: FieldError;
+  helperText?: string;
+  variant?: InputVariant;
+}
+
+export default function InputForm({
+  label,
+  error,
+  helperText,
+  variant = "light",
+  className = "",
+  ...props
+}: InputFieldProps) {
+  const baseStyles =
+    "w-full px-4 py-3 font-raleway text-base transition-all duration-200 focus:outline-none focus:ring-2";
+
+  const variantStyles: Record<InputVariant, string> = {
+    light: "bg-white border border-gray-300 text-[var(--color-black-deep)] placeholder:text-gray-400 focus:ring-[var(--color-purple-dark)] focus:border-[var(--color-purple-dark)]",
+    transparent: "bg-[rgba(var(--color-cream-light),0.1)] border border-[rgba(var(--color-purple-dark),0.2)] text-[rgba(var(--color-cream-light),0.4)] placeholder:text-gray-400 focus:ring-[var(--color-cream-light)] focus:border-[var(--color-cream-light)]",
+  };
+
+  const errorStyles = error ? "border-red-500 focus:ring-red-500 focus:border-red-500" : "";
+
+  return (
+    <div className="w-full">
+      <label htmlFor={props.id} className="block mb-2 font-raleway text-sm font-medium text-blackC">
+        {label}
+      </label>
+
+      <input
+        {...props}
+        className={`${baseStyles} ${variantStyles[variant]} ${errorStyles} ${className}`}
+      />
+
+      {error && <p className="mt-1 text-sm text-red-500 font-raleway">{error.message}</p>}
+      {helperText && !error && (
+        <p className="mt-1 text-sm text-gray-500 font-raleway">{helperText}</p>
+      )}
+    </div>
+  );
+}

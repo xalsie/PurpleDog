@@ -29,14 +29,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" className={`${cormorant.variable} ${raleway.variable}`}>
-      <body>
+    <html lang="en">
+      <body className={`${cormorant.variable} ${raleway.variable} antialiased`}>
         <ReduxProvider>
           <AuthProvider>
             {children}
+            <Footer />
           </AuthProvider>
         </ReduxProvider>
-        <Footer />
       </body>
       
     </html>

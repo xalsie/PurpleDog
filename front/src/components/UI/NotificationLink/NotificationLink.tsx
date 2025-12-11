@@ -5,7 +5,7 @@ import { IoMailOutline } from "react-icons/io5";
 import { useState } from "react";
 
 interface INotificationLink {
-    Notification  : string[]
+  Notification?  : string[]
 }
 
 export default function NotificationLink({ Notification = []} : INotificationLink) {
