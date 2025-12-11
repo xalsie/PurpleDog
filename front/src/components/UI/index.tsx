@@ -1,6 +1,3 @@
-export { default as InputField } from "./InputField/InputField";
-export { default as CheckboxField } from "./CheckboxField/CheckboxField";
-export { default as FileField } from "./FileField/FileField";
 export { default as Button } from './Button';
 export { default as Input } from './Input';
 export { default as Textarea } from './Textarea';
