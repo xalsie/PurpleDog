@@ -16,7 +16,32 @@ interface CategoriesSectionProps {
 
 export default function CategoriesSection({
   title = "Nos Catégories",
-  categories = [],
+  categories = [
+    {
+      id: 'jewelry',
+      image: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/65353f6e5e-65a4c8ede345a4184202.png',
+      title: 'Joaillerie',
+      href: '/categories/jewelry',
+    },
+    {
+      id: 'art',
+      image: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/48153ebb44-11578bfbb8c91238c343.png',
+      title: "Œuvres d'Art",
+      href: '/categories/art',
+    },
+    {
+      id: 'watches',
+      image: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/478ec11857-60197a984f353e6bac21.png',
+      title: 'Horlogerie',
+      href: '/categories/watches',
+    },
+    {
+      id: 'furniture',
+      image: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/03f13468ae-99eb391a346902f12c99.png',
+      title: 'Mobilier',
+      href: '/categories/furniture',
+    },
+  ],
   onCategoryClick,
 }: CategoriesSectionProps) {
   const handleClick = (id: string) => {

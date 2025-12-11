@@ -49,10 +49,22 @@ export default function ProfileAvatar({
         <button
           type="button"
           onClick={handleAvatarClick}
-          className="absolute bottom-0 right-0 w-8 h-8 sm:w-10 sm:h-10 bg-purple-dark rounded-full flex items-center justify-center border-2 border-cream hover:bg-purple-dark/90 transition"
+          className="absolute bottom-2 right-2 p-2 bg-purple-dark rounded-lg hover:bg-black-deep transition"
           aria-label="Changer l'avatar"
         >
-          <i className="fa-solid fa-camera text-cream text-xs sm:text-sm"></i>
+          <svg 
+            className="w-5 h-5 text-cream-light" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" 
+            />
+          </svg>
         </button>
 
         <input

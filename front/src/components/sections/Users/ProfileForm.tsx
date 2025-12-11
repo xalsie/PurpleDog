@@ -48,11 +48,11 @@ export default function ProfileForm({
   };
 
   return (
-    <div id="profile-form-container" className={`bg-white/40 backdrop-blur-sm rounded-lg border border-purple-dark/10 p-6 sm:p-8 lg:p-10 mb-6 ${className}`}>
+    <div id="profile-form-container" className={`max-w-2xl mx-auto bg-white/40 backdrop-blur-sm rounded-lg border border-purple-dark/10 p-6 sm:p-8 lg:p-10 mb-6 ${className}`}>
       <form onSubmit={handleSubmit}>
     
         <div id="personal-info-section" className="mb-8 sm:mb-10">
-          <h2 className="font-title text-2xl sm:text-3xl text-navy-deep mb-6 pb-3 border-b border-purple-dark/10">
+          <h2 className="font-cormorant text-2xl sm:text-3xl text-navy-deep mb-6 pb-3 border-b border-purple-dark/10">
             Informations personnelles
           </h2>
           
@@ -116,7 +116,7 @@ export default function ProfileForm({
 
        
         <div id="security-section" className="mb-8 sm:mb-10">
-          <h2 className="font-title text-2xl sm:text-3xl text-navy-deep mb-6 pb-3 border-b border-purple-dark/10">
+          <h2 className="font-cormorant text-2xl sm:text-3xl text-navy-deep mb-6 pb-3 border-b border-purple-dark/10">
             Sécurité
           </h2>
           
