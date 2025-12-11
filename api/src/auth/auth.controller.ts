@@ -31,38 +31,41 @@ export class AuthController {
         return result;
     }
 
-  @Post()
-  @UseGuards(ThrottlerGuard)
-  @ApiOperation({ summary: 'Register a new user' })
-  @ApiResponse({ status: 201, description: 'User created successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid user data' })
-  @ApiResponse({ status: 409, description: 'Email already in use' })
-  async register(@Body() registerUserDto: RegisterUserDto, @Res() res: Response) {
-    try {
-      const result = await this.authService.registerUser(registerUserDto);
-      if (result instanceof Error) {
-        if (
-          result.message === 'Invalid email' ||
-          result.message === 'Invalid password' ||
-          result.message === 'Invalid role'
-        ) {
-          return res.status(400).send({ error: result.message });
+    @Post()
+    @UseGuards(ThrottlerGuard)
+    @ApiOperation({ summary: 'Register a new user' })
+    @ApiResponse({ status: 201, description: 'User created successfully' })
+    @ApiResponse({ status: 400, description: 'Invalid user data' })
+    @ApiResponse({ status: 409, description: 'Email already in use' })
+    async register(
+        @Body() registerUserDto: RegisterUserDto,
+        @Res() res: Response,
+    ) {
+        try {
+            const result = await this.authService.registerUser(registerUserDto);
+            if (result instanceof Error) {
+                if (
+                    result.message === 'Invalid email' ||
+                    result.message === 'Invalid password' ||
+                    result.message === 'Invalid role'
+                ) {
+                    return res.status(400).send({ error: result.message });
+                }
+                if (result.message === 'Already exists') {
+                    return res.status(409).send({ error: result.message });
+                }
+                return res.status(500).send({ error: result.message });
+            }
+            return res
+                .status(201)
+                .send({ message: 'User registered successfully' });
+        } catch (error) {
+            console.error('Error in adminRegister:', error);
+            return res
+                .status(500)
+                .send({ error: error.message || 'Internal server error' });
         }
-        if (
-          result.message === 'Already exists'
-        ){
-          return res.status(409).send({ error: result.message });
-        }
-        return res.status(500).send({ error: result.message });
-      }
-      return res.status(201).send({ message: 'User registered successfully' });
-    } catch (error) {
-      console.error('Error in adminRegister:', error);
-      return res
-        .status(500)
-        .send({ error: error.message || 'Internal server error' });
     }
-  }
 
     @Post('/login')
     @UseGuards(ThrottlerGuard)
