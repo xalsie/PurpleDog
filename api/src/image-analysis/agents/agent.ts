@@ -64,16 +64,19 @@ function createValuationAgent() {
 
 export async function estimateArtworkValue(imagePaths: string) {
     try {
-        console.log("🚀 DÉMARRAGE: Analyse visuelle");
+        console.log('🚀 DÉMARRAGE: Analyse visuelle');
 
         // Étape 1: Analyse visuelle par Gemini Vision (BLOQUANTE - on attend le résultat)
         const analysisResult = await analyzeImages(imagePaths);
-        console.log('✅ Analyse visuelle terminée:', JSON.stringify(analysisResult, null, 2));
+        console.log(
+            '✅ Analyse visuelle terminée:',
+            JSON.stringify(analysisResult, null, 2),
+        );
 
         // Étape 2: Recherche Catawiki DÉSACTIVÉE ICI
         // Maintenant disponible via POST /image-analysis/enrich/:analysisId
         // pour un appel optionnel en arrière-plan sans bloquer
-        
+
         // Construire le résultat avec les données Gemini
         const toNumber = (v: any): number | null => {
             if (v === null || v === undefined) return null;
@@ -98,13 +101,20 @@ export async function estimateArtworkValue(imagePaths: string) {
             description_longue: safeString(analysisResult.description_longue),
             estimated_price_min: toNumber(analysisResult.estimated_price_min),
             estimated_price_max: toNumber(analysisResult.estimated_price_max),
-            currency: safeString(analysisResult.currency)?.toUpperCase() || 'EUR',
+            currency:
+                safeString(analysisResult.currency)?.toUpperCase() || 'EUR',
             method: 'visual_analysis',
-            country_of_origin: safeString(analysisResult.country_of_origin || analysisResult.country),
+            country_of_origin: safeString(
+                analysisResult.country_of_origin || analysisResult.country,
+            ),
             style: safeString(analysisResult.style),
             signature: safeString(analysisResult.signature),
-            artwork_title: safeString(analysisResult.artwork_title || analysisResult.artworkTitle),
-            style_subtype: safeString(analysisResult.style_subtype || analysisResult.styleSubtype),
+            artwork_title: safeString(
+                analysisResult.artwork_title || analysisResult.artworkTitle,
+            ),
+            style_subtype: safeString(
+                analysisResult.style_subtype || analysisResult.styleSubtype,
+            ),
             color: safeString(analysisResult.color),
             weight: safeString(analysisResult.weight || analysisResult.Weight),
             height: safeString(analysisResult.height),
@@ -112,7 +122,9 @@ export async function estimateArtworkValue(imagePaths: string) {
             depth: safeString(analysisResult.depth),
         };
 
-        console.log('📦 Résultat Gemini retourné immédiatement (Catawiki disponible via POST /enrich/:analysisId)');
+        console.log(
+            '📦 Résultat Gemini retourné immédiatement (Catawiki disponible via POST /enrich/:analysisId)',
+        );
 
         return output;
     } catch (error) {

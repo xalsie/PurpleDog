@@ -20,8 +20,10 @@ export const catawikiScraperTool = new DynamicStructuredTool({
     func: async ({ query }) => {
         let browser: Browser | null = null;
         try {
-            await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500));
-            
+            await new Promise((resolve) =>
+                setTimeout(resolve, Math.random() * 1000 + 500),
+            );
+
             browser = await chromium.launch({
                 headless: false,
                 args: [
@@ -32,7 +34,8 @@ export const catawikiScraperTool = new DynamicStructuredTool({
             });
 
             const context = await browser.newContext({
-                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                userAgent:
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 locale: 'fr-FR',
                 viewport: { width: 1280, height: 800 },
             });
@@ -125,19 +128,29 @@ export const catawikiScraperTool = new DynamicStructuredTool({
             const page = await context.newPage();
 
             await page.addInitScript(() => {
-                Object.defineProperty(navigator, 'webdriver', { get: () => false });
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => false,
+                });
             });
 
             const searchUrl = `https://www.catawiki.com/fr/s?q=${encodeURIComponent(query)}`;
-            await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+            await page.goto(searchUrl, {
+                waitUntil: 'domcontentloaded',
+                timeout: 30000,
+            });
             await page.waitForTimeout(2000);
 
-            const bodyText = await page.textContent('body').catch(() => '') || '';
+            const bodyText =
+                (await page.textContent('body').catch(() => '')) || '';
             if (bodyText.includes('Access Denied')) {
                 throw new Error('WAF blocked');
             }
 
-            const selectors = ['article', 'div[class*="lot"]', 'a[href*="/l/"]'];
+            const selectors = [
+                'article',
+                'div[class*="lot"]',
+                'a[href*="/l/"]',
+            ];
             let foundSelector: string | null = null;
 
             for (const selector of selectors) {
@@ -152,29 +165,45 @@ export const catawikiScraperTool = new DynamicStructuredTool({
                 throw new Error('No results found');
             }
 
-            const items = await page.$$eval(foundSelector, (elements: Element[]) => {
-                return elements.slice(0, 15).map((el) => {
-                    const getText = (el: Element) => el.textContent?.trim() || '';
-                    const titleEl = el.querySelector('h1, h2, h3, p[class*="title"]');
-                    const priceEl = el.querySelector('[class*="price"], [class*="bid"]');
-                    const linkEl = el.querySelector('a');
-                    const title = titleEl ? getText(titleEl) : '';
-                    if (!title || title.length < 5) return null;
-                    return {
-                        title,
-                        currentPrice: priceEl ? getText(priceEl) : 'N/A',
-                        url: linkEl?.getAttribute('href') || '',
-                    };
-                }).filter(Boolean);
-            });
+            const items = await page.$$eval(
+                foundSelector,
+                (elements: Element[]) => {
+                    return elements
+                        .slice(0, 15)
+                        .map((el) => {
+                            const getText = (el: Element) =>
+                                el.textContent?.trim() || '';
+                            const titleEl = el.querySelector(
+                                'h1, h2, h3, p[class*="title"]',
+                            );
+                            const priceEl = el.querySelector(
+                                '[class*="price"], [class*="bid"]',
+                            );
+                            const linkEl = el.querySelector('a');
+                            const title = titleEl ? getText(titleEl) : '';
+                            if (!title || title.length < 5) return null;
+                            return {
+                                title,
+                                currentPrice: priceEl
+                                    ? getText(priceEl)
+                                    : 'N/A',
+                                url: linkEl?.getAttribute('href') || '',
+                            };
+                        })
+                        .filter(Boolean);
+                },
+            );
 
             const prices: number[] = [];
-            items.forEach(item => {
+            items.forEach((item) => {
                 if (item?.currentPrice) {
                     const match = item.currentPrice.match(/[\d\s]+[,.]?\d*/);
                     if (match) {
-                        const num = parseFloat(match[0].replace(/\s/g, '').replace(',', '.'));
-                        if (!isNaN(num) && num > 0 && num < 1000000) prices.push(num);
+                        const num = parseFloat(
+                            match[0].replace(/\s/g, '').replace(',', '.'),
+                        );
+                        if (!isNaN(num) && num > 0 && num < 1000000)
+                            prices.push(num);
                     }
                 }
             });
@@ -184,16 +213,31 @@ export const catawikiScraperTool = new DynamicStructuredTool({
 
             if (prices.length > 0) {
                 prices.sort((a, b) => a - b);
-                const avg = prices.reduce((sum, p) => sum + p, 0) / prices.length;
+                const avg =
+                    prices.reduce((sum, p) => sum + p, 0) / prices.length;
                 estimatedPrice = Math.round(avg);
-                priceRange = { min: Math.round(prices[0]), max: Math.round(prices[prices.length - 1]) };
-                console.log(` Estimation: ${estimatedPrice}€ (${prices.length} résultats)`);
+                priceRange = {
+                    min: Math.round(prices[0]),
+                    max: Math.round(prices[prices.length - 1]),
+                };
+                console.log(
+                    ` Estimation: ${estimatedPrice}€ (${prices.length} résultats)`,
+                );
             }
 
-            return JSON.stringify({ items, estimated_price: estimatedPrice, price_range: priceRange, total_results: items.length });
+            return JSON.stringify({
+                items,
+                estimated_price: estimatedPrice,
+                price_range: priceRange,
+                total_results: items.length,
+            });
         } catch (error: any) {
             console.warn('Catawiki échoué:', error.message);
-            return JSON.stringify({ error: true, message: error.message, items: [] });
+            return JSON.stringify({
+                error: true,
+                message: error.message,
+                items: [],
+            });
         } finally {
             if (browser) await browser.close();
         }

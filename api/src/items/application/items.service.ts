@@ -27,20 +27,20 @@ export class ItemsService {
 
     async create(dto: CreateItemDto): Promise<Item> {
         const medias: ItemMedia[] = [];
-        
+
         if (dto.medias && Array.isArray(dto.medias) && dto.medias.length > 0) {
-            const mediaEntities = await this.mediasService.findByIds(dto.medias);
-            
+            const mediaEntities = await this.mediasService.findByIds(
+                dto.medias,
+            );
+
             if (mediaEntities.length !== dto.medias.length) {
                 throw new NotFoundException('Some media files were not found');
             }
-            
+
             mediaEntities.forEach((media, index) => {
-                medias.push(new ItemMedia(
-                    media.url,
-                    media.mediaType,
-                    index === 0 
-                ));
+                medias.push(
+                    new ItemMedia(media.url, media.mediaType, index === 0),
+                );
             });
         }
 

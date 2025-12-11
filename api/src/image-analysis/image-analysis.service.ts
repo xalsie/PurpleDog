@@ -11,7 +11,10 @@ import { catawikiScraperTool } from './agents/tools/catawiki';
 
 @Injectable()
 export class ImageAnalysisService {
-    private enrichmentCache = new Map<string, { data: any; timestamp: number }>();
+    private enrichmentCache = new Map<
+        string,
+        { data: any; timestamp: number }
+    >();
     private readonly ENRICHMENT_TTL = 3600000; // 1 heure en millisecondes
 
     constructor(private readonly mediasService: MediasService) {
@@ -49,7 +52,7 @@ export class ImageAnalysisService {
                 }
             }
         }
-        
+
         return null;
     }
 
@@ -95,21 +98,22 @@ export class ImageAnalysisService {
         data: { artiste?: string; style?: string; titre?: string },
     ): Promise<any> {
         try {
-            console.log(
-                `🔍 Recherche Catawiki pour ${analysisId}`,
-            );
+            console.log(`🔍 Recherche Catawiki pour ${analysisId}`);
 
             // Extraire les mots-clés importants pour une recherche plus générique
             const searchParts: string[] = [];
-            
+
             // Si on a un artiste, extraire juste le nom de famille
             if (data.artiste) {
                 // Enlever les préfixes comme "Après", "Attribué à", etc.
                 const cleanArtist = data.artiste
-                    .replace(/^(Après|D'après|Attribué à|Dans le goût de|École de)\s+/i, '')
+                    .replace(
+                        /^(Après|D'après|Attribué à|Dans le goût de|École de)\s+/i,
+                        '',
+                    )
                     .replace(/\(.*?\)/g, '') // Enlever les dates
                     .trim();
-                
+
                 // Prendre juste le dernier mot (nom de famille généralement)
                 const words = cleanArtist.split(/\s+/);
                 const lastName = words[words.length - 1];
@@ -117,10 +121,20 @@ export class ImageAnalysisService {
                     searchParts.push(lastName);
                 }
             }
-            
+
             // Ajouter le type d'objet du titre (statue, sculpture, vase, etc.)
             if (data.titre) {
-                const objectTypes = ['statue', 'sculpture', 'vase', 'tableau', 'peinture', 'bronze', 'buste', 'céramique', 'porcelaine'];
+                const objectTypes = [
+                    'statue',
+                    'sculpture',
+                    'vase',
+                    'tableau',
+                    'peinture',
+                    'bronze',
+                    'buste',
+                    'céramique',
+                    'porcelaine',
+                ];
                 const lowerTitle = data.titre.toLowerCase();
                 for (const type of objectTypes) {
                     if (lowerTitle.includes(type)) {
@@ -129,7 +143,7 @@ export class ImageAnalysisService {
                     }
                 }
             }
-            
+
             // Ajouter une partie du style si pas d'artiste
             if (!data.artiste && data.style) {
                 const styleWords = data.style.split(/[,\s]+/);
@@ -143,9 +157,12 @@ export class ImageAnalysisService {
             console.log(`🔍 Requête Catawiki simplifiée: "${searchQuery}"`);
 
             // Appeler l'outil Catawiki directement et attendre le résultat
-            const result = await catawikiScraperTool.func({ query: searchQuery });
+            const result = await catawikiScraperTool.func({
+                query: searchQuery,
+            });
 
-            const enrichmentData = typeof result === 'string' ? JSON.parse(result) : result;
+            const enrichmentData =
+                typeof result === 'string' ? JSON.parse(result) : result;
 
             // Stocker dans le cache
             this.enrichmentCache.set(analysisId, {
@@ -156,7 +173,7 @@ export class ImageAnalysisService {
             console.log(
                 `✅ Enrichissement Catawiki complété pour ${analysisId}`,
             );
-            
+
             return enrichmentData;
         } catch (error: any) {
             console.warn(

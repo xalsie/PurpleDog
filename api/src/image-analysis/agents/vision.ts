@@ -103,7 +103,7 @@ IMPORTANT :
 
     const response = await visionModel.invoke([message]);
     let content = response.content as string;
-    
+
     console.log('📄 Réponse brute de Gemini (longueur:', content.length, ')');
 
     // STEP 1: Clean markdown code fences from response
@@ -116,7 +116,7 @@ IMPORTANT :
     try {
         const parsed = JSON.parse(content);
         console.log('✅ JSON parsé directement');
-        
+
         // Ensure descriptions are never null
         if (!parsed.description_court || parsed.description_court === null) {
             parsed.description_court = `${parsed.titre || 'Objet'}. ${parsed.style ? 'Style: ' + parsed.style + '.' : ''}`;
@@ -125,23 +125,31 @@ IMPORTANT :
             const details = [
                 parsed.titre || 'Objet analysé',
                 parsed.artiste ? `Artiste: ${parsed.artiste}` : null,
-                parsed.category_parent ? `Catégorie: ${parsed.category_parent}` : null,
+                parsed.category_parent
+                    ? `Catégorie: ${parsed.category_parent}`
+                    : null,
                 parsed.style ? `Style: ${parsed.style}` : null,
-                parsed.country_of_origin ? `Provenance: ${parsed.country_of_origin}` : null,
+                parsed.country_of_origin
+                    ? `Provenance: ${parsed.country_of_origin}`
+                    : null,
                 `État: Basé sur l'analyse visuelle`,
-            ].filter(Boolean).join('. ');
+            ]
+                .filter(Boolean)
+                .join('. ');
             parsed.description_longue = details;
         }
-        
+
         return parsed;
     } catch (error) {
-        console.log('⚠️ Parse direct échoué, tentative extraction partielle...');
+        console.log(
+            '⚠️ Parse direct échoué, tentative extraction partielle...',
+        );
     }
 
     // STEP 3: Extract JSON object boundaries and try again
     const jsonStart = content.indexOf('{');
     const jsonEnd = content.lastIndexOf('}');
-    
+
     if (jsonStart >= 0 && jsonEnd > jsonStart) {
         // Find actual JSON boundaries by counting braces
         let braceCount = 0;
@@ -154,138 +162,187 @@ IMPORTANT :
                 break;
             }
         }
-        
+
         const jsonStr = content.substring(jsonStart, actualEnd + 1);
-        
+
         try {
             const parsed = JSON.parse(jsonStr);
             console.log('✅ JSON extrait et parsé');
-            
+
             // Ensure descriptions are never null
-            if (!parsed.description_court || parsed.description_court === null) {
+            if (
+                !parsed.description_court ||
+                parsed.description_court === null
+            ) {
                 parsed.description_court = `${parsed.titre || 'Objet'}. ${parsed.style ? 'Style: ' + parsed.style + '.' : ''}`;
             }
-            if (!parsed.description_longue || parsed.description_longue === null) {
+            if (
+                !parsed.description_longue ||
+                parsed.description_longue === null
+            ) {
                 const details = [
                     parsed.titre || 'Objet analysé',
                     parsed.artiste ? `Artiste: ${parsed.artiste}` : null,
-                    parsed.category_parent ? `Catégorie: ${parsed.category_parent}` : null,
+                    parsed.category_parent
+                        ? `Catégorie: ${parsed.category_parent}`
+                        : null,
                     parsed.style ? `Style: ${parsed.style}` : null,
-                    parsed.country_of_origin ? `Provenance: ${parsed.country_of_origin}` : null,
+                    parsed.country_of_origin
+                        ? `Provenance: ${parsed.country_of_origin}`
+                        : null,
                     `État: Basé sur l'analyse visuelle`,
-                ].filter(Boolean).join('. ');
+                ]
+                    .filter(Boolean)
+                    .join('. ');
                 parsed.description_longue = details;
             }
-            
+
             return parsed;
         } catch (e) {
-            console.log('⚠️ JSON extrait reste invalide, réparation en cours...');
-            
+            console.log(
+                '⚠️ JSON extrait reste invalide, réparation en cours...',
+            );
+
             // Try to repair incomplete JSON by closing unclosed strings/objects
             let repaired = jsonStr;
-            
+
             // Count unmatched quotes
             const stringCount = (repaired.match(/(?<!\\)"/g) || []).length;
             if (stringCount % 2 === 1) {
                 repaired += '"';
             }
-            
+
             // Count unmatched braces
             const openBraces = (repaired.match(/\{/g) || []).length;
             const closeBraces = (repaired.match(/\}/g) || []).length;
             for (let i = 0; i < openBraces - closeBraces; i++) {
                 repaired += '}';
             }
-            
+
             try {
                 const parsed = JSON.parse(repaired);
                 console.log('✅ JSON réparé avec succès');
-                
+
                 // Ensure descriptions are never null
-                if (!parsed.description_court || parsed.description_court === null) {
+                if (
+                    !parsed.description_court ||
+                    parsed.description_court === null
+                ) {
                     parsed.description_court = `${parsed.titre || 'Objet'}. ${parsed.style ? 'Style: ' + parsed.style + '.' : ''}`;
                 }
-                if (!parsed.description_longue || parsed.description_longue === null) {
+                if (
+                    !parsed.description_longue ||
+                    parsed.description_longue === null
+                ) {
                     const details = [
                         parsed.titre || 'Objet analysé',
                         parsed.artiste ? `Artiste: ${parsed.artiste}` : null,
-                        parsed.category_parent ? `Catégorie: ${parsed.category_parent}` : null,
+                        parsed.category_parent
+                            ? `Catégorie: ${parsed.category_parent}`
+                            : null,
                         parsed.style ? `Style: ${parsed.style}` : null,
-                        parsed.country_of_origin ? `Provenance: ${parsed.country_of_origin}` : null,
+                        parsed.country_of_origin
+                            ? `Provenance: ${parsed.country_of_origin}`
+                            : null,
                         `État: Basé sur l'analyse visuelle`,
-                    ].filter(Boolean).join('. ');
+                    ]
+                        .filter(Boolean)
+                        .join('. ');
                     parsed.description_longue = details;
                 }
-                
+
                 return parsed;
             } catch (e2) {
-                console.log('❌ Réparation complète échouée, extraction basique...');
+                console.log(
+                    '❌ Réparation complète échouée, extraction basique...',
+                );
             }
         }
     }
-    
+
     // STEP 4: Last resort - extract individual fields with regex
     console.log('⚠️ Basculer en mode extraction basique...');
     const partialInfo: any = {
         method: 'visual_analysis',
-        currency: 'EUR'
+        currency: 'EUR',
     };
-    
+
     // Extract titre
     const titreMatch = content.match(/"titre"\s*:\s*"([^"]*?)"/);
     if (titreMatch) partialInfo.titre = titreMatch[1];
-    
+
     // Extract artiste
     const artisteMatch = content.match(/"artiste"\s*:\s*"([^"]*?)"/);
     if (artisteMatch) partialInfo.artiste = artisteMatch[1];
-    
+
     // Extract category_parent
     const categoryMatch = content.match(/"category_parent"\s*:\s*"([^"]*?)"/);
     if (categoryMatch) partialInfo.category_parent = categoryMatch[1];
-    
+
     // Extract description_court
-    const descCourtMatch = content.match(/"description_court"\s*:\s*"([^"]*?)"/);
+    const descCourtMatch = content.match(
+        /"description_court"\s*:\s*"([^"]*?)"/,
+    );
     if (descCourtMatch) partialInfo.description_court = descCourtMatch[1];
-    
+
     // Extract description_longue (being careful with embedded quotes/markdown)
-    const descLongMatch = content.match(/"description_longue"\s*:\s*"([^"]*?)"/);
+    const descLongMatch = content.match(
+        /"description_longue"\s*:\s*"([^"]*?)"/,
+    );
     if (descLongMatch) {
         // Clean any remaining markdown from description
         let desc = descLongMatch[1];
-        desc = desc.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+        desc = desc
+            .replace(/```json\s*/g, '')
+            .replace(/```\s*/g, '')
+            .trim();
         partialInfo.description_longue = desc;
     }
-    
+
     // Extract estimated_price_min
     const priceMinMatch = content.match(/"estimated_price_min"\s*:\s*(\d+)/);
-    if (priceMinMatch) partialInfo.estimated_price_min = parseInt(priceMinMatch[1]);
-    
+    if (priceMinMatch)
+        partialInfo.estimated_price_min = parseInt(priceMinMatch[1]);
+
     // Extract estimated_price_max
     const priceMaxMatch = content.match(/"estimated_price_max"\s*:\s*(\d+)/);
-    if (priceMaxMatch) partialInfo.estimated_price_max = parseInt(priceMaxMatch[1]);
-    
+    if (priceMaxMatch)
+        partialInfo.estimated_price_max = parseInt(priceMaxMatch[1]);
+
     if (Object.keys(partialInfo).length === 2) {
         // Only default fields were found, content is probably not JSON at all
-        console.error('❌ Impossible d\'extraire des données de Gemini');
+        console.error("❌ Impossible d'extraire des données de Gemini");
         throw new Error('Invalid Gemini response format');
     }
-    
+
     // Ensure descriptions are never null in fallback too
-    if (!partialInfo.description_court || partialInfo.description_court === null) {
+    if (
+        !partialInfo.description_court ||
+        partialInfo.description_court === null
+    ) {
         partialInfo.description_court = `${partialInfo.titre || 'Objet'}. ${partialInfo.style ? 'Style: ' + partialInfo.style + '.' : ''}`;
     }
-    if (!partialInfo.description_longue || partialInfo.description_longue === null) {
+    if (
+        !partialInfo.description_longue ||
+        partialInfo.description_longue === null
+    ) {
         const details = [
             partialInfo.titre || 'Objet analysé',
             partialInfo.artiste ? `Artiste: ${partialInfo.artiste}` : null,
-            partialInfo.category_parent ? `Catégorie: ${partialInfo.category_parent}` : null,
+            partialInfo.category_parent
+                ? `Catégorie: ${partialInfo.category_parent}`
+                : null,
             partialInfo.style ? `Style: ${partialInfo.style}` : null,
-            partialInfo.country_of_origin ? `Provenance: ${partialInfo.country_of_origin}` : null,
+            partialInfo.country_of_origin
+                ? `Provenance: ${partialInfo.country_of_origin}`
+                : null,
             `État: Basé sur l'analyse visuelle`,
-        ].filter(Boolean).join('. ');
+        ]
+            .filter(Boolean)
+            .join('. ');
         partialInfo.description_longue = details;
     }
-    
+
     console.log('✅ Informations partielles extraites:', partialInfo);
     return partialInfo;
 }
