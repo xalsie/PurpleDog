@@ -2,9 +2,10 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { LoginForm } from "@/components/auth/LoginForm";
+import { LoginForm } from "@/features/auth/LoginForm";
 import { useSession } from "@/hooks/useSession";
 import { getDashboardPath } from "@/lib/routes";
+import NavbarHome from "@/components/layout/NavBarHome/NavBarHome";
 
 export default function LoginPage() {
   const { isAuthenticated, userRole } = useSession();
@@ -18,5 +19,10 @@ export default function LoginPage() {
 
   if (isAuthenticated) return null;
 
-  return <LoginForm />;
+  return(
+    <div>
+      <NavbarHome/>
+      <LoginForm/>
+    </div>
+  )
 }

@@ -5,7 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { loginSchema, LoginFormData } from "@/lib/validations";
-import { InputField } from "@/components/UI";
+import { InputForm } from "@/components/ui";
+import { Button } from "@/components/ui"
 
 interface FormErrorProps {
   message?: string | null;
@@ -36,23 +37,23 @@ export function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-900 to-purple-700 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-BeigeC px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg shadow-xl p-8">
+        <div className="bg-white rounded-sm shadow-xl p-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 text-center">
+            <h1 className="text-3xl font-bold font-gamora text-gray-800 text-center">
               Purple Dog
             </h1>
-            <p className="text-gray-600 text-center mt-2">
-              Bienvenue - Connexion
+            <p className="text-gray-600 text-center mt-2 font-raleway">
+              Connexion
             </p>
           </div>
 
           <FormError message={error} />
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <InputField
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 flex flex-col">
+            <InputForm
               label="Email"
               id="email"
               type="email"
@@ -61,7 +62,7 @@ export function LoginForm() {
               error={errors.email}
             />
 
-            <InputField
+            <InputForm
               label="Mot de passe"
               id="password"
               type="password"
@@ -71,13 +72,9 @@ export function LoginForm() {
             />
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            <Button variant="primary" size="md" type="submit" disabled={isLoading} className="mx-auto">
               {isLoading ? "Connexion en cours..." : "Se connecter"}
-            </button>
+            </Button>
           </form>
 
           {/* Divider */}
@@ -93,8 +90,8 @@ export function LoginForm() {
           {/* Links */}
           <div className="mt-6 text-center">
             <p className="text-gray-600 text-sm">
-              Vous n'avez pas de compte?{" "}
-              <Link href="/register" className="text-purple-600 hover:text-purple-700 font-semibold">
+              Vous n&apos;avez pas de compte ?{" "}
+              <Link href="/register" className="text-VioletC hover:underline font-semibold font-raleway">
                 Inscrivez-vous
               </Link>
             </p>
@@ -102,7 +99,7 @@ export function LoginForm() {
 
           {/* Forgot Password */}
           <div className="mt-4 text-center">
-            <Link href="/forgot-password" className="text-gray-500 hover:text-gray-700 text-sm">
+            <Link href="/forgot-password" className="text-gray-500 hover:text-gray-700 text-sm font-raleway">
               Mot de passe oublié?
             </Link>
           </div>

@@ -138,7 +138,6 @@ export const useAuth = () => {
   const logout = useCallback(async () => {
     try {
       await axiosInstance.post("/auth/logout").catch(() => {
-        // Ignore logout errors
       });
     } catch (err) {
       console.error("Logout error:", err);
