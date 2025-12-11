@@ -1,3 +1,8 @@
+import ToggleSwitch from "./ToggleSwitch";
+
+export { default as InputField } from "./InputField/InputField";
+export { default as CheckboxField } from "./CheckboxField/CheckboxField";
+export { default as FileField } from "./FileField/FileField";
 export { default as Button } from './Button';
 export { default as Input } from './Input';
 export { default as Textarea } from './Textarea';
@@ -10,3 +15,7 @@ export { default as CheckboxField } from "./CheckboxField/CheckboxField";
 export { default as FileField } from "./FileField/FileField";
 export { default as SearchBar } from "./SearchBar/SearchBar";
 export {default as FilterDropdown, type FilterOption } from "./FilterDropDown/FilterDropDown"
+export { default as SearchSection } from './Searchbar';
+export { default as ProfileAvatar } from './ProfileAvatar';
+export { default as Searchbar } from './Searchbar';
+export { default as ToggleSwitch } from './ToggleSwitch';
