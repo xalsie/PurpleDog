@@ -21,16 +21,6 @@ export class User extends BaseEntity {
     @Column({ type: 'boolean', default: false })
     IsIdentityVerified: boolean;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    createdAt: Date;
-
-    @Column({
-        type: 'timestamp',
-        default: () => 'CURRENT_TIMESTAMP',
-        onUpdate: 'CURRENT_TIMESTAMP',
-    })
-    updatedAt: Date;
-
     @Column({ type: 'timestamp', nullable: true })
     lastLogin: Date | null;
 

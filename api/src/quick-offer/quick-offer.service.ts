@@ -87,7 +87,7 @@ export class QuickOfferService {
         return this.qoRepo.find({
             where: { userId },
             relations: ['item'],
-            order: { createdAt: 'DESC' },
+            order: { createDateTime: 'DESC' },
         });
     }
 }

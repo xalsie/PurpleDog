@@ -1,18 +1,9 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToOne,
-    JoinColumn,
-    CreateDateColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ItemSchema } from '../../items/infrastructure/typeorm/item.schema';
+import { BaseEntity } from '../../base.entity';
 
 @Entity('bids')
-export class Bid {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-
+export class Bid extends BaseEntity {
     @Column({ name: 'user_id', type: 'uuid' })
     userId: string;
 
@@ -25,7 +16,4 @@ export class Bid {
 
     @Column({ type: 'numeric', precision: 12, scale: 2 })
     amount: string | number;
-
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
 }

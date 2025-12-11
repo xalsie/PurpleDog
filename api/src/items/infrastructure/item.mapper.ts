@@ -77,7 +77,13 @@ export class ItemMapper {
             sale_type: sale_type,
             status: schema.status,
             medias: medias,
-            created_at: schema.created_at,
+            createDateTime: schema.createDateTime,
+            createdBy: schema.createdBy,
+            internalComment: schema.internalComment,
+            lastChangedDateTime: schema.lastChangedDateTime,
+            lastChangedBy: schema.lastChangedBy,
+            isActive: schema.isActive,
+            isArchived: schema.isArchived,
         });
     }
 

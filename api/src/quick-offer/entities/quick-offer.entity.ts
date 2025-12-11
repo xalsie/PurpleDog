@@ -1,19 +1,9 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToOne,
-    JoinColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ItemSchema } from '../../items/infrastructure/typeorm/item.schema';
+import { BaseEntity } from '../../base.entity';
 
 @Entity('quick_offers')
-export class QuickOffer {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-
+export class QuickOffer extends BaseEntity {
     @Column({ name: 'user_id', type: 'uuid' })
     userId: string;
 
@@ -29,10 +19,4 @@ export class QuickOffer {
 
     @Column({ type: 'varchar', length: 20, default: 'PENDING' })
     status: string;
-
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
-
-    @UpdateDateColumn({ name: 'updated_at' })
-    updatedAt: Date;
 }

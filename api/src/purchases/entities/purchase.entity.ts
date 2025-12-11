@@ -1,18 +1,15 @@
 import {
     Entity,
-    PrimaryGeneratedColumn,
     Column,
     ManyToOne,
     JoinColumn,
     CreateDateColumn,
 } from 'typeorm';
 import { ItemSchema } from '../../items/infrastructure/typeorm/item.schema';
+import { BaseEntity } from '../../base.entity';
 
 @Entity('purchases')
-export class Purchase {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-
+export class Purchase extends BaseEntity {
     @Column({ name: 'buyer_id', type: 'uuid' })
     buyerId: string;
 
