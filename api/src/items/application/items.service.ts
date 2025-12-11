@@ -119,9 +119,10 @@ export class ItemsService {
             .filter((x) => !!x.item);
     async search(researchDto: ResearchItemDto): Promise<Item[]> {
         const { query, category } = researchDto;
-        if (!query || !category || category.length === 0) {
+        if (!query && (!category || category.length === 0)) {
             return [];
         }
+        console.log('Searching items with', { category, query });
         return await this.itemRepository.search(category, query);
     }
 }
