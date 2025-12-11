@@ -23,12 +23,15 @@ export default function ProfileActions({
           variant="primary"
           size="lg"
           className="uppercase tracking-wider"
+          href="#"
         >
           Enregistrer les modifications
         </Button>
         <Button
+        
           onClick={onCancel}
           variant="outline"
+          href="#"
           size="lg"
           className="flex-1 sm:flex-none uppercase tracking-wider"
         >

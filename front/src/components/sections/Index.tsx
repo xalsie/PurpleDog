@@ -1,3 +1,4 @@
+import ConversationsList from './Messages/ConversationList';
 import AuctionHeader from './Products/AuctionHeader';
 import ProductDetails from './Products/ProductDetail';
 import ProductHeader from './Products/ProductHeader';
@@ -22,3 +23,6 @@ export { default as ProductDetails } from './Products/ProductDetail';
 export { default as SellerInfos } from './Products/SellerInfos';
 export { default as AuctionHeader } from './Products/AuctionHeader';
 export { default as AuctionDetails } from './Products/AuctionDetails';
+export { default as ConversationsList } from './Messages/ConversationList';
+export { default as MessageInput } from './Messages/MessageInput';
+export { default as MessageThread } from './Messages/MessageThread';
