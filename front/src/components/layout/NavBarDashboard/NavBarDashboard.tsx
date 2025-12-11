@@ -16,7 +16,7 @@ export default function NavBarDashboard({ UserType,logOut }: INavBarDashboard) {
     const notifications = ["e", "e"];
 
     return (
-        <header className="sticky top-0 z-50 w-full bg-WhiteC text-VioletC border-b border-BeigeC border">
+        <header className="sticky top-0 z-50 w-full bg-WhiteC text-VioletC border-b border-VioletC border">
         <div className="w-full mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex-1 md:text-center">
             <Link
