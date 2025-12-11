@@ -36,7 +36,7 @@ export default function NotificationsSettings({
 
   return (
     <div id="notifications-section" className={className}>
-      <h2 className="font-title text-2xl sm:text-3xl text-navy-deep mb-6 pb-3 border-b border-purple-dark/10">
+      <h2 className="font-cormorant text-2xl sm:text-3xl text-navy-deep mb-6 pb-3 border-b border-purple-dark/10">
         Notifications
       </h2>
       

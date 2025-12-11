@@ -1,3 +1,7 @@
+import AuctionHeader from './Products/AuctionHeader';
+import ProductDetails from './Products/ProductDetail';
+import ProductHeader from './Products/ProductHeader';
+
 export { default as HeroSection } from './Hero';
 export { default as FeaturedCarousel } from './Carousel';
 export { default as CategoriesSection } from './Categories';
@@ -12,3 +16,9 @@ export { default as MyAuctions } from './Users/MyAuctions';
 export { default as ProfileForm } from './Users/ProfileForm';
 export { default as NotificationsSwitch } from './Users/NotificationsSwitch';
 export { default as ProfileActions } from './Users/ProfileActions';
+export { default as PhotoGallery } from './Products/PhotoGallery';
+export { default as ProductHeader } from './Products/ProductHeader';
+export { default as ProductDetails } from './Products/ProductDetail';
+export { default as SellerInfos } from './Products/SellerInfos';
+export { default as AuctionHeader } from './Products/AuctionHeader';
+export { default as AuctionDetails } from './Products/AuctionDetails';

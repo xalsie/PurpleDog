@@ -23,6 +23,10 @@
     font-family: var(--font-raleway), sans-serif;
     font-weight: 300;
   }
+
+  a {
+    cursor: pointer;
+  }
 }
 
 @theme {

@@ -18,7 +18,7 @@ export default function Button({
   className = '',
   ...props
 }: ButtonProps) {
-  const baseStyles = 'font-raleway font-light transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles = 'font-raleway font-light transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variantStyles = {
     primary: 'bg-[var(--color-purple-dark)] text-[var(--color-cream-light)] hover:bg-[var(--color-black-deep)] hover:text-[var(--color-cream-light)]',

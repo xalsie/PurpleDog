@@ -17,12 +17,12 @@ export default function ProfileActions({
   return (
     <>
   
-      <div id="action-buttons" className={`flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 ${className}`}>
+      <div id="action-buttons" className={`flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 justify-center ${className}`}>
         <Button
           onClick={onSave}
           variant="primary"
           size="lg"
-          className="flex-1 uppercase tracking-wider"
+          className="uppercase tracking-wider"
         >
           Enregistrer les modifications
         </Button>
@@ -40,7 +40,7 @@ export default function ProfileActions({
       <div id="danger-zone" className="text-center py-6 border-t border-purple-dark/10">
         <button
           onClick={onDeleteAccount}
-          className="text-navy-deep/40 hover:text-navy-deep/60 text-xs sm:text-sm uppercase tracking-wider transition"
+          className="text-navy-deep/40 hover:text-navy-deep/60 text-xs sm:text-sm uppercase tracking-wider transition cursor-pointer"
         >
           Supprimer mon compte
         </button>
