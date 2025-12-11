@@ -20,6 +20,27 @@ export class TypeOrmItemRepository implements ItemRepository {
         return ItemMapper.toDomain(saved);
     }
 
+    async search(category?: string[], query?: string): Promise<Item[]> {
+        const repoQueryBuilder = this.repo.createQueryBuilder('item');
+
+        if (category) {
+            repoQueryBuilder.andWhere('item.category IN (:...category)', {
+                category: category,
+            });
+        }
+
+        if (query) {
+            repoQueryBuilder.andWhere(
+                `(item.name ILIKE :q OR item.description ILIKE :q)`,
+                {
+                    q: `%${query}%`,
+                },
+            );
+        }
+
+        return (await repoQueryBuilder.getMany()) as unknown as Item[];
+    }
+
     async findAll(): Promise<Item[]> {
         const all = await this.repo.find({ relations: ['medias'] });
         return all.map((s) => ItemMapper.toDomain(s));

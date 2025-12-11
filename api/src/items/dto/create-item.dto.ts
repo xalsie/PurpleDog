@@ -53,7 +53,7 @@ export class CreateItemDto {
 
     @ApiProperty()
     @IsNumber()
-    categoryId: number;
+    category: string[];
 
     @ApiProperty()
     @IsNotEmptyObject()

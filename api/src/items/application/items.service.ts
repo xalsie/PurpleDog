@@ -4,6 +4,7 @@ import { ITEM_REPOSITORY } from '../domain/item.repository';
 import type { ItemRepository } from '../domain/item.repository';
 import { CreateItemDto } from '../dto/create-item.dto';
 import { UpdateItemDto } from '../dto/update-item.dto';
+import { ResearchItemDto } from '../dto/research-item.dto';
 
 @Injectable()
 export class ItemsService {
@@ -25,7 +26,7 @@ export class ItemsService {
 
         const item = new Item({
             sellerId: dto.sellerId,
-            categoryId: dto.categoryId,
+            category: dto.category,
             name: dto.name,
             description: dto.description,
             dimensions_cm: dto.dimensions,
@@ -56,5 +57,13 @@ export class ItemsService {
 
     async remove(id: string): Promise<void> {
         return this.itemRepository.delete(id);
+    }
+
+    async search(researchDto: ResearchItemDto): Promise<Item[]> {
+        const { query, category } = researchDto;
+        if (!query || !category || category.length === 0) {
+            return [];
+        }
+        return await this.itemRepository.search(category, query);
     }
 }

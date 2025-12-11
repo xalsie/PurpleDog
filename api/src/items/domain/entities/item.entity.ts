@@ -35,7 +35,7 @@ export class ItemMedia {
 
 export class Item {
     sellerId: number | null;
-    categoryId: number | null;
+    category: string[];
     name: string;
     description: string;
     dimensions_cm: DimensionsCm;
@@ -58,7 +58,7 @@ export class Item {
 
     constructor(props: {
         sellerId: number | null;
-        categoryId: number | null;
+        category: string[];
         name: string;
         description: string;
         dimensions_cm: DimensionsCm;
@@ -80,7 +80,7 @@ export class Item {
     }) {
         if (props.id) this.id = props.id;
         this.sellerId = props.sellerId;
-        this.categoryId = props.categoryId;
+        this.category = props.category;
         this.name = props.name;
         this.description = props.description;
         this.dimensions_cm = props.dimensions_cm;
