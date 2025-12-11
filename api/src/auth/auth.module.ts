@@ -6,8 +6,11 @@ import { SecurityModule } from '../security';
 import { User, ProfessionalProfile, Profile } from '../user';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Profile, ProfessionalProfile]), SecurityModule],
-  controllers: [AuthController],
-  providers: [AuthService],
+    imports: [
+        TypeOrmModule.forFeature([User, Profile, ProfessionalProfile]),
+        SecurityModule,
+    ],
+    controllers: [AuthController],
+    providers: [AuthService],
 })
 export class AuthModule {}
