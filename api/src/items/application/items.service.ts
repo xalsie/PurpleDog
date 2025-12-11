@@ -117,6 +117,8 @@ export class ItemsService {
                 favCount: parseInt(r.favCount, 10),
             }))
             .filter((x) => !!x.item);
+    }
+
     async search(researchDto: ResearchItemDto): Promise<Item[]> {
         const { query, category } = researchDto;
         if (!query && (!category || category.length === 0)) {
