@@ -20,16 +20,22 @@ export const catawikiScraperTool = new DynamicStructuredTool({
     func: async ({ query }) => {
         let browser: Browser | null = null;
         try {
+            await new Promise((resolve) =>
+                setTimeout(resolve, Math.random() * 1000 + 500),
+            );
+
             browser = await chromium.launch({
                 headless: false,
-                args: ['--no-sandbox', '--disable-setuid-sandbox'],
-                slowMo: Math.random() * 155 + 185, // random 185-340ms
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-blink-features=AutomationControlled',
+                ],
             });
 
-            // Bypass WAF avec contexte personnalisé
             const context = await browser.newContext({
                 userAgent:
-                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36',
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 locale: 'fr-FR',
                 viewport: { width: 1280, height: 800 },
             });
@@ -121,75 +127,117 @@ export const catawikiScraperTool = new DynamicStructuredTool({
 
             const page = await context.newPage();
 
-            const baseUrl = 'https://www.catawiki.com/fr/s';
-            const searchUrl = `${baseUrl}?q=${encodeURIComponent(query)}&sort=bidding_end_desc`;
-
-            await page.goto(searchUrl, {
-                waitUntil: 'domcontentloaded',
-                timeout: 10000,
+            await page.addInitScript(() => {
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => false,
+                });
             });
 
-            await page.waitForTimeout(500);
+            const searchUrl = `https://www.catawiki.com/fr/s?q=${encodeURIComponent(query)}`;
+            await page.goto(searchUrl, {
+                waitUntil: 'domcontentloaded',
+                timeout: 30000,
+            });
+            await page.waitForTimeout(2000);
 
-            // continuer sans accepter les cookies
-            try {
-                const cookieButton = page
-                    .getByRole('button', { name: /accepter/i })
-                    .first();
-                if (await cookieButton.isVisible({ timeout: 5000 })) {
-                    await cookieButton.click();
+            const bodyText =
+                (await page.textContent('body').catch(() => '')) || '';
+            if (bodyText.includes('Access Denied')) {
+                throw new Error('WAF blocked');
+            }
+
+            const selectors = [
+                'article',
+                'div[class*="lot"]',
+                'a[href*="/l/"]',
+            ];
+            let foundSelector: string | null = null;
+
+            for (const selector of selectors) {
+                const count = await page.locator(selector).count();
+                if (count > 3) {
+                    foundSelector = selector;
+                    break;
                 }
-            } catch (error) {
+            }
+
+            if (!foundSelector) {
+                throw new Error('No results found');
+            }
+
+            const items = await page.$$eval(
+                foundSelector,
+                (elements: Element[]) => {
+                    return elements
+                        .slice(0, 15)
+                        .map((el) => {
+                            const getText = (el: Element) =>
+                                el.textContent?.trim() || '';
+                            const titleEl = el.querySelector(
+                                'h1, h2, h3, p[class*="title"]',
+                            );
+                            const priceEl = el.querySelector(
+                                '[class*="price"], [class*="bid"]',
+                            );
+                            const linkEl = el.querySelector('a');
+                            const title = titleEl ? getText(titleEl) : '';
+                            if (!title || title.length < 5) return null;
+                            return {
+                                title,
+                                currentPrice: priceEl
+                                    ? getText(priceEl)
+                                    : 'N/A',
+                                url: linkEl?.getAttribute('href') || '',
+                            };
+                        })
+                        .filter(Boolean);
+                },
+            );
+
+            const prices: number[] = [];
+            items.forEach((item) => {
+                if (item?.currentPrice) {
+                    const match = item.currentPrice.match(/[\d\s]+[,.]?\d*/);
+                    if (match) {
+                        const num = parseFloat(
+                            match[0].replace(/\s/g, '').replace(',', '.'),
+                        );
+                        if (!isNaN(num) && num > 0 && num < 1000000)
+                            prices.push(num);
+                    }
+                }
+            });
+
+            let estimatedPrice: number | null = null;
+            let priceRange: { min: number; max: number } | null = null;
+
+            if (prices.length > 0) {
+                prices.sort((a, b) => a - b);
+                const avg =
+                    prices.reduce((sum, p) => sum + p, 0) / prices.length;
+                estimatedPrice = Math.round(avg);
+                priceRange = {
+                    min: Math.round(prices[0]),
+                    max: Math.round(prices[prices.length - 1]),
+                };
                 console.log(
-                    'Pas de bannière cookie ou erreur lors du clic.',
-                    error,
+                    ` Estimation: ${estimatedPrice}€ (${prices.length} résultats)`,
                 );
             }
 
-            await page.content();
-
-            await page.waitForSelector(
-                'article[class*="c-lot-card__container"]',
-                {
-                    timeout: 5000,
-                },
-            );
-
-            const items = await page.$$eval(
-                'article[class*="c-lot-card__container"]',
-                (elements) => {
-                    return elements.slice(0, 10).map((el) => {
-                        const titleEl = el.querySelector(
-                            'p[class*="c-lot-card__title"]',
-                        );
-
-                        const priceEl = el.querySelector(
-                            'p[class*="c-lot-card__price"]',
-                        );
-
-                        const imgEl = el.querySelector('img');
-
-                        const url = el.querySelector('a[class*="c-lot-card"]');
-
-                        return {
-                            title: titleEl
-                                ? titleEl.textContent?.trim()
-                                : 'Titre inconnu',
-                            currentPrice: priceEl
-                                ? priceEl.textContent?.trim()
-                                : 'N/A',
-                            url: url ? url.getAttribute('href') || '' : '',
-                            imageUrl: imgEl ? imgEl.getAttribute('src') : '',
-                        };
-                    });
-                },
-            );
-
-            console.log(`${items.length} éléments trouvés.`);
-            return JSON.stringify(items);
-        } catch (error) {
-            console.error('Erreur Scraper:', error);
-            return `Erreur lors de la recherche: ${(error as Error).message}`;
+            return JSON.stringify({
+                items,
+                estimated_price: estimatedPrice,
+                price_range: priceRange,
+                total_results: items.length,
+            });
+        } catch (error: any) {
+            console.warn('Catawiki échoué:', error.message);
+            return JSON.stringify({
+                error: true,
+                message: error.message,
+                items: [],
+            });
         } finally {
             if (browser) await browser.close();
         }

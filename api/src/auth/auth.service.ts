@@ -82,8 +82,8 @@ export class AuthService {
 
             const profile = profileRepo.create({
                 userId: savedUser.id,
-                firstName: dto.firstName,
-                lastName: dto.lastName,
+                firstName: dto.firstName!,
+                lastName: dto.lastName!,
                 addressLine1: dto.address || null,
                 photoUrl: dto.profilePhoto || null,
                 birthDate: birthDateValue,

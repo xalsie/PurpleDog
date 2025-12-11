@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Item, ItemMedia } from '../domain/entities/item.entity';
 import { ITEM_REPOSITORY } from '../domain/item.repository';
 import type { ItemRepository } from '../domain/item.repository';
@@ -10,6 +10,7 @@ import { ItemSchema } from '../infrastructure/typeorm/item.schema';
 import { MediaType } from '../domain/entities/media.type';
 import { Favorite } from '../../favorites/entities/favorite.entity';
 import { Media } from '../../medias/entities/media.entity';
+import { MediasService } from '../../medias/medias.service';
 import { ResearchItemDto } from '../dto/research-item.dto';
 
 @Injectable()
@@ -21,27 +22,37 @@ export class ItemsService {
         private readonly itemRepo: Repository<ItemSchema>,
         @InjectRepository(Favorite)
         private readonly favRepo: Repository<Favorite>,
+        private readonly mediasService: MediasService,
     ) {}
 
     async create(dto: CreateItemDto): Promise<Item> {
         const medias: ItemMedia[] = [];
-        if (dto.medias && Array.isArray(dto.medias)) {
-            for (const m of dto.medias) {
-                const url = String(m.url);
-                const type = m.type;
-                const isPrimary = !!m.isPrimary;
-                medias.push(new ItemMedia(url, type, isPrimary));
+
+        if (dto.medias && Array.isArray(dto.medias) && dto.medias.length > 0) {
+            const mediaEntities = await this.mediasService.findByIds(
+                dto.medias,
+            );
+
+            if (mediaEntities.length !== dto.medias.length) {
+                throw new NotFoundException('Some media files were not found');
             }
+
+            mediaEntities.forEach((media, index) => {
+                medias.push(
+                    new ItemMedia(media.url, media.mediaType, index === 0),
+                );
+            });
         }
 
         const item = new Item({
-            sellerId: dto.sellerId,
             category: dto.category,
+            sellerId: dto.sellerId ?? null,
             name: dto.name,
             description: dto.description,
             dimensions_cm: dto.dimensions,
             weight_kg: dto.weight_kg,
             desired_price: dto.desired_price,
+            starting_price: dto.starting_price,
             ai_estimated_price: dto.ai_estimated_price,
             min_price_accepted: dto.min_price_accepted,
             sale_type: dto.sale_type,

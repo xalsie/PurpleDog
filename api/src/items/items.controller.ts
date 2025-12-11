@@ -6,11 +6,19 @@ import {
     Param,
     Patch,
     Delete,
+    UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBearerAuth,
+    ApiTags,
+    ApiOperation,
+    ApiResponse,
+} from '@nestjs/swagger';
 import { ItemsService } from './application/items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { AuthGuard } from '../security/auth.guard';
+import { CurrentUser, User } from '../user';
 import { ResearchItemDto } from './dto/research-item.dto';
 
 @ApiBearerAuth()
@@ -19,9 +27,14 @@ import { ResearchItemDto } from './dto/research-item.dto';
 export class ItemsController {
     constructor(private readonly itemsService: ItemsService) {}
 
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth()
     @Post()
-    create(@Body() dto: CreateItemDto) {
-        return this.itemsService.create(dto);
+    @ApiOperation({ summary: 'Create item' })
+    @ApiResponse({ status: 201, description: 'Item created' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    create(@Body() dto: CreateItemDto, @CurrentUser() user: User) {
+        return this.itemsService.create({ ...dto, sellerId: user.id });
     }
 
     @Post('filter')
