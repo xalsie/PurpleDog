@@ -1,6 +1,6 @@
 import { Item, ItemMedia, SaleType } from '../domain/entities/item.entity';
 import { ItemSchema } from './typeorm/item.schema';
-import { ItemMediaSchema } from './typeorm/item-media.schema';
+import { Media } from '../../medias/entities/media.entity';
 
 export class ItemMapper {
     static toDomain(schema: ItemSchema): Item {
@@ -8,7 +8,7 @@ export class ItemMapper {
         if (schema.medias && Array.isArray(schema.medias)) {
             for (const m of schema.medias) {
                 const url = String(m.url);
-                const type = m.type;
+                const type = m.mediaType;
                 const isPrimary = !!m.isPrimary;
                 const mid = m.id as string | undefined;
                 if (mid) medias.push(new ItemMedia(url, type, isPrimary, mid));
@@ -77,7 +77,13 @@ export class ItemMapper {
             sale_type: sale_type,
             status: schema.status,
             medias: medias,
-            created_at: schema.created_at,
+            createDateTime: schema.createDateTime,
+            createdBy: schema.createdBy,
+            internalComment: schema.internalComment,
+            lastChangedDateTime: schema.lastChangedDateTime,
+            lastChangedBy: schema.lastChangedBy,
+            isActive: schema.isActive,
+            isArchived: schema.isArchived,
         });
     }
 
@@ -97,10 +103,10 @@ export class ItemMapper {
         s.status = item.status;
         const mediasToPersist: ItemMedia[] = item.medias || [];
         s.medias = mediasToPersist.map((m: ItemMedia) => {
-            const mm = new ItemMediaSchema();
+            const mm = new Media();
             if (m.id) mm.id = m.id;
             mm.url = m.url;
-            mm.type = m.type;
+            mm.mediaType = m.mediaType;
             mm.isPrimary = m.isPrimary ?? false;
             return mm;
         });

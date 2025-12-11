@@ -21,6 +21,7 @@
     background-color: var(--color-cream-light);
     color: var(--color-black-deep);
     font-family: var(--font-raleway), sans-serif;
+    font-weight: 300;
   }
 }
 
@@ -32,6 +33,67 @@
   --color-blackC : #020016;
   --color-VioletC: var(--color-purple-dark);
   --color-WhiteC : var(--color-cream-light);
+  --color-BeigeC : var(--color-cream-light);
+}
+
+/* Font utility classes */
+.font-cormorant {
+  font-family: var(--font-cormorant), serif;
+}
+
+.font-raleway {
+  font-family: var(--font-raleway), sans-serif;
+}
+
+/* Font weights */
+.font-light {
+  font-weight: 300;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+/* Font utility classes */
+.font-cormorant {
+  font-family: var(--font-cormorant), serif;
+}
+
+.font-raleway {
+  font-family: var(--font-raleway), sans-serif;
+}
+
+/* Font weights */
+.font-light {
+  font-weight: 300;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
   --color-BeigeC : var(--color-white-gray);
 }
 

@@ -1,18 +1,10 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    OneToMany,
-    CreateDateColumn,
-} from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { SaleType, ItemStatus } from '../../domain/entities/item.entity';
-import { ItemMediaSchema } from './item-media.schema';
+import { Media } from '../../../medias/entities/media.entity';
+import { BaseEntity } from '../../../base.entity';
 
 @Entity('items')
-export class ItemSchema {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-
+export class ItemSchema extends BaseEntity {
     @Column({ name: 'seller_id', type: 'int', nullable: true })
     sellerId: number | null;
 
@@ -80,11 +72,8 @@ export class ItemSchema {
     })
     status: ItemStatus;
 
-    @OneToMany(() => ItemMediaSchema, (m: ItemMediaSchema) => m.item, {
+    @OneToMany(() => Media, (m: Media) => m.item, {
         cascade: true,
     })
-    medias: ItemMediaSchema[];
-
-    @CreateDateColumn({ name: 'created_at' })
-    created_at: Date;
+    medias: Media[];
 }

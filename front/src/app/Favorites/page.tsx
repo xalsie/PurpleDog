@@ -12,9 +12,6 @@ export default function Favorites() {
       <NavBarDashboard UserType={user?.role} logOut={logout}/>
       <div>
         <h2>Mes Favories</h2>
-
-
-
       </div>
     </div>
   );

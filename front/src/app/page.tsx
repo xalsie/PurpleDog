@@ -1,11 +1,18 @@
-import NavbarHome from "@/components/layout/NavBarHome/NavBarHome";
-import NavBarDashboard from "@/components/layout/NavBarDashboard/NavBarDashboard";
+import { HeroSection, FeaturedCarousel, CategoriesSection, ConceptSection, ServicesSection, NewsletterForm } from '@/components/sections/Index';
+import NavbarHome from '@/components/layout/NavBarHome/NavBarHome';
 
-export default function HomePage({}) {
+export default function HomePage() {
   return (
-    <div className="flex  w-full flex-col bg-zinc-50 font-sans">
-      <NavBarDashboard UserType="PROFESSIONAL"/>
-      <NavbarHome/>
-    </div>
+    <main>
+      <NavbarHome />
+      <HeroSection />
+      <ConceptSection />
+      <ServicesSection /> 
+      <FeaturedCarousel />
+      <CategoriesSection />
+      <NewsletterForm /> 
+    </main>
   );
-}
+} 
+
+// TO DO : ajouter la logique d'inscription à la newsletter

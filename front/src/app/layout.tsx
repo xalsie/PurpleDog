@@ -38,6 +38,7 @@ export default function RootLayout({
         </ReduxProvider>
         <Footer />
       </body>
+      
     </html>
   )
 }
