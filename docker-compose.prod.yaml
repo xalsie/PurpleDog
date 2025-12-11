@@ -3,7 +3,7 @@
 
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     container_name: purpledog-postgres
     restart: unless-stopped
     env_file:
@@ -58,8 +58,8 @@ services:
 
   front:
     build:
-      context: .
-      dockerfile: ./front/Dockerfile
+      context: ./front
+      dockerfile: Dockerfile
       target: production
     image: purpledog-nginx:latest
     container_name: purpledog-nginx
