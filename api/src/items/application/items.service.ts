@@ -10,6 +10,7 @@ import { ItemSchema } from '../infrastructure/typeorm/item.schema';
 import { MediaType } from '../domain/entities/media.type';
 import { Favorite } from '../../favorites/entities/favorite.entity';
 import { Media } from '../../medias/entities/media.entity';
+import { ResearchItemDto } from '../dto/research-item.dto';
 
 @Injectable()
 export class ItemsService {
@@ -35,7 +36,7 @@ export class ItemsService {
 
         const item = new Item({
             sellerId: dto.sellerId,
-            categoryId: dto.categoryId,
+            category: dto.category,
             name: dto.name,
             description: dto.description,
             dimensions_cm: dto.dimensions,
@@ -105,5 +106,11 @@ export class ItemsService {
                 favCount: parseInt(r.favCount, 10),
             }))
             .filter((x) => !!x.item);
+    async search(researchDto: ResearchItemDto): Promise<Item[]> {
+        const { query, category } = researchDto;
+        if (!query || !category || category.length === 0) {
+            return [];
+        }
+        return await this.itemRepository.search(category, query);
     }
 }

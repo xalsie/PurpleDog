@@ -90,7 +90,7 @@ export class AuthController {
     })
     @ApiResponse({ status: 401, description: 'Unauthorized' })
     async me(@CurrentUser() user: User) {
-        return this.authService.me(user);
+        return await this.authService.me(user);
     }
 
     @Get('/forgot/:email')

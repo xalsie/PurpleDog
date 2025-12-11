@@ -7,11 +7,13 @@ import {
     Patch,
     Delete,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ItemsService } from './application/items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { ResearchItemDto } from './dto/research-item.dto';
 
+@ApiBearerAuth()
 @ApiTags('items')
 @Controller('items')
 export class ItemsController {
@@ -20,6 +22,11 @@ export class ItemsController {
     @Post()
     create(@Body() dto: CreateItemDto) {
         return this.itemsService.create(dto);
+    }
+
+    @Post('filter')
+    search(@Body() dto: ResearchItemDto) {
+        return this.itemsService.search(dto);
     }
 
     @Get()

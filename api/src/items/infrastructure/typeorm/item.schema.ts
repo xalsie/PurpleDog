@@ -8,8 +8,8 @@ export class ItemSchema extends BaseEntity {
     @Column({ name: 'seller_id', type: 'int', nullable: true })
     sellerId: number | null;
 
-    @Column({ name: 'category_id', type: 'int', nullable: true })
-    categoryId: number | null;
+    @Column({ name: 'category_id', type: 'varchar', nullable: true })
+    category: string[];
 
     @Column({ length: 255 })
     name: string;
