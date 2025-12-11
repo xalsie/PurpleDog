@@ -1,15 +1,27 @@
-import { Entity, Column, OneToMany } from 'typeorm';
+import {
+    Entity,
+    Column,
+    OneToMany,
+    ManyToOne,
+    JoinColumn,
+    RelationId,
+} from 'typeorm';
 import { SaleType, ItemStatus } from '../../domain/entities/item.entity';
 import { Media } from '../../../medias/entities/media.entity';
 import { BaseEntity } from '../../../base.entity';
+import { User } from '../../../user/entities/user.entity';
 
 @Entity('items')
 export class ItemSchema extends BaseEntity {
-    @Column({ name: 'seller_id', type: 'int', nullable: true })
-    sellerId: number | null;
+    @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'seller_id' })
+    seller: User | null;
 
-    @Column({ name: 'category_id', type: 'int', nullable: true })
-    categoryId: number | null;
+    @RelationId((item: ItemSchema) => item.seller)
+    sellerId: string | null;
+
+    @Column({ name: 'category', type: 'simple-array', nullable: true })
+    category: string[];
 
     @Column({ length: 255 })
     name: string;
@@ -37,6 +49,15 @@ export class ItemSchema extends BaseEntity {
         nullable: true,
     })
     desired_price: string | number | null;
+
+    @Column({
+        name: 'starting_price',
+        type: 'numeric',
+        precision: 12,
+        scale: 2,
+        nullable: true,
+    })
+    starting_price: string | number | null;
 
     @Column({
         name: 'ai_estimated_price',

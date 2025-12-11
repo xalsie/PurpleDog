@@ -9,7 +9,7 @@ const fallbackBaseUrl = "http://localhost:3001";
 
 export const axiosInstance: AxiosInstance = axios.create({
   baseURL: (process.env.NEXT_PUBLIC_API_URL || fallbackBaseUrl) + "/api",
-  timeout: 10000,
+  timeout: 60000, // 60 secondes pour permettre l'analyse IA
   headers: {
     "Content-Type": "application/json",
   },

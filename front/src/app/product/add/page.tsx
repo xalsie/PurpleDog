@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
-import { Container, Button, InputField, Textarea, FileField, CheckboxField } from '@/components/ui';
+import { Container, Button, InputForm, Textarea, FileField, CheckboxField } from '@/components/ui';
 
 export default function CreateListingPage() {
   const [formData, setFormData] = useState({
@@ -50,7 +50,7 @@ export default function CreateListingPage() {
             </h2>
             
             <div className="space-y-6">
-              <InputField
+              <InputForm
                 label="Titre de l'annonce"
                 type="text"
                 value={formData.title}
@@ -99,7 +99,7 @@ export default function CreateListingPage() {
                 </div>
               </div>
 
-              <InputField
+              <InputForm
                 label="Prix"
                 type="number"
                 value={formData.price}
