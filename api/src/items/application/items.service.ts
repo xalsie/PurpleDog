@@ -25,7 +25,7 @@ export class ItemsService {
         private readonly mediasService: MediasService,
     ) {}
 
-    async create(dto: CreateItemDto): Promise<Item> {
+    async create(dto: CreateItemDto, sellerId: string): Promise<Item> {
         const medias: ItemMedia[] = [];
 
         if (dto.medias && Array.isArray(dto.medias) && dto.medias.length > 0) {
@@ -46,7 +46,7 @@ export class ItemsService {
 
         const item = new Item({
             category: dto.category,
-            sellerId: dto.sellerId ?? null,
+            sellerId,
             name: dto.name,
             description: dto.description,
             dimensions_cm: dto.dimensions,

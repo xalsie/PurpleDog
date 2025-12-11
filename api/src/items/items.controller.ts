@@ -34,7 +34,7 @@ export class ItemsController {
     @ApiResponse({ status: 201, description: 'Item created' })
     @ApiResponse({ status: 401, description: 'Unauthorized' })
     create(@Body() dto: CreateItemDto, @CurrentUser() user: User) {
-        return this.itemsService.create({ ...dto, sellerId: user.id });
+        return this.itemsService.create(dto, user.id);
     }
 
     @Post('filter')

@@ -47,11 +47,6 @@ export class CreateItemDto {
     @IsString()
     name: string;
 
-    @ApiProperty({ required: false })
-    @IsOptional()
-    @IsString()
-    sellerId?: string;
-
     @ApiProperty({ type: [String] })
     @IsArray()
     @IsString({ each: true })
