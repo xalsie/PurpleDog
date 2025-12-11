@@ -23,11 +23,11 @@ export class TypeOrmItemRepository implements ItemRepository {
     async search(category?: string[], query?: string): Promise<Item[]> {
         const repoQueryBuilder = this.repo.createQueryBuilder('item');
 
-        if (category) {
-            repoQueryBuilder.andWhere('item.category IN (:...category)', {
-                category: category,
-            });
-        }
+        // if (category) {
+        //     repoQueryBuilder.andWhere('item.category IN (:...category)', {
+        //         category: category,
+        //     });
+        // }
 
         if (query) {
             repoQueryBuilder.andWhere(
