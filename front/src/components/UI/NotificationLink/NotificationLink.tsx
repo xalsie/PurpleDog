@@ -19,7 +19,7 @@ export default function NotificationLink({ Notification = []} : INotificationLin
 
       {notifNumber > 0 && (
         <span
-          className="absolute -top-1 -right-1  bg-WhiteC text-VioletC text-xs font-semibold w-4 h-4 flex items-center justify-center rounded-full md:w-5 md:h-5 md:text-sm"
+          className="absolute -top-1 -right-1  bg-VioletC text-WhiteC text-xs font-regular w-4 h-4 flex items-center justify-center rounded-full md:w-5 md:h-5 md:text-sm"
         >
           {notifNumber}
         </span>
