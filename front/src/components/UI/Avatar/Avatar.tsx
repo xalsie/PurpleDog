@@ -55,7 +55,7 @@ export default function AvatarDropdown({ name, photoUrl, onLogout }: AvatarDropd
           <ul className="flex flex-col">
             <li>
               <Link
-                href="/settings"
+                href="/dashboard/profile"
                 className="block px-3 py-2 sm:px-4 sm:py-2 text-sm text-gray-700 hover:bg-gray-100 transition md:text-base lg:text-lg"
               >
                 Paramètres

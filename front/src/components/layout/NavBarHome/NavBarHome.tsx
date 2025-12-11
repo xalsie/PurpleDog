@@ -9,7 +9,7 @@ export default function NavbarHome() {
         
         <div className="flex-1 md:text-center">
           <Link   
-            href="#"
+            href="/"
             className="text-xl font-regular tracking-wide md:text-3xl font-gamora"
           >
             Purple Dog

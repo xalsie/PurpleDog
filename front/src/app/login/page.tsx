@@ -17,10 +17,8 @@ import NavbarHome from "@/components/layout/NavBarHome/NavBarHome";
      }
    }, [isAuthenticated, userRole, router]);
 
-   if (isAuthenticated) return null;
-
   return(
-    <div>
+    <div className="min-h-screen flex flex-col">
       <NavbarHome/>
       <LoginForm/>
     </div>

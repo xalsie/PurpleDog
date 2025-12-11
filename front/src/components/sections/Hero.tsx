@@ -14,8 +14,8 @@ interface HeroSectionProps {
 export default function HeroSection({
   title = "L'Art de l'Exception",
   description = "Découvrez une sélection raffinée d'objets de luxe et participez à des ventes aux enchères exclusives",
-  ctaText = "Explorer la Collection",
-  ctaHref = "/collection",
+  ctaText = "Rejoindre la plateforme",
+  ctaHref = "/login",
   onCtaClick,
   backgroundImage = "https://storage.googleapis.com/uxpilot-auth.appspot.com/98f7f86b86-43dfe55a88cc6039ffcb.png",
 }: HeroSectionProps) {

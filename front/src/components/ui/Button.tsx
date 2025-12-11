@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -8,6 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   fullWidth?: boolean;
   children: React.ReactNode;
+  href?: string;
 }
 
 export default function Button({
@@ -16,10 +18,11 @@ export default function Button({
   fullWidth = false,
   children,
   className = '',
+  href,
   ...props
 }: ButtonProps) {
-  const baseStyles = 'font-raleway font-light transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
-  
+  const baseStyles = 'font-raleway font-light transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed inline-block text-center';
+
   const variantStyles = {
     primary: 'bg-[var(--color-purple-dark)] text-[var(--color-cream-light)] hover:bg-[var(--color-black-deep)] hover:text-[var(--color-cream-light)]',
     secondary: 'bg-[var(--color-cream-light)] text-[var(--color-purple-dark)] hover:bg-[#FFFCF5] hover:text-[var(--color-purple-dark)]',
@@ -34,9 +37,19 @@ export default function Button({
 
   const widthStyle = fullWidth ? 'w-full' : '';
 
+  const combinedClassName = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${widthStyle} ${className}`;
+
+  if (href) {
+    return (
+      <Link href={href} className={combinedClassName}>
+        {children}
+      </Link>
+    );
+  }
+
   return (
     <button
-      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${widthStyle} ${className}`}
+      className={combinedClassName}
       {...props}
     >
       {children}

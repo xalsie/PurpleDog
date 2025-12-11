@@ -5,6 +5,7 @@ import { Container, Button } from '@/components/ui';
 import { AuctionHeader, AuctionDetails, PhotoGallery, SellerInfos } from '@/components/sections/Index';
 import NavBarDashboard from '@/components/layout/NavBarDashboard/NavBarDashboard';
 import { useAuth } from '@/hooks/useAuth';
+import axiosInstance from '@/lib/axios';
 
 interface AuctionProduct {
   id: string;
@@ -39,25 +40,55 @@ export default function AuctionProductPage({ productId }: AuctionProductPageProp
   const [product, setProduct] = useState<AuctionProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-    const { user, logout } = useAuth();
+  const { user, logout } = useAuth();
+
+  const defaultAuctionProduct: AuctionProduct = {
+   id: '1',
+   brand: 'Hermès',
+   title: 'Kelly 32 Vintage',
+   subtitle: 'Sac iconique en cuir Box bordeaux, circa 1995',
+   currentBid: 3450,
+   timeLeft: '2j 14h',
+   bidsCount: 23,
+   model: 'Kelly 32',
+   material: 'Cuir Box',
+   color: 'Bordeaux',
+   year: '1995',
+   condition: 'Excellent',
+   authenticated: true,
+   description: "Sac Kelly 32 en cuir Box bordeaux, datant de 1995. Pièce authentique en excellent état vintage avec patine naturelle du cuir. Fermoir et cadenas plaqué or en parfait état de fonctionnement. Intérieur en cuir chevreau bordeaux impeccable.",
+  images: [
+   'https://storage.googleapis.com/uxpilot-auth.appspot.com/2fe8b912ae-08939be41498732d673b.png',
+   'https://storage.googleapis.com/uxpilot-auth.appspot.com/1e3b7ae36f-b6e656608b5dadff4ad3.png',
+    'https://storage.googleapis.com/uxpilot-auth.appspot.com/ed117302db-0ef9383370e382c2d72e.png',
+    'https://storage.googleapis.com/uxpilot-auth.appspot.com/e9a4bda1e5-f4d3ebee959865a69b05.png',
+    'https://storage.googleapis.com/uxpilot-auth.appspot.com/af06b0b441-ca4c42dfa004d446f8e1.png',
+    'https://storage.googleapis.com/uxpilot-auth.appspot.com/830672da53-e24cd66178d57a9437ca.png',
+    'https://storage.googleapis.com/uxpilot-auth.appspot.com/921ffbcb1f-8afe17bd773098fd479a.png',
+    'https://storage.googleapis.com/uxpilot-auth.appspot.com/197b360499-9a468a952a417a295627.png',
+    'https://storage.googleapis.com/uxpilot-auth.appspot.com/f28079d9fb-70f9ed420956375029a2.png',
+    'https://storage.googleapis.com/uxpilot-auth.appspot.com/543f7a6df4-62b7f39390fb849ed71f.png',
+  ],
+  status: 'auction',
+  seller: {
+    id: 'seller-2',
+    name: 'Jean L.',
+    avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg',
+    verified: true,
+  },
+};
 
   useEffect(() => {
     const fetchProduct = async () => {
       if (!productId) {
-        setError('Product ID manquant');
+        setProduct(defaultAuctionProduct);
         setLoading(false);
         return;
       }
 
       try {
         setLoading(true);
-        const response = await fetch(`/api/auctions/${productId}`);
-        
-        if (!response.ok) {
-          throw new Error('Enchère non trouvée');
-        }
-
-        const data = await response.json();
+        const { data } = await axiosInstance.get(`/auctions/${productId}`);
         setProduct(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erreur de chargement');
@@ -72,23 +103,15 @@ export default function AuctionProductPage({ productId }: AuctionProductPageProp
 
   const handleBid = async (amount: number) => {
     if (!product) return;
-    
+
     try {
-      // TODO: Implémenter enchère
-      const response = await fetch('/api/bids', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          auctionId: product.id,
-          amount 
-        }),
+      const { data: updatedProduct } = await axiosInstance.post('/bids', {
+        auctionId: product.id,
+        amount
       });
 
-      if (response.ok) {
-        console.log('Enchère placée:', amount);
-        const updatedProduct = await response.json();
-        setProduct(updatedProduct);
-      }
+      console.log('Enchère placée:', amount);
+      setProduct(updatedProduct);
     } catch (err) {
       console.error('Error placing bid:', err);
     }
@@ -98,11 +121,8 @@ export default function AuctionProductPage({ productId }: AuctionProductPageProp
     if (!product) return;
 
     try {
-      // TODO: Implémenter ajout aux favoris
-      await fetch('/api/favorites', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ auctionId: product.id }),
+      await axiosInstance.post('/favorite', {
+        auctionId: product.id
       });
       console.log('Ajouté aux favoris');
     } catch (err) {
@@ -114,19 +134,13 @@ export default function AuctionProductPage({ productId }: AuctionProductPageProp
     if (!product) return;
 
     try {
-      // TODO: Implémenter messagerie
-      const response = await fetch('/api/conversations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          sellerId: product.seller.id,
-          auctionId: product.id 
-        }),
+      const { data } = await axiosInstance.post('/conversations', {
+        sellerId: product.seller.id,
+        auctionId: product.id
       });
 
-      if (response.ok) {
-        const { conversationId } = await response.json();
-        window.location.href = `/messages/${conversationId}`;
+      if (data?.conversationId) {
+        window.location.href = `/messages/${data.conversationId}`;
       }
     } catch (err) {
       console.error('Error starting conversation:', err);
@@ -218,39 +232,4 @@ export default function AuctionProductPage({ productId }: AuctionProductPageProp
   );
 }
 
-// Données de démonstration
-// const defaultAuctionProduct: AuctionProduct = {
-//   id: '1',
-//   brand: 'Hermès',
-//   title: 'Kelly 32 Vintage',
-//   subtitle: 'Sac iconique en cuir Box bordeaux, circa 1995',
-//   currentBid: 3450,
-//   timeLeft: '2j 14h',
-//   bidsCount: 23,
-//   model: 'Kelly 32',
-//   material: 'Cuir Box',
-//   color: 'Bordeaux',
-//   year: '1995',
-//   condition: 'Excellent',
-//   authenticated: true,
-//   description: "Sac Kelly 32 en cuir Box bordeaux, datant de 1995. Pièce authentique en excellent état vintage avec patine naturelle du cuir. Fermoir et cadenas plaqué or en parfait état de fonctionnement. Intérieur en cuir chevreau bordeaux impeccable.",
-//   images: [
-//     'https://storage.googleapis.com/uxpilot-auth.appspot.com/2fe8b912ae-08939be41498732d673b.png',
-//     'https://storage.googleapis.com/uxpilot-auth.appspot.com/1e3b7ae36f-b6e656608b5dadff4ad3.png',
-//     'https://storage.googleapis.com/uxpilot-auth.appspot.com/ed117302db-0ef9383370e382c2d72e.png',
-//     'https://storage.googleapis.com/uxpilot-auth.appspot.com/e9a4bda1e5-f4d3ebee959865a69b05.png',
-//     'https://storage.googleapis.com/uxpilot-auth.appspot.com/af06b0b441-ca4c42dfa004d446f8e1.png',
-//     'https://storage.googleapis.com/uxpilot-auth.appspot.com/830672da53-e24cd66178d57a9437ca.png',
-//     'https://storage.googleapis.com/uxpilot-auth.appspot.com/921ffbcb1f-8afe17bd773098fd479a.png',
-//     'https://storage.googleapis.com/uxpilot-auth.appspot.com/197b360499-9a468a952a417a295627.png',
-//     'https://storage.googleapis.com/uxpilot-auth.appspot.com/f28079d9fb-70f9ed420956375029a2.png',
-//     'https://storage.googleapis.com/uxpilot-auth.appspot.com/543f7a6df4-62b7f39390fb849ed71f.png',
-//   ],
-//   status: 'auction',
-//   seller: {
-//     id: 'seller-2',
-//     name: 'Marie L.',
-//     avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg',
-//     verified: true,
-//   },
-// };
+ 
