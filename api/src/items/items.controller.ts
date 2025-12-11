@@ -6,21 +6,40 @@ import {
     Param,
     Patch,
     Delete,
-    ParseIntPipe,
+    UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+    ApiBearerAuth,
+    ApiTags,
+    ApiOperation,
+    ApiResponse,
+} from '@nestjs/swagger';
 import { ItemsService } from './application/items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { AuthGuard } from '../security/auth.guard';
+import { CurrentUser, User } from '../user';
+import { ResearchItemDto } from './dto/research-item.dto';
 
+@ApiBearerAuth()
 @ApiTags('items')
 @Controller('items')
 export class ItemsController {
     constructor(private readonly itemsService: ItemsService) {}
 
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth()
     @Post()
-    create(@Body() dto: CreateItemDto) {
-        return this.itemsService.create(dto);
+    @ApiOperation({ summary: 'Create item' })
+    @ApiResponse({ status: 201, description: 'Item created' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    create(@Body() dto: CreateItemDto, @CurrentUser() user: User) {
+        return this.itemsService.create(dto, user.id);
+    }
+
+    @Post('filter')
+    search(@Body() dto: ResearchItemDto) {
+        return this.itemsService.search(dto);
     }
 
     @Get()
@@ -28,18 +47,23 @@ export class ItemsController {
         return this.itemsService.findAll();
     }
 
+    @Get('top-favorited')
+    findTopFavorited() {
+        return this.itemsService.findTopFavorited(10);
+    }
+
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: string) {
+    findOne(@Param('id') id: string) {
         return this.itemsService.findOne(id);
     }
 
     @Patch(':id')
-    update(@Param('id', ParseIntPipe) id: string, @Body() dto: UpdateItemDto) {
+    update(@Param('id') id: string, @Body() dto: UpdateItemDto) {
         return this.itemsService.update(id, dto);
     }
 
     @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id: string) {
+    remove(@Param('id') id: string) {
         return this.itemsService.remove(id);
     }
 }

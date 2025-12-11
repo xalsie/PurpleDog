@@ -34,13 +34,14 @@ export class ItemMedia {
 }
 
 export class Item {
-    sellerId: number | null;
-    categoryId: number | null;
+    category: string[];
+    sellerId: string | null;
     name: string;
     description: string;
     dimensions_cm: DimensionsCm;
     weight_kg?: number;
     desired_price?: number;
+    starting_price?: number;
     ai_estimated_price?: number | null;
     min_price_accepted?: number | null;
     sale_type: SaleType;
@@ -57,8 +58,8 @@ export class Item {
     isArchived: boolean;
 
     constructor(props: {
-        sellerId: number | null;
-        categoryId: number | null;
+        category: string[];
+        sellerId: string | null;
         name: string;
         description: string;
         dimensions_cm: DimensionsCm;
@@ -66,6 +67,7 @@ export class Item {
         medias?: ItemMedia[];
         weight_kg?: number;
         desired_price?: number;
+        starting_price?: number;
         ai_estimated_price?: number | null;
         min_price_accepted?: number | null;
         status?: ItemStatus;
@@ -79,13 +81,14 @@ export class Item {
         isArchived?: boolean;
     }) {
         if (props.id) this.id = props.id;
+        this.category = props.category;
         this.sellerId = props.sellerId;
-        this.categoryId = props.categoryId;
         this.name = props.name;
         this.description = props.description;
         this.dimensions_cm = props.dimensions_cm;
         this.weight_kg = props.weight_kg;
         this.desired_price = props.desired_price;
+        this.starting_price = props.starting_price;
         this.ai_estimated_price = props.ai_estimated_price ?? null;
         this.min_price_accepted = props.min_price_accepted ?? null;
         this.sale_type = props.sale_type;

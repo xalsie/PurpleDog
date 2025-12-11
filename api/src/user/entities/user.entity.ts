@@ -1,8 +1,9 @@
 import { BaseEntity } from '../../base.entity';
-import { Column, Entity, OneToOne } from 'typeorm';
+import { Column, Entity, OneToOne, OneToMany } from 'typeorm';
 import { Profile } from './user-profile.entity';
 import { ProfessionalProfile } from './user-professional-profile.entity';
 import { RoleEnum } from './role.enum';
+import { ItemSchema } from '../../items/infrastructure/typeorm/item.schema';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -29,4 +30,7 @@ export class User extends BaseEntity {
 
     @OneToOne(() => ProfessionalProfile, (pro) => pro.user)
     professionalProfile?: ProfessionalProfile;
+
+    @OneToMany(() => ItemSchema, (item) => item.seller)
+    items?: ItemSchema[];
 }

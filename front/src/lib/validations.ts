@@ -76,3 +76,67 @@ export type StepEmailData = z.infer<typeof stepEmailSchema>;
 export type StepPasswordData = z.infer<typeof stepPasswordSchema>;
 export type StepParticularDetailsData = z.infer<typeof stepParticularDetailsSchema>;
 export type StepProfessionalDetailsData = z.infer<typeof stepProfessionalDetailsSchema>;
+
+// Item form validation
+const preprocessNumber = (value: unknown) => {
+  if (value === "" || value === null || typeof value === "undefined") return undefined;
+  if (typeof value === "number") return value;
+  const parsed = Number(String(value).replace(",", "."));
+  return Number.isNaN(parsed) ? undefined : parsed;
+};
+
+const requiredPositive = (message: string) =>
+  z.preprocess(preprocessNumber, z.number().positive(message));
+
+const optionalPositive = () =>
+  z.preprocess(preprocessNumber, z.number().positive().optional());
+
+export const itemFormSchema = z.object({
+  name: z.string().trim().min(2, "Titre requis (min 2 caractères)"),
+  category: z.array(z.string()).min(1, "Catégorie requise"),
+  description: z.string().trim().min(10, "Description trop courte"),
+  sale_type: z.enum(["AUCTION", "QUICK_SALE"], { message: "Type de vente requis" }),
+  dimensions: z.object({
+    height: z.number().positive().optional(),
+    width: z.number().positive().optional(),
+    depth: z.number().positive().optional(),
+  }).optional(),
+  weight_kg: optionalPositive(),
+  
+  desired_price: z.number().positive("Prix requis").optional(),
+  starting_price: z.number().positive("Prix de départ requis").optional(),
+  min_price_accepted: optionalPositive(),
+  
+  ai_estimated_price: optionalPositive(),
+  mediaIds: z.array(z.string()).min(1, "Ajoutez au moins une photo"),
+  analysisCategory: z.string().trim().optional(),
+}).refine((data) => {
+  // For QUICK_SALE: desired_price is optional but if provided must be > 0
+  // For AUCTION: starting_price is optional but if provided must be > 0
+  // Both are optional, so form can submit without prices
+  return true;
+}, {
+  message: "Vérifiez les champs de prix",
+  path: ["sale_type"],
+});
+
+export type ItemFormValues = z.infer<typeof itemFormSchema>;
+
+export const defaultItemFormValues: Partial<ItemFormValues> = {
+  name: "",
+  description: "",
+  sale_type: "AUCTION",
+  mediaIds: [],
+  analysisCategory: "",
+  category: [],
+  dimensions: {
+    height: undefined,
+    width: undefined,
+    depth: undefined,
+  },
+  weight_kg: undefined,
+  desired_price: undefined,
+  starting_price: undefined,
+  ai_estimated_price: undefined,
+  min_price_accepted: undefined,
+};

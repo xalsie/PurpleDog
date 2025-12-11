@@ -64,87 +64,20 @@ function createValuationAgent() {
 
 export async function estimateArtworkValue(imagePaths: string) {
     try {
-        console.log("--- DÉMARRAGE DU PIPELINE D'ESTIMATION ---");
+        console.log('🚀 DÉMARRAGE: Analyse visuelle');
 
-        const visualAnalysis = await analyzeImages(imagePaths);
+        // Étape 1: Analyse visuelle par Gemini Vision (BLOQUANTE - on attend le résultat)
+        const analysisResult = await analyzeImages(imagePaths);
         console.log(
-            '\n Analyse terminée :',
-            visualAnalysis.substring(0, 100) + '...',
+            '✅ Analyse visuelle terminée:',
+            JSON.stringify(analysisResult, null, 2),
         );
 
-        const executor = createValuationAgent();
+        // Étape 2: Recherche Catawiki DÉSACTIVÉE ICI
+        // Maintenant disponible via POST /image-analysis/enrich/:analysisId
+        // pour un appel optionnel en arrière-plan sans bloquer
 
-        const artistMatch = visualAnalysis.match(/^ARTISTE:\s*(.*)/m);
-        const artist = artistMatch
-            ? artistMatch[1].split('(')[0].trim()
-            : 'Artiste inconnu';
-
-        const titleMatch = visualAnalysis.match(/la célèbre "([^"]+)"/);
-        const artworkTitle = titleMatch ? titleMatch[1] : 'Titre non spécifié';
-
-        const userPrompt = `Estime la valeur pour l'œuvre "${artworkTitle}" par l'artiste "${artist}". Concentre ta recherche sur Catawiki en utilisant ces informations pour trouver des œuvres comparables et baser ton estimation sur les prix du marché. RÉPONDS STRICTEMENT PAR UN JSON VALIDE CONFORME AU SCHÉMA SYSTÈME.`;
-
-        const result = await executor.invoke({
-            messages: [new HumanMessage({ content: userPrompt })],
-        });
-
-        try {
-            console.log("\n--- TRACE COMPLÈTE DE L'AGENT (console only) ---");
-            console.log(JSON.stringify(result.messages || result, null, 2));
-        } catch (e) {
-            console.log('Could not stringify agent result, raw:', e);
-        }
-
-        let finalText = '';
-        const msgs = result.messages || [];
-        for (let i = msgs.length - 1; i >= 0; i--) {
-            const m: any = msgs[i];
-            if (!m) continue;
-            if (typeof m.content === 'string' && m.content.trim()) {
-                finalText = m.content.trim();
-                break;
-            }
-            if (typeof m.text === 'string' && m.text.trim()) {
-                finalText = m.text.trim();
-                break;
-            }
-            if (m.tool_response && typeof m.tool_response === 'string') {
-                finalText = m.tool_response.trim();
-                break;
-            }
-            try {
-                const s = JSON.stringify(m.content || m);
-                if (s && s !== '{}') {
-                    finalText = s;
-                    break;
-                }
-            } catch (e) {
-                console.log('Error stringifying message content:', e);
-            }
-        }
-
-        finalText = finalText || '';
-
-        let parsed: any = null;
-        const tryParse = (s: string) => {
-            try {
-                return JSON.parse(s);
-            } catch (e) {
-                console.log('JSON parsing error:', e);
-                return null;
-            }
-        };
-
-        parsed = tryParse(finalText);
-        if (!parsed) {
-            const first = finalText.indexOf('{');
-            const last = finalText.lastIndexOf('}');
-            if (first >= 0 && last > first) {
-                const jsonSub = finalText.substring(first, last + 1);
-                parsed = tryParse(jsonSub);
-            }
-        }
-
+        // Construire le résultat avec les données Gemini
         const toNumber = (v: any): number | null => {
             if (v === null || v === undefined) return null;
             if (typeof v === 'number') return Number.isFinite(v) ? v : null;
@@ -155,118 +88,43 @@ export async function estimateArtworkValue(imagePaths: string) {
 
         const safeString = (v: any): string | null => {
             if (v === null || v === undefined) return null;
-            return String(v).trim() || null;
+            const str = String(v).trim();
+            return str.length > 0 ? str : null;
         };
 
         const output = {
-            titre: null as string | null,
-            artiste: null as string | null,
-            category_parent: null as string | null,
-            category_enfant: null as Array<Array<string>> | null,
-            description_court: null as string | null,
-            description_longue: null as string | null,
-            estimated_price_min: null as number | null,
-            estimated_price_max: null as number | null,
-            currency: null as string | null,
-            method: null as string | null,
-            country_of_origin: null as string | null,
-            style: null as string | null,
-            signature: null as string | null,
-            artwork_title: null as string | null,
-            style_subtype: null as string | null,
-            color: null as string | null,
-            weight: null as string | null,
-            estimation_text: finalText,
+            titre: safeString(analysisResult.titre),
+            artiste: safeString(analysisResult.artiste),
+            category_parent: safeString(analysisResult.category_parent),
+            category_enfant: analysisResult.category_enfant,
+            description_court: safeString(analysisResult.description_court),
+            description_longue: safeString(analysisResult.description_longue),
+            estimated_price_min: toNumber(analysisResult.estimated_price_min),
+            estimated_price_max: toNumber(analysisResult.estimated_price_max),
+            currency:
+                safeString(analysisResult.currency)?.toUpperCase() || 'EUR',
+            method: 'visual_analysis',
+            country_of_origin: safeString(
+                analysisResult.country_of_origin || analysisResult.country,
+            ),
+            style: safeString(analysisResult.style),
+            signature: safeString(analysisResult.signature),
+            artwork_title: safeString(
+                analysisResult.artwork_title || analysisResult.artworkTitle,
+            ),
+            style_subtype: safeString(
+                analysisResult.style_subtype || analysisResult.styleSubtype,
+            ),
+            color: safeString(analysisResult.color),
+            weight: safeString(analysisResult.weight || analysisResult.Weight),
+            height: safeString(analysisResult.height),
+            width: safeString(analysisResult.width),
+            depth: safeString(analysisResult.depth),
         };
 
-        if (parsed && typeof parsed === 'object') {
-            output.titre =
-                safeString(parsed.titre) ||
-                safeString(parsed.title) ||
-                output.titre;
-            output.artiste =
-                safeString(parsed.artiste) ||
-                safeString(parsed.artist) ||
-                output.artiste ||
-                artist;
-            output.category_parent =
-                safeString(parsed.category_parent) || output.category_parent;
-            output.category_enfant =
-                parsed.category_enfant ||
-                parsed.category_child ||
-                output.category_enfant;
-            output.description_court =
-                safeString(parsed.description_court) ||
-                safeString(parsed.description_short) ||
-                output.description_court;
-            output.description_longue =
-                safeString(parsed.description_longue) ||
-                safeString(parsed.description_long) ||
-                output.description_longue ||
-                visualAnalysis;
-            output.estimated_price_min = toNumber(
-                parsed.estimated_price_min ||
-                    parsed.estimated_min ||
-                    parsed.min,
-            );
-            output.estimated_price_max = toNumber(
-                parsed.estimated_price_max ||
-                    parsed.estimated_max ||
-                    parsed.max,
-            );
-            output.currency = safeString(
-                parsed.currency || parsed.devise || parsed.currency,
-            );
-            if (output.currency)
-                output.currency = output.currency.toUpperCase();
-            output.method = safeString(parsed.method) || output.method;
-            output.country_of_origin =
-                safeString(parsed.country_of_origin) ||
-                safeString(parsed.country) ||
-                output.country_of_origin;
-            output.style = safeString(parsed.style) || output.style;
-            output.signature = safeString(parsed.signature) || output.signature;
-            output.artwork_title =
-                safeString(parsed.artwork_title) ||
-                safeString(parsed.artworkTitle) ||
-                output.artwork_title ||
-                artworkTitle;
-            output.style_subtype =
-                safeString(parsed.style_subtype) ||
-                safeString(parsed.styleSubtype) ||
-                output.style_subtype;
-            output.color = safeString(parsed.color) || output.color;
-            output.weight = safeString(parsed.weight) || output.weight;
-        } else {
-            const num = (s: string | null) => {
-                if (!s) return null;
-                const cleaned = s
-                    .replace(/[^0-9.,]/g, '')
-                    .replace(/\s/g, '')
-                    .replace(',', '.');
-                const n = Number(cleaned);
-                return Number.isFinite(n) ? n : null;
-            };
-
-            const priceMatch = finalText.match(
-                /([0-9]{1,3}(?:[\s]?[0-9]{3})*(?:[.,][0-9]+)?)\s*(?:€|EUR)/i,
-            );
-            if (priceMatch && priceMatch[1]) {
-                const p = num(priceMatch[1]);
-                output.estimated_price_min = p;
-                output.estimated_price_max = p;
-                output.currency = 'EUR';
-            }
-            output.method =
-                /Estimation Théo/i.test(finalText) ||
-                /Estimation Théorique/i.test(finalText)
-                    ? 'theoretical'
-                    : 'market';
-            output.description_longue =
-                output.description_longue || visualAnalysis;
-            output.artiste = output.artiste || artist;
-            output.artwork_title = output.artwork_title || artworkTitle;
-        }
+        console.log(
+            '📦 Résultat Gemini retourné immédiatement (Catawiki disponible via POST /enrich/:analysisId)',
+        );
 
         return output;
     } catch (error) {
