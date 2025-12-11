@@ -5,8 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { loginSchema, LoginFormData } from "@/lib/validations";
-import { InputForm } from "@/components/ui";
-import { Button } from "@/components/ui"
+import { InputForm, Button } from "@/components/ui";
 
 interface FormErrorProps {
   message?: string | null;

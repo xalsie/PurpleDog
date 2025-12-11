@@ -1,7 +1,6 @@
 import {
     CanActivate,
     ExecutionContext,
-    Inject,
     Injectable,
     UnauthorizedException,
 } from '@nestjs/common';
@@ -36,7 +35,7 @@ export class AuthGuard implements CanActivate {
         }
         try {
             user = await this.userRepo.findOne({
-                where: { id: payload.userId },
+                where: { email: payload.email },
             });
             if (!user) {
                 throw new UnauthorizedException();

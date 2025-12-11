@@ -1,11 +1,18 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { env } from './env.type';
+import { join } from 'path';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+    const uploadsPath = join(__dirname, '..', '..', 'uploads');
+    app.useStaticAssets(uploadsPath, {
+        prefix: '/uploads',
+    });
 
     app.enableCors({
         origin: env.FRONT_URL || 'http://localhost:3000',
@@ -26,10 +33,20 @@ async function bootstrap() {
         })
         .addBearerAuth()
         .build();
+
     const documentFactory = () => SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, documentFactory);
 
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(
+        new ValidationPipe({
+            forbidNonWhitelisted: false,
+            skipMissingProperties: false,
+            transform: true,
+            transformOptions: {
+                enableImplicitConversion: true,
+            },
+        }),
+    );
 
     await app.listen(process.env.PORT ?? 3001);
 }

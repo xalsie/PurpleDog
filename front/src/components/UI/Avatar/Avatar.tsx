@@ -30,10 +30,10 @@ export default function AvatarDropdown({ name, photoUrl, onLogout }: AvatarDropd
     <div className="relative inline-block" ref={dropdownRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex flex-col items-center p-1 sm:p-2 rounded-lg hover:bg-gray-100 transition"
+        className="flex flex-col items-center p-1 sm:p-2 rounded-lg"
       >
         <div
-          className="w-8 h-8 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-indigo-200"
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-VioletC"
         >
           {photoUrl ? (
             <Image src={photoUrl} alt={name} width={50} height={50} className="w-full h-full object-cover" />
@@ -43,7 +43,7 @@ export default function AvatarDropdown({ name, photoUrl, onLogout }: AvatarDropd
             </div>
           )}
         </div>
-        <p className="mt-0.5 sm:mt-1 text-sm sm:text-lg font-semibold text-indigo-800">
+        <p className="mt-0.5 sm:mt-1 text-sm sm:text-lg font-light text-VioletC">
             {name}
         </p>
       </button>

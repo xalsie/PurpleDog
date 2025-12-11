@@ -47,13 +47,10 @@ export class CreateItemDto {
     @IsString()
     name: string;
 
-    @ApiProperty()
-    @IsNumber()
-    sellerId: number;
-
-    @ApiProperty()
-    @IsNumber()
-    categoryId: number;
+    @ApiProperty({ type: [String] })
+    @IsArray()
+    @IsString({ each: true })
+    category: string[];
 
     @ApiProperty()
     @IsNotEmptyObject()
@@ -70,17 +67,21 @@ export class CreateItemDto {
     @IsString()
     description: string;
 
-    @ApiProperty({ type: [MediaDto] })
+    @ApiProperty({ type: [String], description: 'Array of media IDs' })
     @IsArray()
     @ArrayMinSize(1)
-    @ValidateNested({ each: true })
-    @Type(() => MediaDto)
-    medias: MediaDto[];
+    @IsString({ each: true })
+    medias: string[];
 
     @ApiProperty({ required: false })
     @IsOptional()
     @IsNumber()
     desired_price?: number;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsNumber()
+    starting_price?: number;
 
     @ApiProperty({ required: false })
     @IsOptional()
