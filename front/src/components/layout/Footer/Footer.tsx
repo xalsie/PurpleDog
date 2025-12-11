@@ -11,7 +11,7 @@ export default function Footer() {
           className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-16"
         >
           <div className="flex flex-col gap-3">
-            <h3 className="text-2xl font-bold">Purple Dog</h3>
+            <h3 className="text-2xl font-bold font">Purple Dog</h3>
             <p className="text-sm opacity-80 leading-relaxed">
               La plateforme parisienne de référence pour la vente d’objets de
               luxe et les enchères d’exception.
@@ -19,8 +19,8 @@ export default function Footer() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <h3 className="text-lg font-semibold">À Propos</h3>
-            <ul className="text-sm opacity-80 flex flex-col gap-2">
+            <h3 className="text-lg font-semibold font-gamora">À Propos</h3>
+            <ul className="text-sm opacity-80 flex flex-col gap-2 font-raleway">
               <li>
                 <Link href="#">Qui sommes-nous</Link>
               </li>
@@ -37,7 +37,7 @@ export default function Footer() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <h3 className="text-lg font-semibold">Services</h3>
+            <h3 className="text-lg font-semibold font-gamora">Services</h3>
             <ul className="text-sm opacity-80 flex flex-col gap-2">
               <li>
                 <Link href="#">Vendre un objet</Link>
@@ -55,7 +55,7 @@ export default function Footer() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <h3 className="text-lg font-semibold">Contact</h3>
+            <h3 className="text-lg font-semibold font-gamora">Contact</h3>
 
             <ul className="text-sm opacity-80 flex flex-col gap-2">
               <li>

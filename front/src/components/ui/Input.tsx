@@ -29,7 +29,7 @@ export default function Input({
   return (
     <div className="w-full">
       {label && (
-        <label className="block mb-2 font-raleway text-sm font-medium text-[#020016]">
+        <label className="block mb-2 font-raleway text-sm font-medium text-blackC">
           {label}
         </label>
     )}

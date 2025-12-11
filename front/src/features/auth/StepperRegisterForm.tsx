@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState } from "react";
 import { useForm, SubmitHandler, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -17,7 +17,7 @@ import {
   StepParticularDetailsData,
   StepProfessionalDetailsData,
 } from "@/lib/validations";
-import { InputField, CheckboxField } from "@/components/UI";
+import { InputForm,Button } from "@/components/ui";
 
 interface FormErrorProps {
   message?: string | null;
@@ -169,13 +169,13 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
   const selectedType = watchPassword("type");
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-900 to-purple-700 px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-WhiteC px-4 py-8">
       <div className="w-full max-w-lg">
         <div className="bg-white rounded-lg shadow-xl p-8">
           {/* Header */}
           <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold text-gray-800">Purple Dog</h1>
-            <p className="text-gray-600 mt-2">Inscription</p>
+            <h1 className="text-3xl font-bold text-gray-800 font-gamora">Purple Dog</h1>
+            <p className="text-gray-600 mt-2 font-raleway">Inscription</p>
           </div>
 
           {/* Progress Stepper */}
@@ -185,7 +185,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center ${
                     currentStep === "email"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-VioletC text-white"
                       : "bg-green-500 text-white"
                   }`}
                 >
@@ -204,7 +204,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center ${
                     currentStep === "password"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-VioletC text-white"
                       : currentStep === "details"
                       ? "bg-green-500 text-white"
                       : "bg-gray-300 text-gray-500"
@@ -225,7 +225,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center ${
                     currentStep === "details"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-VioletC text-white"
                       : "bg-gray-300 text-gray-500"
                   }`}
                 >
@@ -241,7 +241,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
           {/* Step 1: Email */}
           {currentStep === "email" && (
             <form onSubmit={handleSubmitEmail(onSubmitEmail)} className="space-y-4">
-              <InputField
+              <InputForm
                 label="Adresse email"
                 id="email"
                 type="email"
@@ -250,13 +250,9 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 error={errorsEmail.email}
               />
 
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+              <Button variant="primary" size="md" type="submit" disabled={isLoading} fullWidth={true}>
                 Suivant
-              </button>
+              </Button>
             </form>
           )}
 
@@ -270,11 +266,11 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 font-raleway">
                   Type de compte
                 </label>
                 <div className="grid grid-cols-2 gap-4">
-                  <label className="flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition hover:border-purple-600">
+                  <label className="flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition hover:border-VioletC">
                     <input
                       type="radio"
                       value={UserRole.SELLER}
@@ -283,7 +279,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                     />
                     <span className="text-sm font-medium">Particulier</span>
                   </label>
-                  <label className="flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition hover:border-purple-600">
+                  <label className="flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition hover:border-VioletC">
                     <input
                       type="radio"
                       value={UserRole.PROFESSIONAL}
@@ -298,7 +294,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 )}
               </div>
 
-              <InputField
+              <InputForm
                 label="Mot de passe"
                 id="password"
                 type="password"
@@ -308,7 +304,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 helperText="Min. 8 caractères, 1 majuscule, 1 chiffre, 1 caractère spécial"
               />
 
-              <InputField
+              <InputForm
                 label="Confirmer mot de passe"
                 id="confirmPassword"
                 type="password"
@@ -318,20 +314,8 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
               />
 
               <div className="flex space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep("email")}
-                  className="w-1/3 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-4 rounded-lg transition"
-                >
-                  Retour
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-2/3 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Suivant
-                </button>
+                <Button type="button" variant="outline" size="md" onClick={() => setCurrentStep("email")}>Retour</Button>
+                <Button type="submit" disabled={isLoading} variant="primary" size="md" fullWidth={true}>Suivant</Button>
               </div>
             </form>
           )}
@@ -351,7 +335,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 </p>
               </div>
 
-              <InputField
+              <InputForm
                 label="Prénom"
                 id="firstName"
                 type="text"
@@ -360,7 +344,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 error={errorsParticularDetails.firstName}
               />
 
-              <InputField
+              <InputForm
                 label="Nom"
                 id="lastName"
                 type="text"
@@ -369,7 +353,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 error={errorsParticularDetails.lastName}
               />
 
-              <InputField
+              <InputForm
                 label="Date de naissance"
                 id="birthDate"
                 type="date"
@@ -377,27 +361,15 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 error={errorsParticularDetails.birthDate}
               />
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-900">
+              <div className="bg-BeigeC  border-violetC rounded-sm p-4">
+                <p className="text-sm text-VoiletC">
                   ℹ️ Les autres informations (adresse, photo, etc.) pourront être renseignées plus tard dans votre profil.
                 </p>
               </div>
 
               <div className="flex space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep("password")}
-                  className="w-1/3 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-4 rounded-lg transition"
-                >
-                  Retour
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-2/3 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? "Inscription en cours..." : "S'inscrire"}
-                </button>
+                <Button type="button" variant="outline" size="md" onClick={() => setCurrentStep("password")}>Retour</Button>
+                <Button type="submit" disabled={isLoading} variant="primary" size="md" fullWidth={true}>{isLoading ? "Inscription en cours..." : "S'inscrire"}</Button>
               </div>
             </form>
           )}
@@ -417,7 +389,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 </p>
               </div>
 
-              <InputField
+              <InputForm
                 label="Prénom"
                 id="firstName"
                 type="text"
@@ -426,7 +398,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 error={errorsProfessionalDetails.firstName}
               />
 
-              <InputField
+              <InputForm
                 label="Nom"
                 id="lastName"
                 type="text"
@@ -435,7 +407,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 error={errorsProfessionalDetails.lastName}
               />
 
-              <InputField
+              <InputForm
                 label="Date de naissance"
                 id="birthDate"
                 type="date"
@@ -443,7 +415,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 error={errorsProfessionalDetails.birthDate}
               />
 
-              <InputField
+              <InputForm
                 label="Nom de l'entreprise"
                 id="companyName"
                 type="text"
@@ -452,7 +424,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 error={errorsProfessionalDetails.companyName}
               />
 
-              <InputField
+              <InputForm
                 label="SIRET"
                 id="siret"
                 type="text"
@@ -462,7 +434,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 helperText="14 chiffres"
               />
 
-              <InputField
+              <InputForm
                 label="Numéro de TVA"
                 id="vat"
                 type="text"
@@ -471,27 +443,15 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
                 error={errorsProfessionalDetails.vat}
               />
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-900">
+              <div className="bg-BeigeC border rounded-sm p-4">
+                <p className="text-sm text-VioletC">
                   ℹ️ Les autres informations (KBIS, site web, spécialités, etc.) pourront être renseignées plus tard dans votre profil.
                 </p>
               </div>
 
               <div className="flex space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep("password")}
-                  className="w-1/3 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-4 rounded-lg transition"
-                >
-                  Retour
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-2/3 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? "Inscription en cours..." : "S'inscrire"}
-                </button>
+                <Button type="button" variant="outline" size="md" onClick={() => setCurrentStep("password")}>Retour</Button>
+                <Button type="submit" disabled={isLoading} variant="primary" size="md" fullWidth={true}>{isLoading ? "Inscription en cours..." : "S'inscrire"}</Button>
               </div>
             </form>
           )}
@@ -500,8 +460,8 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
           <div className="mt-6 text-center">
             <p className="text-gray-600 text-sm">
               Vous avez déjà un compte ?{" "}
-              <Link href="/login" className="text-purple-600 hover:text-purple-700 font-semibold">
-                Se connecter
+              <Link href="/login" className="text-VioletC hover:underline font-semibold font-raleway">
+                Connectez-vous
               </Link>
             </p>
           </div>

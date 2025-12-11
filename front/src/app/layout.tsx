@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Raleway } from 'next/font/google'
 import "./globals.css";
-import Footer from "@/layout/Footer/Footer";
+import Footer from "@/components/layout/Footer/Footer";
 import { ReduxProvider } from "@/components/providers/ReduxProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 
@@ -30,9 +30,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
-        <Footer/>
+      <body className={`${cormorant.variable} ${raleway.variable} antialiased`}>
+        <ReduxProvider>
+          <AuthProvider>
+            {children}
+            <Footer />
+          </AuthProvider>
+        </ReduxProvider>
       </body>
     </html>
   )
