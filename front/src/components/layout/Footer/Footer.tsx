@@ -87,7 +87,7 @@ export default function Footer() {
 
         <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
           <p className="text-sm opacity-80">
-            © 2024 Purple Dog. Tous droits réservés.
+            © 2025 Purple Dog. Tous droits réservés.
           </p>
 
           <div className="flex gap-6 text-sm opacity-80">

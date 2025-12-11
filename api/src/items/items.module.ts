@@ -6,9 +6,10 @@ import { ItemSchema } from './infrastructure/typeorm/item.schema';
 import { Media } from '../medias/entities/media.entity';
 import { TypeOrmItemRepository } from './infrastructure/typeorm-item.repository';
 import { ITEM_REPOSITORY } from './domain/item.repository';
+import { Favorite } from '../favorites/entities/favorite.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([ItemSchema, Media])],
+    imports: [TypeOrmModule.forFeature([ItemSchema, Media, Favorite])],
     controllers: [ItemsController],
     providers: [
         ItemsService,

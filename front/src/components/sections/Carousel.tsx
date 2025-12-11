@@ -3,7 +3,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Container } from '@/components/ui';
+import axios from '@/lib/axios';
 
+interface Media {
+  id: string
+  url: string;
+  isPrimary?: boolean;
+}
 interface CarouselItem {
   id: string;
   image: string;
@@ -33,6 +39,7 @@ export default function FeaturedCarousel({
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
+  const [carouselItems, setCarouselItems] = useState<CarouselItem[]>(items);
 
   // Détecte le nombre d'items à afficher selon la taille d'écran
   useEffect(() => {
@@ -49,7 +56,44 @@ export default function FeaturedCarousel({
     return () => window.removeEventListener('resize', updateItemsPerView);
   }, []);
 
-  const maxIndex = Math.max(0, items.length - itemsPerView);
+  useEffect(() => {
+    setCarouselItems(items);
+  }, [items]);
+
+  useEffect(() => {
+    if (items && items.length > 0) return;
+
+    let cancelled = false;
+    axios
+      .get('/items/top-favorited')
+      .then((res) => {
+        if (cancelled) return;
+        const data = res.data as Array<{ item: any; favCount: number }>;
+        const mapped: CarouselItem[] = data.map((d) => {
+          const it = d.item ?? d;
+          const medias = it.medias ?? [];
+          const primary = medias.find((m: Media) => m.isPrimary) ?? medias[0];
+          const image = primary?.url ? `${process.env.NEXT_PUBLIC_API_URL}${primary.url}` : '/images/placeholder.png';
+          const price = Number(it.desired_price ?? it.ai_estimated_price ?? 0);
+          return {
+            id: it.id,
+            image,
+            title: it.name,
+            subtitle: it.description ?? '',
+            price,
+            isLiked: false,
+          };
+        });
+        setCarouselItems(mapped);
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const maxIndex = Math.max(0, carouselItems.length - itemsPerView);
 
   const goToSlide = (index: number) => {
     const clampedIndex = Math.max(0, Math.min(index, maxIndex));
@@ -101,7 +145,7 @@ export default function FeaturedCarousel({
   };
 
   // Calcul du nombre de dots à afficher
-  const dotsCount = itemsPerView === 1 ? items.length : maxIndex + 1;
+  const dotsCount = itemsPerView === 1 ? carouselItems.length : maxIndex + 1;
 
   return (
     <section className="py-16 lg:py-20" style={{ backgroundColor: 'rgba(44, 14, 64, 0.05)' }}>
@@ -128,7 +172,7 @@ export default function FeaturedCarousel({
                 transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
               }}
             >
-              {items.map((item) => (
+              {carouselItems.map((item) => (
                 <div
                   key={item.id}
                   className="min-w-full lg:min-w-[33.333%] px-3"

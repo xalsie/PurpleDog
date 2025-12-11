@@ -6,7 +6,6 @@ import {
     Param,
     Patch,
     Delete,
-    ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ItemsService } from './application/items.service';
@@ -28,18 +27,23 @@ export class ItemsController {
         return this.itemsService.findAll();
     }
 
+    @Get('top-favorited')
+    findTopFavorited() {
+        return this.itemsService.findTopFavorited(10);
+    }
+
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: string) {
+    findOne(@Param('id') id: string) {
         return this.itemsService.findOne(id);
     }
 
     @Patch(':id')
-    update(@Param('id', ParseIntPipe) id: string, @Body() dto: UpdateItemDto) {
+    update(@Param('id') id: string, @Body() dto: UpdateItemDto) {
         return this.itemsService.update(id, dto);
     }
 
     @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id: string) {
+    remove(@Param('id') id: string) {
         return this.itemsService.remove(id);
     }
 }
