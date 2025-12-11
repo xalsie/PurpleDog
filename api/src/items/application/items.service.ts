@@ -37,6 +37,8 @@ export class ItemsService {
             medias,
         });
 
+        // TODO: attribuer les mediaIds a l'item id
+
         return this.itemRepository.save(item);
     }
 

@@ -7,7 +7,9 @@ import {
     Param,
     Delete,
     Query,
+    Sse,
 } from '@nestjs/common';
+import { Observable } from 'rxjs';
 import { BidsService } from './bids.service';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { UpdateBidDto } from './dto/update-bid.dto';
@@ -15,6 +17,11 @@ import { UpdateBidDto } from './dto/update-bid.dto';
 @Controller('bids')
 export class BidsController {
     constructor(private readonly bidsService: BidsService) {}
+
+    @Sse('stream/:itemId')
+    stream(@Param('itemId') itemId: string): Observable<any> {
+        return this.bidsService.getBidStream(itemId);
+    }
 
     @Post()
     create(@Body() createBidDto: CreateBidDto) {

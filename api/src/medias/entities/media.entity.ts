@@ -1,18 +1,10 @@
-import {
-    Column,
-    Entity,
-    PrimaryGeneratedColumn,
-    ManyToOne,
-    JoinColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
 import { ItemSchema } from '../../items/infrastructure/typeorm/item.schema';
 import { MediaType } from '../../items/domain/entities/media.type';
+import { BaseEntity } from '../../base.entity';
 
 @Entity('media')
-export class Media {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-
+export class Media extends BaseEntity {
     @Column({ name: 'item_id', type: 'uuid', nullable: true })
     itemId: string;
 

@@ -34,7 +34,6 @@ export class ItemMedia {
 }
 
 export class Item {
-    id?: string;
     sellerId: number | null;
     categoryId: number | null;
     name: string;
@@ -47,7 +46,15 @@ export class Item {
     sale_type: SaleType;
     status: ItemStatus;
     medias: ItemMedia[];
-    created_at?: Date;
+
+    id: string;
+    createDateTime: Date;
+    createdBy: string | null;
+    internalComment: string | null;
+    lastChangedDateTime: Date;
+    lastChangedBy: string | null;
+    isActive: boolean;
+    isArchived: boolean;
 
     constructor(props: {
         sellerId: number | null;
@@ -63,9 +70,15 @@ export class Item {
         min_price_accepted?: number | null;
         status?: ItemStatus;
         id?: string;
-        created_at?: Date;
+        createDateTime?: Date;
+        createdBy?: string | null;
+        internalComment?: string | null;
+        lastChangedDateTime?: Date;
+        lastChangedBy?: string | null;
+        isActive?: boolean;
+        isArchived?: boolean;
     }) {
-        this.id = props.id;
+        if (props.id) this.id = props.id;
         this.sellerId = props.sellerId;
         this.categoryId = props.categoryId;
         this.name = props.name;
@@ -78,7 +91,13 @@ export class Item {
         this.sale_type = props.sale_type;
         this.status = props.status ?? ItemStatus.DRAFT;
         this.medias = props.medias ?? [];
-        this.created_at = props.created_at;
+        this.createDateTime = props.createDateTime ?? new Date();
+        this.createdBy = props.createdBy ?? null;
+        this.internalComment = props.internalComment ?? null;
+        this.lastChangedDateTime = props.lastChangedDateTime ?? new Date();
+        this.lastChangedBy = props.lastChangedBy ?? null;
+        this.isActive = props.isActive ?? true;
+        this.isArchived = props.isArchived ?? false;
 
         const images = this.medias.filter(
             (m) => m.mediaType === MediaType.IMAGE,

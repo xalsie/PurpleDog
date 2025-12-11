@@ -34,7 +34,7 @@ export class FavoriteService {
             .createQueryBuilder('f')
             .leftJoinAndSelect('f.item', 'i')
             .where('f.userId = :userId', { userId })
-            .orderBy('f.createdAt', 'DESC')
+            .orderBy('f.createDateTime', 'DESC')
             .skip((page - 1) * pageSize)
             .take(pageSize)
             .getManyAndCount();
@@ -47,7 +47,7 @@ export class FavoriteService {
                 r.item.status === ItemStatus.PUBLISHED
                     ? 'en vente'
                     : 'plus disponible',
-            favoriteCreatedAt: r.createdAt,
+            favoriteCreatedAt: r.createDateTime,
         }));
 
         return { data, meta: { page, pageSize, total } };
