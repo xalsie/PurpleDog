@@ -34,7 +34,7 @@ export default function DashboardCTA({
       <Container>
         <div className="bg-[var(--color-purple-dark)] rounded-none sm:rounded-lg overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-            {/* Content */}
+
             <div className="p-8 sm:p-10 lg:p-16 flex flex-col justify-center">
               <h2 className="font-cormorant text-3xl sm:text-4xl lg:text-5xl text-[var(--color-cream-light)] mb-4 sm:mb-6">
                 {title}
@@ -66,7 +66,6 @@ export default function DashboardCTA({
               </div>
             </div>
 
-            {/* Image */}
             <div className="h-64 sm:h-80 lg:h-auto relative overflow-hidden">
               <Image
                 src={image}

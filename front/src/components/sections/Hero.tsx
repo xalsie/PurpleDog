@@ -29,7 +29,6 @@ export default function HeroSection({
 
   return (
     <section className="relative bg-[var(--color-purple-dark)] h-[600px] lg:h-[700px] flex items-center justify-center overflow-hidden">
-      {/* Background Image with Overlay */}
       <div className="absolute inset-0">
         <Image
           src={backgroundImage}
@@ -41,8 +40,6 @@ export default function HeroSection({
         />
         <div className="absolute inset-0 bg-[var(--color-purple-dark)] opacity-80"></div>
       </div>
-
-      {/* Content with Container */}
       <Container size="lg" className="relative z-10">
         <div className="text-center">
           <h1 className="font-cormorant text-4xl lg:text-6xl xl:text-7xl text-[var(--color-cream-light)] mb-6 leading-tight">

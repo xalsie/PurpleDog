@@ -15,7 +15,6 @@ export default function ProfilePage() {
 
   return (
     <Container size="lg">
-      {/* Profile Header */}
       <div id="profile-header" className="text-center mb-8 sm:mb-12">
         <h1 className="font-title text-3xl sm:text-4xl lg:text-5xl text-navy-deep mb-2">
           Mon Profil
@@ -24,8 +23,6 @@ export default function ProfilePage() {
           Gérez vos informations personnelles
         </p>
       </div>
-
-      {/* Avatar Section */}
         <ProfileAvatar
           initialAvatarUrl={avatarUrl}
           onAvatarChange={(file) => {

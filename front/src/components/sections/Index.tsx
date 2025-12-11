@@ -1,6 +1,3 @@
-import MyAuctions from './Users/MyAuctions';
-import ProfileActions from './Users/ProfileActions';
-
 export { default as HeroSection } from './Hero';
 export { default as FeaturedCarousel } from './Carousel';
 export { default as CategoriesSection } from './Categories';

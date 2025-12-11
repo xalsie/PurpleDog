@@ -75,7 +75,6 @@ export default function ProductCard({
 
   const CardContent = (
     <div className="bg-cream-light overflow-hidden group cursor-pointer">
-      {/* Image Container */}
       <div className="relative aspect-square overflow-hidden bg-cream-light">
         <Image
           src={image}
@@ -83,8 +82,6 @@ export default function ProductCard({
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        
-        {/* Badge */}
         {status && (
           <div className="absolute bottom-3 left-3">
             <Badge variant={status}>
@@ -95,8 +92,6 @@ export default function ProductCard({
             </Badge>
           </div>
         )}
-
-        {/* Navigation Arrows for Carousel */}
         <button 
           className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
           onClick={(e) => e.stopPropagation()}
@@ -117,7 +112,6 @@ export default function ProductCard({
         </button>
       </div>
 
-      {/* Content */}
       <div className="p-4">
         <h3 className="font-cormorant text-lg font-light text-purple-dark mb-1">
           {title}
@@ -126,7 +120,6 @@ export default function ProductCard({
           <p className="font-raleway font-light text-sm text-gray-500 mb-2">{subtitle}</p>
         )}
         
-        {/* Price or Auction Info */}
         {status === 'auction' && (currentBid || bidsCount || timeLeft) ? (
           <div className="space-y-1">
             <p className="font-raleway text-base font-light text-purple-dark">
@@ -148,19 +141,15 @@ export default function ProductCard({
             {price.toLocaleString('fr-FR')} €
           </p>
         )}
-
-        {/* Seller Mode - Offers Count */}
         {viewMode === 'seller' && offersCount !== undefined && offersCount > 0 && (
           <p className="font-raleway text-sm text-gray-600 mt-2">
             {offersCount} offre{offersCount > 1 ? 's' : ''} reçue{offersCount > 1 ? 's' : ''}
           </p>
         )}
 
-        {/* Actions */}
         <div className="flex gap-2 mt-3 justify-end">
           {viewMode === 'buyer' ? (
             <>
-              {/* Buyer Actions - Like & Share */}
               <button
                 onClick={handleLike}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -197,7 +186,7 @@ export default function ProductCard({
             </>
           ) : (
             <>
-              {/* Seller Actions - Edit, Delete, Boost */}
+        
               {status !== 'sold' && onEdit && (
                 <button
                   onClick={handleEdit}

@@ -31,7 +31,7 @@ export default function ReviewBanner({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="p-8 sm:p-12 lg:p-16 text-center">
           <div className="max-w-2xl mx-auto">
-            {/* Star Icon */}
+       
             <div className="flex justify-center mb-6">
               <svg 
                 className="w-8 h-8 sm:w-10 sm:h-10" 
@@ -42,17 +42,17 @@ export default function ReviewBanner({
               </svg>
             </div>
 
-            {/* Title */}
+            
             <h2 className="font-cormorant text-2xl sm:text-3xl lg:text-4xl mb-4 sm:mb-6" style={{ color: '#2C0E40' }}>
               {title}
             </h2>
 
-            {/* Description */}
+      
             <p className="text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed" style={{ color: 'rgba(2, 0, 22, 0.7)' }}>
               {description}
             </p>
 
-            {/* CTA Button */}
+         
             {ctaHref ? (
               <a href={ctaHref}>
                 <Button

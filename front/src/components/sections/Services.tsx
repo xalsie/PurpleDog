@@ -58,17 +58,12 @@ export default function ServicesSection({
         <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
           {services.map((service) => (
             <div key={service.id} className="text-center">
-              {/* Icon Circle */}
               <div className="w-16 h-16 bg-purple-dark/10 rounded-full flex items-center justify-center mx-auto mb-6 text-purple-dark">
                 {service.icon}
               </div>
-
-              {/* Title */}
               <h3 className="font-cormorant text-xl lg:text-2xl text-purple-dark mb-4">
                 {service.title}
               </h3>
-
-              {/* Description */}
               <p className="text-black-deep/70 leading-relaxed">
                 {service.description}
               </p>

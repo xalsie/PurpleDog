@@ -55,7 +55,6 @@ export default function ProfileAvatar({
           <i className="fa-solid fa-camera text-cream text-xs sm:text-sm"></i>
         </button>
 
-        {/* Input file caché */}
         <input
           ref={fileInputRef}
           type="file"

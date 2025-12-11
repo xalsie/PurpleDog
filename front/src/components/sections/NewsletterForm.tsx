@@ -24,7 +24,7 @@ export default function NewsletterForm({
     e.preventDefault();
     if (email && onSubmit) {
       onSubmit(email);
-      setEmail(''); // Reset after submit
+      setEmail('');
     }
   };
 
@@ -51,8 +51,6 @@ export default function NewsletterForm({
           <p className="text-[var(--color-cream-light)] opacity-70 text-base lg:text-lg mb-8 max-w-2xl mx-auto font-raleway font-light">
             {description}
           </p>
-
-          {/* Newsletter Form */}
           <form 
             onSubmit={handleSubmit}
             className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto"

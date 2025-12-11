@@ -23,7 +23,6 @@ export default function CreateListingPage() {
   return (
     <main className="py-12 lg:py-16">
       <Container size="md">
-        {/* Header */}
         <div className="text-center mb-12">
           <h1 className="font-cormorant text-4xl lg:text-5xl text-purple-dark mb-4">
             Créer une annonce
@@ -32,10 +31,7 @@ export default function CreateListingPage() {
             Partagez vos trésors avec notre communauté
           </p>
         </div>
-
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Images */}
           <div className="bg-white rounded-lg p-8 shadow-sm border border-purple-dark/10">
             <h2 className="font-cormorant text-2xl text-purple-dark mb-6">
               Photos de l'objet
@@ -48,8 +44,6 @@ export default function CreateListingPage() {
               helperText="Formats acceptés : JPG, PNG (max 5 photos)"
             />
           </div>
-
-          {/* Informations générales */}
           <div className="bg-white rounded-lg p-8 shadow-sm border border-purple-dark/10">
             <h2 className="font-cormorant text-2xl text-purple-dark mb-6">
               Informations générales
@@ -132,8 +126,6 @@ export default function CreateListingPage() {
               </div>
             </div>
           </div>
-
-          {/* Conditions */}
           <div className="bg-white rounded-lg p-8 shadow-sm border border-purple-dark/10">
             <h2 className="font-cormorant text-2xl text-purple-dark mb-6">
               Conditions de vente
@@ -159,8 +151,6 @@ export default function CreateListingPage() {
               />
             </div>
           </div>
-
-          {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-4 justify-end">
             <Button
               type="button"

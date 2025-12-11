@@ -24,36 +24,7 @@ interface FeaturedCarouselProps {
 export default function FeaturedCarousel({
   title = "Sélection du Moment",
   description = "Découvrez nos pièces d'exception actuellement disponibles",
-  items = [
-    {
-      id: '1',
-      image: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/b33a166c57-d7a31c85a4607b573787.png',
-      title: 'Collier Diamants',
-      subtitle: 'Cartier, 1925',
-      price: 125000,
-    },
-    {
-      id: '2',
-      image: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/9d2cadbf4c-bd06a3a2262e94ba03ec.png',
-      title: 'Montre Patek Philippe',
-      subtitle: 'Référence 5711, 2018',
-      price: 89000,
-    },
-    {
-      id: '3',
-      image: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/c8205ffaa7-fea841e5c3fb322a22df.png',
-      title: 'Sac Hermès Birkin',
-      subtitle: 'Cuir Togo, Noir',
-      price: 35000,
-    },
-    {
-      id: '4',
-      image: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/f335a20f92-8810f7fec8c18f2621fc.png',
-      title: 'Stylo Montblanc',
-      subtitle: 'Meisterstück 149',
-      price: 12500,
-    },
-  ],
+  items = [],
   onLike,
   onItemClick,
 }: FeaturedCarouselProps) {
@@ -135,7 +106,6 @@ export default function FeaturedCarousel({
   return (
     <section className="py-16 lg:py-20" style={{ backgroundColor: 'rgba(44, 14, 64, 0.05)' }}>
       <Container>
-        {/* Header */}
         <div className="text-center mb-12 lg:mb-16">
           <h2 className="font-cormorant text-3xl lg:text-5xl text-[var(--color-purple-dark)] mb-4">
             {title}
@@ -144,8 +114,6 @@ export default function FeaturedCarousel({
             {description}
           </p>
         </div>
-
-        {/* Carousel */}
         <div className="relative max-w-6xl mx-auto">
           <div 
             className="overflow-hidden"
@@ -167,7 +135,6 @@ export default function FeaturedCarousel({
                   onClick={() => handleItemClick(item.id)}
                 >
                   <div className="bg-[var(--color-cream-light)] group cursor-pointer">
-                    {/* Image */}
                     <div className="relative h-[400px] lg:h-[450px] overflow-hidden">
                       <Image
                         src={item.image}
@@ -177,8 +144,6 @@ export default function FeaturedCarousel({
                         sizes="(max-width: 1024px) 100vw, 33vw"
                       />
                     </div>
-
-                    {/* Content */}
                     <div className="p-6">
                       <h3 className="font-cormorant text-xl lg:text-2xl text-[var(--color-purple-dark)] mb-2">
                         {item.title}

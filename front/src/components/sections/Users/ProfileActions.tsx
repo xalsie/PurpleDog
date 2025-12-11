@@ -16,7 +16,7 @@ export default function ProfileActions({
 }: ProfileActionsProps) {
   return (
     <>
-      {/* Action Buttons */}
+  
       <div id="action-buttons" className={`flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 ${className}`}>
         <Button
           onClick={onSave}
@@ -36,7 +36,7 @@ export default function ProfileActions({
         </Button>
       </div>
 
-      {/* Danger Zone */}
+    
       <div id="danger-zone" className="text-center py-6 border-t border-purple-dark/10">
         <button
           onClick={onDeleteAccount}

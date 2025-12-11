@@ -21,7 +21,7 @@ export default function DashboardProCTA({
   auctionText = "Créer une enchère",
   onDirectSale,
   onAuction,
-  directSaleHref = "/dashboard/pro/vente-directe",
+  directSaleHref = "/dashboard/pro/vendre",
   auctionHref = "/dashboard/pro/enchere",
 }: DashboardProCTAProps) {
   const handleDirectSale = () => {
@@ -51,7 +51,6 @@ export default function DashboardProCTA({
             {description}
           </p>
           
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button
               variant="secondary"

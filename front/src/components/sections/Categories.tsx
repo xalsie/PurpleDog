@@ -16,32 +16,7 @@ interface CategoriesSectionProps {
 
 export default function CategoriesSection({
   title = "Nos Catégories",
-  categories = [
-    {
-      id: 'jewelry',
-      image: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/65353f6e5e-65a4c8ede345a4184202.png',
-      title: 'Joaillerie',
-      href: '/categories/jewelry',
-    },
-    {
-      id: 'art',
-      image: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/48153ebb44-11578bfbb8c91238c343.png',
-      title: "Œuvres d'Art",
-      href: '/categories/art',
-    },
-    {
-      id: 'watches',
-      image: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/478ec11857-60197a984f353e6bac21.png',
-      title: 'Horlogerie',
-      href: '/categories/watches',
-    },
-    {
-      id: 'furniture',
-      image: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/03f13468ae-99eb391a346902f12c99.png',
-      title: 'Mobilier',
-      href: '/categories/furniture',
-    },
-  ],
+  categories = [],
   onCategoryClick,
 }: CategoriesSectionProps) {
   const handleClick = (id: string) => {
@@ -54,8 +29,6 @@ export default function CategoriesSection({
         <h2 className="font-cormorant text-3xl lg:text-5xl text-purple-dark text-center mb-12 lg:mb-16">
           {title}
         </h2>
-
-        {/* Grid: 2 cols mobile, 4 cols desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {categories.map((category) => (
             <CategoryCard

@@ -35,7 +35,6 @@ export default function ConceptSection({
     <section className="py-16 lg:py-24">
       <Container size="lg">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Text Content */}
           <div className={imagePosition === 'right' ? 'order-2 lg:order-1' : 'order-2 lg:order-2'}>
             <h2 className="font-cormorant text-3xl lg:text-5xl text-purple-dark mb-6">
               {title}
@@ -49,8 +48,6 @@ export default function ConceptSection({
                 {paragraph}
               </p>
             ))}
-
-            {/* Stats */}
             {stats && stats.length > 0 && (
               <div className="grid grid-cols-3 gap-6 lg:gap-8 mt-8">
                 {stats.map((stat, index) => (
@@ -66,8 +63,6 @@ export default function ConceptSection({
               </div>
             )}
           </div>
-
-          {/* Image */}
           <div className={imagePosition === 'right' ? 'order-1 lg:order-2' : 'order-1 lg:order-1'}>
             <div className="relative h-[400px] lg:h-[500px]">
               <Image

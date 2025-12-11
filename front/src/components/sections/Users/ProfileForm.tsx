@@ -27,11 +27,11 @@ export default function ProfileForm({
   className = '' 
 }: ProfileFormProps) {
   const [formData, setFormData] = useState<ProfileFormData>({
-    firstName: initialData.firstName || 'Alexandre',
-    lastName: initialData.lastName || 'Dubois',
-    email: initialData.email || 'alexandre.dubois@email.fr',
-    phone: initialData.phone || '+33 6 12 34 56 78',
-    address: initialData.address || '12 Rue de Rivoli, 75001 Paris',
+    firstName: initialData.firstName || '',
+    lastName: initialData.lastName || '',
+    email: initialData.email || '',
+    phone: initialData.phone || '',
+    address: initialData.address || '',
     currentPassword: initialData.currentPassword || '',
     newPassword: initialData.newPassword || '',
     confirmPassword: initialData.confirmPassword || '',
@@ -50,7 +50,7 @@ export default function ProfileForm({
   return (
     <div id="profile-form-container" className={`bg-white/40 backdrop-blur-sm rounded-lg border border-purple-dark/10 p-6 sm:p-8 lg:p-10 mb-6 ${className}`}>
       <form onSubmit={handleSubmit}>
-        {/* Personal Info Section */}
+    
         <div id="personal-info-section" className="mb-8 sm:mb-10">
           <h2 className="font-title text-2xl sm:text-3xl text-navy-deep mb-6 pb-3 border-b border-purple-dark/10">
             Informations personnelles
@@ -114,7 +114,7 @@ export default function ProfileForm({
           </div>
         </div>
 
-        {/* Security Section */}
+       
         <div id="security-section" className="mb-8 sm:mb-10">
           <h2 className="font-title text-2xl sm:text-3xl text-navy-deep mb-6 pb-3 border-b border-purple-dark/10">
             Sécurité
