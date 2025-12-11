@@ -15,7 +15,7 @@ export default function ReviewBanner({
   title = "Votre avis compte",
   description = "Aidez-nous à améliorer votre expérience en partageant vos impressions sur Purple Dog.",
   ctaText = "Laisser un avis",
-  ctaHref = "/dashboard/particulier/avis",
+  ctaHref = "/dashboard/pro/avis",
   onCtaClick,
 }: ReviewBannerProps) {
   const handleClick = () => {
