@@ -5,10 +5,10 @@ import { BaseEntity } from '../../../base.entity';
 
 @Entity('items')
 export class ItemSchema extends BaseEntity {
-    @Column({ name: 'seller_id', type: 'int', nullable: true })
-    sellerId: number | null;
+    @Column({ name: 'seller_id', type: 'uuid', nullable: true })
+    sellerId: string | null;
 
-    @Column({ name: 'category_id', type: 'varchar', nullable: true })
+    @Column({ name: 'category', type: 'simple-array', nullable: true })
     category: string[];
 
     @Column({ length: 255 })
@@ -37,6 +37,15 @@ export class ItemSchema extends BaseEntity {
         nullable: true,
     })
     desired_price: string | number | null;
+
+    @Column({
+        name: 'starting_price',
+        type: 'numeric',
+        precision: 12,
+        scale: 2,
+        nullable: true,
+    })
+    starting_price: string | number | null;
 
     @Column({
         name: 'ai_estimated_price',

@@ -7,9 +7,16 @@ import { Media } from '../medias/entities/media.entity';
 import { TypeOrmItemRepository } from './infrastructure/typeorm-item.repository';
 import { ITEM_REPOSITORY } from './domain/item.repository';
 import { Favorite } from '../favorites/entities/favorite.entity';
+import { SecurityModule } from '../security/security.module';
+import { User } from '../user/entities/user.entity';
+import { MediasModule } from '../medias/medias.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([ItemSchema, Media, Favorite])],
+    imports: [
+        TypeOrmModule.forFeature([ItemSchema, Media, Favorite, User]),
+        SecurityModule,
+        MediasModule,
+    ],
     controllers: [ItemsController],
     providers: [
         ItemsService,
