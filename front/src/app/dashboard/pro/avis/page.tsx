@@ -1,7 +1,9 @@
 'use client';
 
+import NavBarDashboard from '@/components/layout/NavBarDashboard/NavBarDashboard';
 import { Feedback } from '../../../../components/sections/Users/Feedback';
 import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Avis {
   id: number;
@@ -52,8 +54,11 @@ export default function AvisPage() {
     console.log('Données reçues du composant Feedback:', data);
   };
 
+  const { user, logout } = useAuth()
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <>
+      <NavBarDashboard UserType={user?.role} logOut={logout}/>
+      <div className="container mx-auto p-6 max-w-4xl">
       <h1 className="text-3xl font-bold mb-8">Avis et Témoignages</h1>
       
       <div className="mb-12">
@@ -85,5 +90,6 @@ export default function AvisPage() {
         ))}
       </div>
     </div>
+    </>
   );
 }
