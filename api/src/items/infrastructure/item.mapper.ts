@@ -75,7 +75,7 @@ export class ItemMapper {
         return new Item({
             category: schema.category,
             id: schema.id,
-            sellerId: schema.sellerId,
+            sellerId: schema.sellerId ?? schema.seller?.id ?? null,
             name: schema.name,
             description: schema.description,
             dimensions_cm,
@@ -101,7 +101,7 @@ export class ItemMapper {
         const s = new ItemSchema();
         if (item.id) s.id = item.id;
         s.category = item.category;
-        s.sellerId = item.sellerId;
+        s.seller = item.sellerId ? ({ id: item.sellerId } as any) : null;
         s.name = item.name;
         s.description = item.description;
         s.dimensions_cm = item.dimensions_cm;

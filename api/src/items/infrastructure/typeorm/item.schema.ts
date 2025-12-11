@@ -1,11 +1,23 @@
-import { Entity, Column, OneToMany } from 'typeorm';
+import {
+    Entity,
+    Column,
+    OneToMany,
+    ManyToOne,
+    JoinColumn,
+    RelationId,
+} from 'typeorm';
 import { SaleType, ItemStatus } from '../../domain/entities/item.entity';
 import { Media } from '../../../medias/entities/media.entity';
 import { BaseEntity } from '../../../base.entity';
+import { User } from '../../../user/entities/user.entity';
 
 @Entity('items')
 export class ItemSchema extends BaseEntity {
-    @Column({ name: 'seller_id', type: 'uuid', nullable: true })
+    @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'seller_id' })
+    seller: User | null;
+
+    @RelationId((item: ItemSchema) => item.seller)
     sellerId: string | null;
 
     @Column({ name: 'category', type: 'simple-array', nullable: true })
