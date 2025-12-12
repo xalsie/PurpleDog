@@ -9,8 +9,11 @@ export { default as InputForm } from "./InputForm/InputForm";
 export { default as CheckboxField } from "./CheckboxField/CheckboxField";
 export { default as FileField } from "./FileField/FileField";
 export { default as SearchBar } from "./SearchBar/SearchBar";
-export {default as FilterDropdown, type FilterOption } from "./FilterDropDown/FilterDropDown"
-export { default as SearchSection } from './Searchbar';
-export { default as ProfileAvatar } from './ProfileAvatar';
 export { default as Searchbar } from './Searchbar';
+export {default as FilterDropdown, type FilterOption } from "./FilterDropDown/FilterDropDown";
+export { default as Avatar } from './Avatar/Avatar';
+export { default as ProfileAvatar } from './ProfileAvatar';
+export { default as NotificationLink } from './NotificationLink/NotificationLink';
 export { default as ToggleSwitch } from './ToggleSwitch';
+export { LoadingOverlay } from './LoadingOverlay';
+
