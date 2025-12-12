@@ -26,3 +26,4 @@ export { default as AuctionDetails } from './Products/AuctionDetails';
 export { default as ConversationsList } from './Messages/ConversationList';
 export { default as MessageInput } from './Messages/MessageInput';
 export { default as MessageThread } from './Messages/MessageThread';
+export { default as ReviewModal } from './Users/ReviewModal';

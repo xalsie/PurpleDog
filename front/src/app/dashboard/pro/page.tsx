@@ -10,12 +10,22 @@ import CategoriesSection from '@/components/sections/Categories';
 
 export default function DashboardParticulierHome() {
   const { user, logout } = useAuth()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filters, setFilters] = useState({})
+  
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query)
+  }
+  
+  const handleFiltersChange = (newFilters: any) => {
+    setFilters(newFilters)
+  }
   return (
     <main>
       <NavBarDashboard UserType={user?.role} logOut={logout}/>
       <DashboardProCta />
       <div>
-        <SearchBar/>
+        <SearchBar searchQuery={searchQuery} filters={filters} onSearchChange={handleSearchChange} onFiltersChange={handleFiltersChange} />
       </div>
       <MyListings />
       <MyAuctions />

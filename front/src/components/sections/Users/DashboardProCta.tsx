@@ -23,7 +23,7 @@ export default function DashboardProCTA({
   onSale,
   onBuy,
   directSaleHref = "/dashboard/vente",
-  buyerHref = "/dashboard/pro/feed",
+  buyerHref = "/dashboard/pro/listing",
 }: DashboardProCTAProps) {
   const handleSale = () => {
     if (onSale) {

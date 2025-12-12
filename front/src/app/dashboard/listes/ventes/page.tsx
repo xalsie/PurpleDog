@@ -2,6 +2,9 @@
 
 import React from 'react';
 import { Container, ProductCard } from '@/components/ui';
+import NavBarDashboard from '@/components/layout/NavBarDashboard/NavBarDashboard';
+import { useAuth } from '@/hooks/useAuth';
+
 
 interface Listing {
   id: string;
@@ -27,7 +30,7 @@ interface MyListingsProps {
 export default function MyListings({
   title = "Mes annonces",
   viewAllText = true,
-  viewAllHref = "/dashboard/listes/ventes",
+  viewAllHref = "/dashboard/ventes",
   listings = [],
   onViewAll,
   onEdit,
@@ -41,25 +44,18 @@ export default function MyListings({
       window.location.href = viewAllHref;
     }
   };
+    const { user, logout } = useAuth();
 
   return (
+    <> 
+    <NavBarDashboard UserType={user?.role} logOut={logout}/>
     <section className="py-8 sm:py-12 lg:py-16">
       <Container>
         <div className="flex items-center justify-between mb-8 sm:mb-12">
           <h2 className="font-cormorant text-2xl sm:text-3xl lg:text-4xl text-purple-dark">
             {title}
           </h2>
-          { viewAllText && 
-            <button
-              onClick={handleViewAll}
-              className="text-purple-dark text-sm sm:text-base hover:underline flex items-center gap-2"
-            >
-              Voir tout
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          }
+    
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
@@ -81,6 +77,6 @@ export default function MyListings({
           ))}
         </div>
       </Container>
-    </section>
+    </section></>
   );
 }
