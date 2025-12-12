@@ -1,0 +1,74 @@
+'use client';
+import { Container } from '@/components/ui';
+import { FavoriteItemDto } from "@/types/index";
+import FavoritesCard from '@/components/sections/Users/Favorites/FavoritesCard';
+
+interface MyListingsFavoriteProps {
+  title?: string;
+  viewAllText?: boolean;
+  viewAllHref?: string;
+  listings?: FavoriteItemDto[];
+  onViewAll?: () => void;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
+  onBoost?: (id: string) => void;
+}
+
+export default function MyListingsFavorite({
+  title,
+  viewAllText,
+  viewAllHref = "/dashboard/particulier/annonces",
+  listings = [],
+  onViewAll,
+  onEdit,
+  onDelete,
+  onBoost,
+}: MyListingsFavoriteProps) {
+  const handleViewAll = () => {
+    if (onViewAll) {
+      onViewAll();
+    } else if (viewAllHref) {
+      window.location.href = viewAllHref;
+    }
+  };
+
+  return (
+    <section className="py-8 sm:py-12 lg:py-16">
+      <Container>
+        <div className="flex items-center justify-between mb-8 sm:mb-12">
+          <h2 className="font-cormorant text-2xl sm:text-3xl lg:text-4xl text-purple-dark">
+            {title}
+          </h2>
+          { viewAllText && 
+            <button
+              onClick={handleViewAll}
+              className="text-purple-dark text-sm sm:text-base hover:underline flex items-center gap-2"
+            >
+              voir tout
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          }
+        </div>
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
+            {listings.map((listing) => (
+              <FavoritesCard
+                key={listing.id}
+                id={listing.id}
+                medias={listing.medias}
+                title={listing.name}
+                price={listing.price}
+                status={listing.status}
+                availability={listing.availability}
+                sellerName={listing.sellerName}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onBoost={onBoost}
+              />
+            ))}
+          </div>
+      </Container>
+    </section>
+  );
+}

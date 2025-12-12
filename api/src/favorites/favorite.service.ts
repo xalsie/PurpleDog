@@ -41,12 +41,9 @@ export class FavoriteService {
             .take(pageSize)
             .getManyAndCount();
 
-        // Collect unique sellerIds from items
         const sellerIds = Array.from(
             new Set(rows.map((r) => r.item?.sellerId).filter((s) => s != null)),
         );
-
-        // Map sellerId -> seller name (firstName + lastName) when available
         const sellerNameMap: Record<string | number, string | null> = {};
         if (sellerIds.length > 0) {
             const profileRepo = this.favRepo.manager.getRepository(Profile);
@@ -80,6 +77,7 @@ export class FavoriteService {
                 id: r.item.id,
                 name: r.item.name,
                 status: r.item.status,
+                price: r.item.desired_price,
                 availability:
                     r.item.status === ItemStatus.PUBLISHED
                         ? 'en vente'

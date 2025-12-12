@@ -89,3 +89,34 @@ export type AnalysisResponse = {
   estimated_price?: number | string;
   Weight?: string;
 };
+
+export type MediaDto = {
+  id: string;
+  url: string;
+  mediaType: string;
+  isPrimary: boolean;
+};
+
+export type FavoriteItemDto = {
+  id: string;
+  name: string;
+  price : number;
+  status: 'online' | 'auction' | 'sold' | 'draft';
+  availability: string;
+  favoriteCreatedAt: string;
+  medias: MediaDto;
+  sellerId: number | null;
+  sellerName: string | null;
+};
+
+
+export type FavoritesResponse = {
+  data: FavoriteItemDto[];
+  meta: { page: number; pageSize: number; total: number };
+};
+
+export type FavoritesResult = {
+  data: FavoritesResponse | null;
+  isLoading: boolean;
+  error: string | null;
+};
