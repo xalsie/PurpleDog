@@ -11,7 +11,7 @@ import { CreateAuctionDto } from './dto/create-auction.dto';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { ItemStatus } from '../items/domain/entities/item.entity';
 import { AuctionsGateway } from './auctions.gateway';
-const CronJob = require('cron').CronJob;
+import { CronJob } from 'cron';
 
 @Injectable()
 export class AuctionsService {
@@ -73,7 +73,7 @@ export class AuctionsService {
     }
 
     private scheduleAuctionJobs(auction: Auction) {
-        const startJob = new CronJob(auction.startTime, async () => {
+        const startJob: any = new CronJob(auction.startTime, async () => {
             const freshAuction = await this.findOne(auction.id);
             if (freshAuction) {
                 freshAuction.status = AuctionStatus.ACTIVE;
@@ -84,7 +84,7 @@ export class AuctionsService {
             }
         });
 
-        const endJob = new CronJob(auction.endTime, async () => {
+        const endJob: any = new CronJob(auction.endTime, async () => {
             const finalAuction = await this.findOne(auction.id);
             if (!finalAuction) return;
 

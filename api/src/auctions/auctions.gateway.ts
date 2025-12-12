@@ -30,7 +30,7 @@ export class AuctionsGateway {
         @MessageBody() auctionId: string,
         @ConnectedSocket() client: Socket,
     ) {
-        client.join(auctionId);
+        void client.join(auctionId);
         console.log(`Client ${client.id} joined room for auction ${auctionId}`);
     }
 
@@ -39,7 +39,7 @@ export class AuctionsGateway {
         @MessageBody() auctionId: string,
         @ConnectedSocket() client: Socket,
     ) {
-        client.leave(auctionId);
+        void client.leave(auctionId);
         console.log(`Client ${client.id} left room for auction ${auctionId}`);
     }
 
