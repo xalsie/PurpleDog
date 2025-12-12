@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ItemsController } from './items.controller';
 import { ItemsService } from './application/items.service';
@@ -10,12 +10,14 @@ import { Favorite } from '../favorites/entities/favorite.entity';
 import { SecurityModule } from '../security/security.module';
 import { User } from '../user/entities/user.entity';
 import { MediasModule } from '../medias/medias.module';
+import { AuctionsModule } from '../auctions/auctions.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([ItemSchema, Media, Favorite, User]),
         SecurityModule,
         MediasModule,
+        forwardRef(() => AuctionsModule),
     ],
     controllers: [ItemsController],
     providers: [
@@ -25,5 +27,6 @@ import { MediasModule } from '../medias/medias.module';
             useClass: TypeOrmItemRepository,
         },
     ],
+    exports: [ItemsService],
 })
 export class ItemsModule {}

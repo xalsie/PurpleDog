@@ -1,7 +1,3 @@
-'use client';
-import React from 'react';
-import { MyListings, ReviewBanner,  DashboardProCta, MyAuctions, CategoriesSection } from '@/components/sections/Index';
-import { SearchSection } from '@/components/ui';
 'use client'
 
 import { MyListings, ReviewBanner,  DashboardProCta, MyAuctions, CategoriesSection } from '@/components/sections/Index';

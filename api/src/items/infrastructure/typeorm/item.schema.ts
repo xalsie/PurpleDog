@@ -97,4 +97,25 @@ export class ItemSchema extends BaseEntity {
         cascade: true,
     })
     medias: Media[];
+
+    @Column({ name: 'brand', type: 'varchar', length: 255, nullable: true })
+    brand: string | null;
+
+    @Column({ name: 'model', type: 'varchar', length: 255, nullable: true })
+    model: string | null;
+
+    @Column({ name: 'material', type: 'varchar', length: 255, nullable: true })
+    material: string | null;
+
+    @Column({ name: 'color', type: 'varchar', length: 255, nullable: true })
+    color: string | null;
+
+    @Column({ name: 'year', type: 'varchar', length: 32, nullable: true })
+    year: string | null;
+
+    @Column({ name: 'condition', type: 'varchar', length: 255, nullable: true })
+    condition: string | null;
+
+    @Column({ name: 'authenticated', type: 'boolean', default: false })
+    authenticated: boolean;
 }

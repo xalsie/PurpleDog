@@ -1,5 +1,15 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Item, ItemMedia } from '../domain/entities/item.entity';
+import {
+    Inject,
+    Injectable,
+    NotFoundException,
+    forwardRef,
+} from '@nestjs/common';
+import {
+    Item,
+    ItemMedia,
+    SaleType,
+    ItemStatus,
+} from '../domain/entities/item.entity';
 import { ITEM_REPOSITORY } from '../domain/item.repository';
 import type { ItemRepository } from '../domain/item.repository';
 import { CreateItemDto } from '../dto/create-item.dto';
@@ -12,6 +22,7 @@ import { Favorite } from '../../favorites/entities/favorite.entity';
 import { Media } from '../../medias/entities/media.entity';
 import { MediasService } from '../../medias/medias.service';
 import { ResearchItemDto } from '../dto/research-item.dto';
+import { AuctionsService } from '../../auctions/auctions.service';
 
 @Injectable()
 export class ItemsService {
@@ -23,6 +34,8 @@ export class ItemsService {
         @InjectRepository(Favorite)
         private readonly favRepo: Repository<Favorite>,
         private readonly mediasService: MediasService,
+        @Inject(forwardRef(() => AuctionsService))
+        private readonly auctionsService: AuctionsService,
     ) {}
 
     async create(dto: CreateItemDto, sellerId: string): Promise<Item> {
@@ -57,11 +70,41 @@ export class ItemsService {
             min_price_accepted: dto.min_price_accepted,
             sale_type: dto.sale_type,
             medias,
+            brand: dto.brand ?? null,
+            model: dto.model ?? null,
+            material: dto.material ?? null,
+            color: dto.color ?? null,
+            year: dto.year ?? null,
+            condition: dto.condition ?? null,
+            authenticated: dto.authenticated ?? false,
+            status: ItemStatus.PUBLISHED,
         });
 
-        // TODO: attribuer les mediaIds a l'item id
+        const savedItem = await this.itemRepository.save(item);
 
-        return this.itemRepository.save(item);
+        // Automatically create an auction if sale_type is AUCTION
+        if (dto.sale_type === SaleType.AUCTION && savedItem.id) {
+            const startTime = new Date();
+            const endTime = new Date();
+            endTime.setDate(endTime.getDate() + 7); // 7 days from now
+
+            const startingPrice = dto.starting_price ?? dto.desired_price ?? 0;
+
+            try {
+                await this.auctionsService.create({
+                    itemId: savedItem.id,
+                    startTime,
+                    endTime,
+                    startingPrice,
+                    reservePrice: dto.min_price_accepted,
+                });
+            } catch (error) {
+                console.error('Failed to create auction for item:', error);
+                // Don't fail item creation if auction creation fails
+            }
+        }
+
+        return savedItem;
     }
 
     async findAll(): Promise<Item[]> {
@@ -126,5 +169,50 @@ export class ItemsService {
         }
         console.log('Searching items with', { category, query });
         return await this.itemRepository.search(category, query);
+    }
+
+    async findBySellerId(
+        sellerId: string,
+    ): Promise<{ item: ItemSchema; favCount: number }[]> {
+        const items = await this.itemRepo.find({
+            where: { sellerId: sellerId },
+            relations: ['medias'],
+        });
+
+        // Count favoris pour chaque item
+        const itemIds = items.map((it) => it.id);
+        const favCounts: Array<{ itemId: string; favCount: string }> =
+            itemIds.length
+                ? await this.favRepo
+                      .createQueryBuilder('f')
+                      .select('f.itemId', 'itemId')
+                      .addSelect('COUNT(f.id)', 'favCount')
+                      .where('f.itemId IN (:...itemIds)', { itemIds })
+                      .groupBy('f.itemId')
+                      .getRawMany()
+                : [];
+
+        const favMap = new Map(
+            favCounts.map((fc) => [fc.itemId, parseInt(fc.favCount, 10)]),
+        );
+
+        // Filter IMAGE medias and set isPrimary
+        for (const it of items) {
+            const medias = (it.medias ?? []).filter(
+                (m: Media) => m.mediaType === MediaType.IMAGE,
+            );
+            if (medias.length > 0) {
+                const hasPrimary = medias.some((m: Media) => !!m.isPrimary);
+                if (!hasPrimary) {
+                    medias[0].isPrimary = true;
+                }
+            }
+            it.medias = medias;
+        }
+
+        return items.map((it) => ({
+            item: it,
+            favCount: favMap.get(it.id) ?? 0,
+        }));
     }
 }

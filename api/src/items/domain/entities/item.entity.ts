@@ -48,6 +48,14 @@ export class Item {
     status: ItemStatus;
     medias: ItemMedia[];
 
+    brand?: string | null;
+    model?: string | null;
+    material?: string | null;
+    color?: string | null;
+    year?: string | null;
+    condition?: string | null;
+    authenticated?: boolean;
+
     id: string;
     createDateTime: Date;
     createdBy: string | null;
@@ -79,6 +87,13 @@ export class Item {
         lastChangedBy?: string | null;
         isActive?: boolean;
         isArchived?: boolean;
+        brand?: string | null;
+        model?: string | null;
+        material?: string | null;
+        color?: string | null;
+        year?: string | null;
+        condition?: string | null;
+        authenticated?: boolean;
     }) {
         if (props.id) this.id = props.id;
         this.category = props.category;
@@ -94,6 +109,13 @@ export class Item {
         this.sale_type = props.sale_type;
         this.status = props.status ?? ItemStatus.DRAFT;
         this.medias = props.medias ?? [];
+        this.brand = props.brand ?? null;
+        this.model = props.model ?? null;
+        this.material = props.material ?? null;
+        this.color = props.color ?? null;
+        this.year = props.year ?? null;
+        this.condition = props.condition ?? null;
+        this.authenticated = props.authenticated ?? false;
         this.createDateTime = props.createDateTime ?? new Date();
         this.createdBy = props.createdBy ?? null;
         this.internalComment = props.internalComment ?? null;
