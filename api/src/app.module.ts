@@ -16,6 +16,7 @@ import { PurchasesModule } from './purchases/purchases.module';
 import { MediasModule } from './medias/medias.module';
 import { ImageAnalysisModule } from './image-analysis/image-analysis.module';
 import { CategoryModule } from './category';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
     imports: [
@@ -30,6 +31,7 @@ import { CategoryModule } from './category';
         MediasModule,
         ImageAnalysisModule,
         CategoryModule,
+        PaymentsModule,
         ThrottlerModule.forRoot({
             throttlers: [
                 {
