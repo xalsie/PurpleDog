@@ -53,3 +53,39 @@ export interface ApiError {
   statusCode: number;
   timestamp?: string;
 }
+
+// Item types
+export type UploadedMedia = {
+  id: string;
+  url: string;
+  mediaType: string;
+  isPrimary: boolean;
+};
+
+export type AnalysisResponse = {
+  titre?: string;
+  artiste?: string;
+  artwork_title?: string;
+  category_parent?: string;
+  category_enfant?: string[][];
+  description_court?: string;
+  description_longue?: string;
+  estimated_price_min?: number;
+  estimated_price_max?: number;
+  currency?: string;
+  method?: string;
+  country_of_origin?: string;
+  style?: string;
+  signature?: string;
+  style_subtype?: string;
+  color?: string;
+  weight?: string;
+  height?: string;
+  width?: string;
+  depth?: string;
+  title?: string;
+  short_description?: string;
+  long_description?: string;
+  estimated_price?: number | string;
+  Weight?: string;
+};

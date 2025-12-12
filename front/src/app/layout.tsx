@@ -34,9 +34,9 @@ export default function RootLayout({
         <ReduxProvider>
           <AuthProvider>
             {children}
-            <Footer />
           </AuthProvider>
         </ReduxProvider>
+        <Footer />
       </body>
       
     </html>

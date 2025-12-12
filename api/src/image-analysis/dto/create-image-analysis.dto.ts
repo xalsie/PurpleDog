@@ -6,5 +6,5 @@ export class CreateImageAnalysisDto {
 
     @IsArray()
     @IsString({ each: true })
-    mediaIds: string[];
+    medias: string[];
 }

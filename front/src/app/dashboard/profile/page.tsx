@@ -16,13 +16,13 @@ export default function ProfilePage() {
   };
 
     const { user, logout } = useAuth();
-  return (
-    
-    <Container size="lg">
-       <NavBarDashboard 
+  return (<>
+     <NavBarDashboard 
             UserType={user?.role}
             logOut={logout}
             />
+    <Container size="lg">
+      
       <div id="profile-header" className="text-center mb-8 sm:mb-12">
         <h1 className="font-cormorant text-3xl sm:text-4xl lg:text-5xl text-navy-deep mb-2">
           Mon Profil
@@ -42,5 +42,5 @@ export default function ProfilePage() {
         <ProfileForm />
         <ProfileActions className="mt-8 sm:mt-12" />
     </Container>
-  );
+  </>);
 }

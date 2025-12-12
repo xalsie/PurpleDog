@@ -21,10 +21,10 @@ RUN apk add --no-cache wget dumb-init && \
 COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nestjs:nodejs /app/package.json ./package.json
-USER nestjs
+# USER nestjs
 EXPOSE 3001
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main.js"]
 
 # Development - image avec hot-reload
 FROM base AS dev

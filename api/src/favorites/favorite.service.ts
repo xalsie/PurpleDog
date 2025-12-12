@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateFavoriteDto } from './dto/create-favorite.dto';
 import { UpdateFavoriteDto } from './dto/update-favorite.dto';
 import { Favorite } from './entities/favorite.entity';
+import { Profile } from '../user/entities/user-profile.entity';
 
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
@@ -33,22 +34,67 @@ export class FavoriteService {
         const [rows, total] = await this.favRepo
             .createQueryBuilder('f')
             .leftJoinAndSelect('f.item', 'i')
+            .leftJoinAndSelect('i.medias', 'm')
             .where('f.userId = :userId', { userId })
             .orderBy('f.createDateTime', 'DESC')
             .skip((page - 1) * pageSize)
             .take(pageSize)
             .getManyAndCount();
 
-        const data = rows.map((r) => ({
-            id: r.item.id,
-            name: r.item.name,
-            status: r.item.status,
-            availability:
-                r.item.status === ItemStatus.PUBLISHED
-                    ? 'en vente'
-                    : 'plus disponible',
-            favoriteCreatedAt: r.createDateTime,
-        }));
+        // Collect unique sellerIds from items
+        const sellerIds = Array.from(
+            new Set(rows.map((r) => r.item?.sellerId).filter((s) => s != null)),
+        );
+
+        // Map sellerId -> seller name (firstName + lastName) when available
+        const sellerNameMap: Record<string | number, string | null> = {};
+        if (sellerIds.length > 0) {
+            const profileRepo = this.favRepo.manager.getRepository(Profile);
+            const profiles = await Promise.all(
+                sellerIds.map(async (sid) => {
+                    try {
+                        const profile = await profileRepo.findOne({
+                            where: { userId: String(sid) } as any,
+                            select: { firstName: true, lastName: true },
+                        });
+                        let name: string | null = null;
+                        if (profile) {
+                            name = profile.firstName + ' ' + profile.lastName;
+                        }
+                        return { sid, name };
+                    } catch {
+                        return { sid, name: null };
+                    }
+                }),
+            );
+            for (const p of profiles) {
+                sellerNameMap[p.sid] = p.name;
+            }
+        }
+
+        const data = rows.map((r) => {
+            const sellerName = r.item.sellerId
+                ? (sellerNameMap[r.item.sellerId] ?? null)
+                : null;
+            return {
+                id: r.item.id,
+                name: r.item.name,
+                status: r.item.status,
+                availability:
+                    r.item.status === ItemStatus.PUBLISHED
+                        ? 'en vente'
+                        : 'plus disponible',
+                favoriteCreatedAt: r.createDateTime,
+                medias: (r.item.medias || []).map((m) => ({
+                    id: m.id,
+                    url: m.url,
+                    mediaType: m.mediaType,
+                    isPrimary: m.isPrimary,
+                })),
+                sellerId: r.item.sellerId,
+                sellerName,
+            };
+        });
 
         return { data, meta: { page, pageSize, total } };
     }

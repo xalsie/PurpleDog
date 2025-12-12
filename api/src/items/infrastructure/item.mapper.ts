@@ -33,6 +33,15 @@ export class ItemMapper {
             }
         }
 
+        let starting_price: number | undefined = undefined;
+        if (schema.starting_price != null) {
+            if (typeof schema.starting_price === 'string') {
+                starting_price = parseFloat(String(schema.starting_price));
+            } else {
+                starting_price = schema.starting_price;
+            }
+        }
+
         let ai_estimated_price: number | null = null;
         if (schema.ai_estimated_price != null) {
             if (typeof schema.ai_estimated_price === 'string') {
@@ -64,14 +73,15 @@ export class ItemMapper {
         const sale_type = schema.sale_type ?? SaleType.QUICK_SALE;
 
         return new Item({
+            category: schema.category,
             id: schema.id,
-            sellerId: schema.sellerId,
-            categoryId: schema.categoryId,
+            sellerId: schema.sellerId ?? schema.seller?.id ?? null,
             name: schema.name,
             description: schema.description,
             dimensions_cm,
             weight_kg: weight_kg,
             desired_price: desired_price,
+            starting_price: starting_price,
             ai_estimated_price: ai_estimated_price,
             min_price_accepted: min_price_accepted,
             sale_type: sale_type,
@@ -90,13 +100,14 @@ export class ItemMapper {
     static toPersistence(item: Item): ItemSchema {
         const s = new ItemSchema();
         if (item.id) s.id = item.id;
-        s.sellerId = item.sellerId;
-        s.categoryId = item.categoryId;
+        s.category = item.category;
+        s.seller = item.sellerId ? ({ id: item.sellerId } as any) : null;
         s.name = item.name;
         s.description = item.description;
         s.dimensions_cm = item.dimensions_cm;
         s.weight_kg = item.weight_kg ?? null;
         s.desired_price = item.desired_price ?? null;
+        s.starting_price = item.starting_price ?? null;
         s.ai_estimated_price = item.ai_estimated_price ?? null;
         s.min_price_accepted = item.min_price_accepted ?? null;
         s.sale_type = item.sale_type;

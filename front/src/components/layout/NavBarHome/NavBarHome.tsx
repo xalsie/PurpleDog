@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 export default function NavbarHome() {
   return (
@@ -12,7 +13,13 @@ export default function NavbarHome() {
             href="/"
             className="text-xl font-regular tracking-wide md:text-3xl font-gamora"
           >
-            Purple Dog
+            <Image 
+                                src="/Logo-noir.png" 
+                                alt="Purple Dog Logo" 
+                                width={70} 
+                                height={60}
+                                className="md:w-25 md:h-15"
+                            />
           </Link>
         </div>
 

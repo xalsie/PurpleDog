@@ -15,7 +15,7 @@ interface Listing {
 
 interface MyListingsProps {
   title?: string;
-  viewAllText?: string;
+  viewAllText?: boolean;
   viewAllHref?: string;
   listings?: Listing[];
   onViewAll?: () => void;
@@ -26,8 +26,8 @@ interface MyListingsProps {
 
 export default function MyListings({
   title = "Mes annonces",
-  viewAllText = "Voir tout",
-  viewAllHref = "/dashboard/particulier/annonces",
+  viewAllText = true,
+  viewAllHref = "/dashboard/listes/ventes",
   listings = [],
   onViewAll,
   onEdit,
@@ -45,20 +45,21 @@ export default function MyListings({
   return (
     <section className="py-8 sm:py-12 lg:py-16">
       <Container>
-      
         <div className="flex items-center justify-between mb-8 sm:mb-12">
           <h2 className="font-cormorant text-2xl sm:text-3xl lg:text-4xl text-purple-dark">
             {title}
           </h2>
-          <button
-            onClick={handleViewAll}
-            className="text-purple-dark text-sm sm:text-base hover:underline flex items-center gap-2"
-          >
-            {viewAllText}
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+          { viewAllText && 
+            <button
+              onClick={handleViewAll}
+              className="text-purple-dark text-sm sm:text-base hover:underline flex items-center gap-2"
+            >
+              Voir tout
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          }
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">

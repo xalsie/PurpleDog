@@ -5,9 +5,9 @@ RUN apk add --no-cache libc6-compat wget
 
 # Builder - build de l'application Next.js static export
 FROM base AS builder
-COPY front/package.json front/package-lock.json* ./
+COPY package.json package-lock.json* ./
 RUN npm install --legacy-peer-deps
-COPY front/ ./
+COPY . ./
 ENV NODE_ENV=production
 RUN npm run build
 
@@ -26,8 +26,8 @@ CMD ["nginx", "-g", "daemon off;"]
 # Development - image avec hot-reload
 FROM base AS dev
 ENV NODE_ENV=development
-COPY front/package.json front/package-lock.json* ./
+COPY package.json package-lock.json* ./
 RUN npm install --legacy-peer-deps
-COPY front/ ./
+COPY . ./
 EXPOSE 3000
 CMD ["npm", "run", "dev"]

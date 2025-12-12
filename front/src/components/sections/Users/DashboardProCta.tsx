@@ -8,35 +8,36 @@ interface DashboardProCTAProps {
   description?: string;
   directSaleText?: string;
   auctionText?: string;
-  onDirectSale?: () => void;
-  onAuction?: () => void;
+  onSale?: () => void;
+  onBuy?: () => void;
   directSaleHref?: string;
   auctionHref?: string;
+  buyerHref?: string;
 }
 
 export default function DashboardProCTA({
-  title = "Mettre en vente un article",
+  title = "Mettre en vente un article achetez nos articles de prestige",
   description = "Proposez vos articles d'exception à notre communauté d'acheteurs distingués",
-  directSaleText = "Vente directe",
-  auctionText = "Créer une enchère",
-  onDirectSale,
-  onAuction,
-  directSaleHref = "/dashboard/pro/vendre",
-  auctionHref = "/dashboard/pro/enchere",
+  directSaleText = "Achat",
+  auctionText = "Vente",
+  onSale,
+  onBuy,
+  directSaleHref = "/dashboard/vente",
+  buyerHref = "/dashboard/pro/listing",
 }: DashboardProCTAProps) {
-  const handleDirectSale = () => {
-    if (onDirectSale) {
-      onDirectSale();
+  const handleSale = () => {
+    if (onSale) {
+      onSale();
     } else if (directSaleHref) {
       window.location.href = directSaleHref;
     }
   };
 
-  const handleAuction = () => {
-    if (onAuction) {
-      onAuction();
-    } else if (auctionHref) {
-      window.location.href = auctionHref;
+  const handleBuyer = () => {
+    if (onBuy) {
+      onBuy();
+    } else if (buyerHref) {
+      window.location.href = buyerHref;
     }
   };
 
@@ -55,7 +56,7 @@ export default function DashboardProCTA({
             <Button
               variant="secondary"
               size="lg"
-              onClick={handleDirectSale}
+              onClick={handleBuyer}
               className="w-full sm:w-auto"
             >
               {directSaleText}
@@ -64,7 +65,7 @@ export default function DashboardProCTA({
             <Button
               variant="primary"
               size="lg"
-              onClick={handleAuction}
+              onClick={handleSale}
               className="w-full sm:w-auto border-2 border-cream-light text-cream-light hover:bg-cream-light hover:text-purple-dark"
             >
               {auctionText}

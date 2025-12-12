@@ -28,7 +28,7 @@ interface MyAuctionsProps {
 export default function MyAuctions({
   title = "Mes enchères",
   viewAllText = "Voir tout",
-  viewAllHref = "/dashboard/pro/encheres",
+  viewAllHref = "/dashboard/listes/encheres",
   auctions = [],
   onViewAll,
   onEdit,
@@ -44,6 +44,7 @@ export default function MyAuctions({
   };
 
   return (
+    
     <section className="py-8 sm:py-12 lg:py-16">
       <Container>
         <div className="flex items-center justify-between mb-8 sm:mb-12">
