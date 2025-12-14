@@ -28,11 +28,8 @@ export default function ProductsListingPage() {
       try {
         setLoading(true);
         const response = await axios.get('/api/items');
-        console.log('Fetched products:', response.data);
         setProducts(response.data);
       } catch (err) {
-        console.error('Error fetching products:', err);
-        // Use demo data on error
         setProducts(demoProducts);
       } finally {
         setLoading(false);
@@ -45,14 +42,8 @@ export default function ProductsListingPage() {
   if (loading) {
     return (
     <>
-  
       <main className="pt-16 sm:pt-20 min-h-screen bg-cream-light">
-       
         <Container>
-          
-          <div>
-       
-      </div>
           <div className="py-8 sm:py-12">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
               {[...Array(10)].map((_, i) => (
@@ -72,9 +63,8 @@ export default function ProductsListingPage() {
 
   return ( <><NavBarDashboard UserType={user?.role} logOut={logout}/>
     <main className="pt-16 sm:pt-20 min-h-screen bg-cream-light">
-   
       <Container>
-         <SearchBar searchQuery="" filters={{ price: "", saleType: "", category: "", status: "" }} onSearchChange={() => {}} onFiltersChange={() => {}} />
+        <SearchBar searchQuery="" filters={{ price: "", saleType: "", category: "", status: "" }} onSearchChange={() => {}} onFiltersChange={() => {}} />
         <div className="py-8 sm:py-12">
           
           <div className="mb-8">
@@ -86,7 +76,6 @@ export default function ProductsListingPage() {
             </p>
           </div>
 
-         
           {products.length === 0 ? (
             <div className="text-center py-16">
               <p className="text-black-deep/60">Aucun produit disponible</p>

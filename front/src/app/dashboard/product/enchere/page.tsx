@@ -53,6 +53,18 @@ export default function AuctionProductPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [socket, setSocket] = useState<Socket | null>(null);
+    const [isHighestBidder, setIsHighestBidder] = useState(false);
+
+    useEffect(() => {
+        if (auction && user) {
+            const sortedBids = [...auction.bids].sort((a, b) => new Date(b.createDateTime).getTime() - new Date(a.createDateTime).getTime());
+            if (sortedBids.length > 0 && sortedBids[0].bidderId === user.id) {
+                setIsHighestBidder(true);
+            } else {
+                setIsHighestBidder(false);
+            }
+        }
+    }, [auction, user]);
 
     const calculateTimeLeft = useCallback(() => {
         if (!auction) return;
@@ -63,6 +75,9 @@ export default function AuctionProductPage() {
 
         if (distance < 0) {
             setTimeLeft('Terminée');
+            if (auction.status !== 'ENDED') {
+                setAuction(prevAuction => prevAuction ? { ...prevAuction, status: 'ENDED' } : null);
+            }
             return;
         }
 
@@ -88,20 +103,9 @@ export default function AuctionProductPage() {
                 const { data } = await axiosInstance.get(`/auctions/item/${itemId}`);
                 if (data) {
                     setAuction(data);
-                    const nextBid = data.currentPrice + getBidIncrement(data.currentPrice);
+                    const nextBid = Number(data.currentPrice) + getBidIncrement(Number(data.currentPrice));
                     setBidAmount(nextBid);
                     setMaxBidAmount(nextBid);
-                    
-                    const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001');
-                    setSocket(newSocket);
-
-                    newSocket.on('connect', () => {
-                        newSocket.emit('joinAuction', data.id);
-                    });
-
-                    newSocket.on('auctionUpdate', (updatedAuction: AuctionData) => {
-                        setAuction(updatedAuction);
-                    });
                 }
             } catch (err) {
                 setError('Failed to load auction data.');
@@ -112,14 +116,28 @@ export default function AuctionProductPage() {
 
         fetchAuction();
 
-        return () => {
-            if(socket) {
-                socket.off('connect');
-                socket.off('auctionUpdate');
-                socket.disconnect();
-            }
-        };
     }, [searchParams, router]);
+
+    useEffect(() => {
+        if (!auction) return;
+
+        const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001');
+        setSocket(newSocket);
+
+        newSocket.on('connect', () => {
+            newSocket.emit('joinAuction', auction.id);
+        });
+
+        newSocket.on('auctionUpdate', (updatedAuction: AuctionData) => {
+            setAuction(updatedAuction);
+        });
+
+        return () => {
+            newSocket.off('connect');
+            newSocket.off('auctionUpdate');
+            newSocket.disconnect();
+        };
+    }, [auction?.id]);
 
     useEffect(() => {
         const timer = setInterval(calculateTimeLeft, 1000);
@@ -143,14 +161,14 @@ export default function AuctionProductPage() {
                 maxAmount: maxAmount,
             });
         } catch (err: any) {
-             setError(err.response?.data?.message ||'Failed to place bid.');
+            setError(err.response?.data?.message ||'Failed to place bid.');
         }
     };
     
     const quickBidOptions = () => {
         if (!auction) return [];
-        const increment = getBidIncrement(auction.currentPrice);
-        const nextBid = auction.currentPrice + increment;
+        const increment = getBidIncrement(Number(auction.currentPrice));
+        const nextBid = Number(auction.currentPrice) + increment;
         return [nextBid, nextBid + increment, nextBid + 2 * increment];
     };
 
@@ -163,9 +181,8 @@ export default function AuctionProductPage() {
         </div>
     );
 
-
     const { item } = auction;
-    const images = (item.medias ?? []).map((m) => `${process.env.NEXT_PUBLIC_API_URL}${m.url}`);
+    const images = item.medias?.map((m) => `${process.env.NEXT_PUBLIC_API_URL}/api/medias${m.url}`) || [];
 
     return (
         <>
@@ -182,14 +199,16 @@ export default function AuctionProductPage() {
                                     brand={item.brand}
                                     title={item.name}
                                     subtitle={item.description.substring(0, 50) + '...'}
-                                    currentBid={auction.currentPrice}
+                                    currentBid={Number(auction.currentPrice)}
                                     timeLeft={timeLeft}
+                                    status={auction.status}
                                     bidsCount={auction.bids.length}
+                                    isHighestBidder={isHighestBidder}
                                     onBid={() => handleBid(bidAmount)}
                                     onLike={() => {}}
                                     onMessage={() => {}}
                                 />
-                                {auction.status === 'ACTIVE' && (
+                                {auction.status === 'ACTIVE' ? (
                                     <div className="mt-4">
                                         <h3 className="text-lg font-medium text-gray-900">Placer une enchère</h3>
                                         <div className="mt-2 flex gap-2">
@@ -205,27 +224,20 @@ export default function AuctionProductPage() {
                                                 value={bidAmount}
                                                 onChange={(e) => setBidAmount(Number(e.target.value))}
                                                 className="border-gray-300 rounded-md shadow-sm"
-                                            />
-                                            <Button onClick={() => handleBid(bidAmount)} className="ml-2">
-                                                Enchérir
-                                            </Button>
-                                        </div>
-                                        <div className="mt-4">
-                                            <label>Enchère automatique (max):</label>
-                                            <input
-                                                type="number"
-                                                value={maxBidAmount}
-                                                onChange={(e) => setMaxBidAmount(Number(e.target.value))}
-                                                placeholder="Votre enchère maximale"
-                                                className="border-gray-300 rounded-md shadow-sm"
+                                                placeholder="Votre enchère"
                                             />
                                             <Button
                                                 onClick={() => handleBid(bidAmount, maxBidAmount)}
                                                 className="ml-2"
                                             >
-                                                Placer
+                                                Enchérir
                                             </Button>
                                         </div>
+                                    </div>
+                                ) : (
+                                    <div className="mt-4">
+                                        <h3 className="text-lg font-medium text-gray-900">Enchère terminée</h3>
+                                        <p>Cette enchère est terminée. Vous ne pouvez plus placer d'offres.</p>
                                     </div>
                                 )}
                                 <SellerInfos

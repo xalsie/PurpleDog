@@ -92,8 +92,6 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
       const response = await axiosInstance.get<{ exists: boolean; role?: UserRole }>(
         `/auth/check-email/${encodeURIComponent(data.email)}`
       );
-      console.log(response);
-      
 
       if (response.data.exists && response.data.role) {
         setLocalError(

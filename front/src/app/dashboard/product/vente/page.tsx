@@ -74,7 +74,6 @@ export default function ProductPage({ productId }: ProductPageProps) {
 
   const handleCheckoutComplete = () => {
     setShowCheckout(false);
-    console.log('Payment completed successfully');
   };
 
   const defaultProduct: Product = {
@@ -118,7 +117,6 @@ export default function ProductPage({ productId }: ProductPageProps) {
       await axiosInstance.post('/favorite', {
         productId: product.id
       });
-      console.log('Ajouté aux favoris');
     } catch (err) {
       console.error('Error liking product:', err);
     }

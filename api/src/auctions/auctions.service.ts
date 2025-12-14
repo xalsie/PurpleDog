@@ -61,14 +61,16 @@ export class AuctionsService {
     async findOne(id: string): Promise<Auction | null> {
         return this.auctionRepository.findOne({
             where: { id },
-            relations: ['item', 'bids', 'winner', 'item.seller'],
+            // include item.medias so frontend can access item medias
+            relations: ['item', 'item.medias', 'bids', 'winner', 'item.seller'],
         });
     }
 
     async findByItemId(itemId: string): Promise<Auction | null> {
         return this.auctionRepository.findOne({
             where: { itemId },
-            relations: ['item', 'bids', 'winner', 'item.seller'],
+            // include item.medias so frontend can access item medias
+            relations: ['item', 'item.medias', 'bids', 'winner', 'item.seller'],
         });
     }
 

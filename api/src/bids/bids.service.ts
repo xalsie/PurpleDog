@@ -11,7 +11,7 @@ import { Auction, AuctionStatus } from './entities/auction.entity';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { AuctionsService } from '../auctions/auctions.service';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { User } from '../user/entities/user.entity';
+import { User } from '../user';
 import { AuctionsGateway } from '../auctions/auctions.gateway';
 
 @Injectable()
@@ -21,6 +21,8 @@ export class BidsService {
         private readonly bidRepository: Repository<Bid>,
         @InjectRepository(Auction)
         private readonly auctionRepository: Repository<Auction>,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
         private readonly auctionsService: AuctionsService,
         private schedulerRegistry: SchedulerRegistry,
         private readonly auctionsGateway: AuctionsGateway,
@@ -42,31 +44,27 @@ export class BidsService {
             throw new ForbiddenException('Seller cannot bid on their own item');
         }
 
-        const bidAmount = dto.maxAmount ?? dto.amount;
-        const highestBid = await this.getHighestBid(auction.id);
-        const currentPrice = highestBid
-            ? Number(highestBid.amount)
-            : Number(auction.currentPrice);
+        const bidAmount = dto.amount;
+        const currentPrice = Number(auction.currentPrice);
 
-        const nextValidBid = currentPrice + this.getBidIncrement(currentPrice);
-
-        if (bidAmount < nextValidBid) {
+        if (bidAmount <= currentPrice) {
             throw new BadRequestException(
-                `Your bid must be at least ${nextValidBid}`,
+                `Your bid must be higher than the current price of ${currentPrice}`,
             );
         }
 
         const newBid = this.bidRepository.create({
             auctionId: dto.auctionId,
             bidderId: bidderId,
-            amount: dto.amount,
-            maxAmount: dto.maxAmount,
-            isProxy: !!dto.maxAmount,
+            amount: bidAmount,
         });
 
         await this.bidRepository.save(newBid);
 
-        await this.processBids(auction.id);
+        await this.auctionRepository.update(auction.id, {
+            currentPrice: bidAmount,
+            winnerId: bidderId,
+        });
 
         const updatedAuction = await this.auctionsService.findOne(auction.id);
         if (!updatedAuction) {
@@ -79,59 +77,6 @@ export class BidsService {
         this.auctionsGateway.broadcastAuctionUpdate(updatedAuction);
 
         return updatedAuction;
-    }
-
-    private async processBids(auctionId: string): Promise<void> {
-        const auction = await this.auctionRepository.findOne({
-            where: { id: auctionId },
-            relations: ['bids', 'bids.bidder'],
-        });
-        if (!auction) return;
-
-        const bids = auction.bids.sort((a, b) => {
-            const maxA = a.maxAmount ?? a.amount;
-            const maxB = b.maxAmount ?? b.amount;
-            if (maxA !== maxB) {
-                return maxB - maxA;
-            }
-            return a.createDateTime.getTime() - b.createDateTime.getTime();
-        });
-
-        if (bids.length === 0) {
-            return;
-        }
-
-        let currentPrice = auction.startingPrice;
-        let winner: User | null = null;
-
-        if (bids.length === 1) {
-            currentPrice = auction.startingPrice;
-            winner = bids[0].bidder;
-        } else {
-            const topBid = bids[0];
-            const secondTopBid = bids[1];
-
-            const topMax = topBid.maxAmount ?? topBid.amount;
-            const secondMax = secondTopBid.maxAmount ?? secondTopBid.amount;
-
-            if (topMax > secondMax) {
-                const increment = this.getBidIncrement(secondMax);
-                currentPrice = Math.min(topMax, secondMax + increment);
-                winner = topBid.bidder;
-            } else {
-                // Equal max bids
-                currentPrice = topMax;
-                winner = topBid.bidder; // Winner is the one who bid first
-            }
-        }
-
-        auction.currentPrice = currentPrice;
-        auction.winner = winner;
-        if (winner) {
-            auction.winnerId = winner.id;
-        }
-
-        await this.auctionRepository.save(auction);
     }
 
     private getBidIncrement(price: number): number {

@@ -60,7 +60,6 @@ export function useItemForm(): UseItemFormReturn {
       if (url.startsWith("http")) return url;
       // url is already like /uploads/filename.jpg
       const fullUrl = `${apiRoot}${url}`;
-      console.log("🖼️ Image URL:", fullUrl);
       return fullUrl;
     },
     [apiRoot]
@@ -222,7 +221,6 @@ export function useItemForm(): UseItemFormReturn {
           }
         )
         .then((response) => {
-          console.log('✅ Enrichissement Catawiki reçu:', response.data);
           
           if (response.data?.data) {
             if (response.data.data.estimated_price) {
@@ -281,8 +279,6 @@ export function useItemForm(): UseItemFormReturn {
         medias: uploadedMedias.map((media) => media.id),
       };
 
-      console.log('📤 Payload envoyé:', JSON.stringify(payload, null, 2));
-
       try {
         await axiosInstance.post("/items", payload);
         setSuccessMessage("Objet créé avec succès");
@@ -313,9 +309,7 @@ export function useItemForm(): UseItemFormReturn {
     [reset, setError, uploadedMedias]
   );
 
-  const resetForm = useCallback(() => {
-    console.log('🔄 Réinitialisation du formulaire...');
-    
+  const resetForm = useCallback(() => {    
     form.reset({
       name: "",
       description: "",
@@ -339,8 +333,6 @@ export function useItemForm(): UseItemFormReturn {
     setAnalysisId(null);
     
     setFormKey(prev => prev + 1);
-    
-    console.log('✅ Formulaire réinitialisé');
   }, [form]);
 
   return {

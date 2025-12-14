@@ -17,7 +17,7 @@ export class BidsController {
     @UseGuards(AuthGuard)
     @Post()
     create(@Body() createBidDto: CreateBidDto, @Request() req) {
-        const bidderId = req.user.sub;
+        const bidderId = req.user.id;
         return this.bidsService.create(createBidDto, bidderId);
     }
 }

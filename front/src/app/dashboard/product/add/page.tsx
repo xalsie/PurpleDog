@@ -16,8 +16,6 @@ export default function CreateListingPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // TODO: Handle form submission
   };
 
   return (
