@@ -1,0 +1,272 @@
+'use client'
+
+import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
+import { Container } from '@/components/ui';
+import axios from '@/lib/axios';
+
+interface Media {
+  id: string
+  url: string;
+  isPrimary?: boolean;
+}
+interface CarouselItem {
+  id: string;
+  image: string;
+  title: string;
+  subtitle: string;
+  price: number;
+  isLiked?: boolean;
+}
+
+interface FeaturedCarouselProps {
+  title?: string;
+  description?: string;
+  items?: CarouselItem[];
+  onLike?: (id: string) => void;
+  onItemClick?: (id: string) => void;
+}
+
+export default function FeaturedCarousel({
+  title = "Sélection du Moment",
+  description = "Découvrez nos pièces d'exception actuellement disponibles",
+  items = [],
+  onLike,
+  onItemClick,
+}: FeaturedCarouselProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [itemsPerView, setItemsPerView] = useState(1);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [carouselItems, setCarouselItems] = useState<CarouselItem[]>(items);
+
+  // Détecte le nombre d'items à afficher selon la taille d'écran
+  useEffect(() => {
+    const updateItemsPerView = () => {
+      if (window.innerWidth >= 1024) {
+        setItemsPerView(3);
+      } else {
+        setItemsPerView(1);
+      }
+    };
+
+    updateItemsPerView();
+    window.addEventListener('resize', updateItemsPerView);
+    return () => window.removeEventListener('resize', updateItemsPerView);
+  }, []);
+
+  useEffect(() => {
+    setCarouselItems(items);
+  }, [items]);
+
+  useEffect(() => {
+    if (items && items.length > 0) return;
+
+    let cancelled = false;
+    axios
+      .get('/items/top-favorited')
+      .then((res) => {
+        if (cancelled) return;
+        const data = res.data as Array<{ item: any; favCount: number }>;
+        const mapped: CarouselItem[] = data.map((d) => {
+          const it = d.item ?? d;
+          const medias = it.medias ?? [];
+          const primary = medias.find((m: Media) => m.isPrimary) ?? medias[0];
+          const image = primary?.url ? `${process.env.NEXT_PUBLIC_API_URL}${primary.url}` : '/images/placeholder.png';
+          const price = Number(it.desired_price ?? it.ai_estimated_price ?? 0);
+          return {
+            id: it.id,
+            image,
+            title: it.name,
+            subtitle: it.description ?? '',
+            price,
+            isLiked: false,
+          };
+        });
+        setCarouselItems(mapped);
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const maxIndex = Math.max(0, carouselItems.length - itemsPerView);
+
+  const goToSlide = (index: number) => {
+    const clampedIndex = Math.max(0, Math.min(index, maxIndex));
+    setCurrentIndex(clampedIndex);
+  };
+
+  const goToPrev = () => {
+    goToSlide(currentIndex - 1);
+  };
+
+  const goToNext = () => {
+    goToSlide(currentIndex + 1);
+  };
+
+  // Gestion du swipe tactile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && currentIndex < maxIndex) {
+      goToNext();
+    }
+    if (isRightSwipe && currentIndex > 0) {
+      goToPrev();
+    }
+
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
+
+  const handleLike = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    onLike?.(id);
+  };
+
+  const handleItemClick = (id: string) => {
+    onItemClick?.(id);
+  };
+
+  // Calcul du nombre de dots à afficher
+  const dotsCount = itemsPerView === 1 ? carouselItems.length : maxIndex + 1;
+
+  return (
+    <section className="py-16 lg:py-20" style={{ backgroundColor: 'rgba(44, 14, 64, 0.05)' }}>
+      <Container>
+        <div className="text-center mb-12 lg:mb-16">
+          <h2 className="font-cormorant text-3xl lg:text-5xl text-[var(--color-purple-dark)] mb-4">
+            {title}
+          </h2>
+          <p className="text-[var(--color-black-deep)] opacity-70 text-base lg:text-lg font-raleway font-light">
+            {description}
+          </p>
+        </div>
+        <div className="relative max-w-6xl mx-auto">
+          <div 
+            className="overflow-hidden"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div
+              ref={trackRef}
+              className="flex transition-transform duration-500 ease-out"
+              style={{
+                transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
+              }}
+            >
+              {carouselItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="min-w-full lg:min-w-[33.333%] px-3"
+                  onClick={() => handleItemClick(item.id)}
+                >
+                  <div className="bg-[var(--color-cream-light)] group cursor-pointer">
+                    <div className="relative h-[400px] lg:h-[450px] overflow-hidden">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition duration-700"
+                        sizes="(max-width: 1024px) 100vw, 33vw"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <h3 className="font-cormorant text-xl lg:text-2xl text-[var(--color-purple-dark)] mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-[var(--color-black-deep)] opacity-70 text-sm mb-3 font-raleway font-light">
+                        {item.subtitle}
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[var(--color-purple-dark)] font-raleway font-light">
+                          {item.price.toLocaleString('fr-FR')} €
+                        </span>
+                        <button
+                          onClick={(e) => handleLike(e, item.id)}
+                          className="text-[var(--color-purple-dark)] hover:scale-110 transition-transform"
+                          aria-label="Ajouter aux favoris"
+                        >
+                          <svg
+                            className="w-6 h-6"
+                            fill={item.isLiked ? 'currentColor' : 'none'}
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Navigation Buttons - Desktop only */}
+          {maxIndex > 0 && (
+            <>
+              <button
+                onClick={goToPrev}
+                disabled={currentIndex === 0}
+                className="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 bg-[var(--color-cream-light)] text-[var(--color-purple-dark)] w-12 h-12 rounded-full hover:bg-[var(--color-purple-dark)] hover:text-[var(--color-cream-light)] transition shadow-lg items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Précédent"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={goToNext}
+                disabled={currentIndex === maxIndex}
+                className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-[var(--color-cream-light)] text-[var(--color-purple-dark)] w-12 h-12 rounded-full hover:bg-[var(--color-purple-dark)] hover:text-[var(--color-cream-light)] transition shadow-lg items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Suivant"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </>
+          )}
+
+          {/* Dots Navigation */}
+          <div className="flex justify-center gap-2 mt-8">
+            {Array.from({ length: dotsCount }).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  index === currentIndex ? 'bg-[var(--color-purple-dark)]' : 'bg-[var(--color-purple-dark)] opacity-30'
+                }`}
+                aria-label={`Aller à la diapositive ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}

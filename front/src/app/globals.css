@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-purple-dark: #2C0E40;
+    --color-black-deep: #020016;
+    --color-cream-light: #f0eee9f5;
+    --color-white-gray: #E6E3E1;
+
+    --font-family-cormorant: var(--font-cormorant), serif;
+    --font-family-raleway: var(--font-raleway), sans-serif;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: var(--color-cream-light);
+    color: var(--color-black-deep);
+    font-family: var(--font-raleway), sans-serif;
+    font-weight: 300;
+  }
+
+  a {
+    cursor: pointer;
+  }
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-raleway: var(---font-family-raleway);
+  --font-gamora: var(--font-family-cormorant);
+  --color-blackC : #020016;
+  --color-VioletC: var(--color-purple-dark);
+  --color-WhiteC : var(--color-cream-light);
+  --color-BeigeC : var(--color-cream-light);
+}
+
+/* Font utility classes */
+.font-cormorant {
+  font-family: var(--font-cormorant), serif;
+}
+
+.font-raleway {
+  font-family: var(--font-raleway), sans-serif;
+}
+
+/* Font weights */
+.font-light {
+  font-weight: 300;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+/* Font utility classes */
+.font-cormorant {
+  font-family: var(--font-cormorant), serif;
+}
+
+.font-raleway {
+  font-family: var(--font-raleway), sans-serif;
+}
+
+/* Font weights */
+.font-light {
+  font-weight: 300;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+  --color-BeigeC : var(--color-white-gray);
+}
+
+/* Grid Templates pour les ProductCards */
+.grid-categories {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .grid-categories {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .grid-categories {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-categories {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.grid-products {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .grid-products {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid-products {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.grid-products-dense {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .grid-products-dense {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-products-dense {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid-products-dense {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.grid-products-large {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .grid-products-large {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid-products-large {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.grid-list {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+}
