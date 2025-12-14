@@ -8,7 +8,7 @@ interface ProductCardProps {
   title: string;
   subtitle?: string;
   price: number;
-  status?: 'online' | 'auction' | 'sold' | 'draft';
+  status?: "PENDING" | "ACTIVE" | "ENDED" | "CANCELLED";
   currentBid?: number;
   bidsCount?: number;
   timeLeft?: string;
@@ -85,10 +85,10 @@ export default function ProductCard({
         {status && (
           <div className="absolute bottom-3 left-3">
             <Badge variant={status}>
-              {status === 'online' && 'EN VENTE'}
-              {status === 'auction' && 'ENCHÈRE'}
-              {status === 'sold' && 'VENDU'}
-              {status === 'draft' && 'BROUILLON'}
+              {status === 'PENDING' && 'À venir'}
+              {status === 'ACTIVE' && 'En cours'}
+              {status === 'ENDED' && 'Terminée'}
+              {status === 'CANCELLED' && 'Annulée'}
             </Badge>
           </div>
         )}
@@ -120,7 +120,7 @@ export default function ProductCard({
           <p className="font-raleway font-light text-sm text-gray-500 mb-2">{subtitle}</p>
         )}
         
-        {status === 'auction' && (currentBid || bidsCount || timeLeft) ? (
+        {status === 'ACTIVE' && (currentBid || bidsCount || timeLeft) ? (
           <div className="space-y-1">
             <p className="font-raleway text-base font-light text-purple-dark">
               {(currentBid || price).toLocaleString('fr-FR')} €
@@ -187,7 +187,7 @@ export default function ProductCard({
           ) : (
             <>
         
-              {status !== 'sold' && onEdit && (
+              {status !== 'ENDED' && onEdit && (
                 <button
                   onClick={handleEdit}
                   className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -204,7 +204,7 @@ export default function ProductCard({
                   </svg>
                 </button>
               )}
-              {status !== 'sold' && offersCount === 0 && onBoost && (
+              {status !== 'ENDED' && offersCount === 0 && onBoost && (
                 <button
                   onClick={handleBoost}
                   className="p-2 hover:bg-gray-100 rounded-full transition-colors"

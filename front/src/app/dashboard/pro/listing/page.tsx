@@ -12,7 +12,7 @@ interface Product {
   title: string;
   subtitle: string;
   price: number;
-  status: 'online' | 'auction' | 'sold';
+  status: "PENDING" | "ACTIVE" | "ENDED" | "CANCELLED";
   currentBid?: number;
   bidsCount?: number;
   timeLeft?: string;
@@ -95,7 +95,7 @@ export default function ProductsListingPage() {
                   bidsCount={product.bidsCount}
                   timeLeft={product.timeLeft}
                   viewMode="buyer"
-                  href={product.status === 'auction' ? `/auction/${product.id}` : `/product/${product.id}`}
+                  href={product.status === "ACTIVE" ? `/auction/${product.id}` : `/product/${product.id}`}
                   onLike={(id) => console.log('Like:', id)}
                   onShare={(id) => console.log('Share:', id)}
                 />
@@ -116,7 +116,7 @@ const demoProducts: Product[] = [
     title: 'Sac Hermès Birkin 35',
     subtitle: 'Cuir Togo Bordeaux',
     price: 12500,
-    status: 'online',
+    status: 'ACTIVE',
   },
   {
     id: '2',
@@ -124,7 +124,7 @@ const demoProducts: Product[] = [
     title: 'Kelly 32 Vintage',
     subtitle: 'Cuir Box Bordeaux',
     price: 3450,
-    status: 'auction',
+    status: 'ACTIVE',
     currentBid: 3450,
     bidsCount: 23,
     timeLeft: '2j 14h',
@@ -135,7 +135,7 @@ const demoProducts: Product[] = [
     title: 'Montre Rolex Datejust',
     subtitle: 'Or et Acier',
     price: 8500,
-    status: 'online',
+    status: 'ACTIVE',
   },
   {
     id: '4',
@@ -143,7 +143,7 @@ const demoProducts: Product[] = [
     title: 'Collier Cartier Love',
     subtitle: 'Or Rose 18k',
     price: 5200,
-    status: 'auction',
+    status: 'ACTIVE',
     currentBid: 4800,
     bidsCount: 15,
     timeLeft: '1j 8h',
@@ -154,7 +154,7 @@ const demoProducts: Product[] = [
     title: 'Tableau Picasso',
     subtitle: 'Période Bleue',
     price: 45000,
-    status: 'auction',
+    status: 'ACTIVE',
     currentBid: 42000,
     bidsCount: 38,
     timeLeft: '5j 2h',
@@ -165,7 +165,7 @@ const demoProducts: Product[] = [
     title: 'Fauteuil Eames',
     subtitle: 'Lounge Chair Original',
     price: 3200,
-    status: 'online',
+    status: 'ACTIVE',
   },
   {
     id: '7',
@@ -173,7 +173,7 @@ const demoProducts: Product[] = [
     title: 'Bague Tiffany & Co',
     subtitle: 'Diamant 1.5ct',
     price: 18500,
-    status: 'online',
+    status: 'ACTIVE',
   },
   {
     id: '8',
@@ -181,7 +181,7 @@ const demoProducts: Product[] = [
     title: 'Sculpture Giacometti',
     subtitle: 'Bronze Patiné',
     price: 28000,
-    status: 'auction',
+    status: 'ACTIVE',
     currentBid: 26500,
     bidsCount: 42,
     timeLeft: '3j 18h',
@@ -192,7 +192,7 @@ const demoProducts: Product[] = [
     title: 'Manteau Chanel',
     subtitle: 'Tweed Noir et Blanc',
     price: 4200,
-    status: 'online',
+    status: 'ACTIVE',
   },
   {
     id: '10',
@@ -200,7 +200,7 @@ const demoProducts: Product[] = [
     title: 'Vase Ming',
     subtitle: 'Porcelaine Dynastie Ming',
     price: 35000,
-    status: 'auction',
+    status: 'ACTIVE',
     currentBid: 32000,
     bidsCount: 56,
     timeLeft: '4j 12h',
@@ -211,7 +211,7 @@ const demoProducts: Product[] = [
     title: 'Chaussures Louboutin',
     subtitle: 'Escarpins Rouges',
     price: 850,
-    status: 'online',
+    status: 'ACTIVE',
   },
   {
     id: '12',
@@ -219,6 +219,6 @@ const demoProducts: Product[] = [
     title: 'Bracelet Van Cleef',
     subtitle: 'Alhambra Or Jaune',
     price: 7500,
-    status: 'online',
+    status: 'ACTIVE',
   },
 ];

@@ -161,7 +161,7 @@ export default function AuctionProductPage() {
                 maxAmount: maxAmount,
             });
         } catch (err: any) {
-            setError(err.response?.data?.message ||'Failed to place bid.');
+            setError(err?.response?.data?.message ||'Failed to place bid.');
         }
     };
     
