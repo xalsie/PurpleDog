@@ -4,13 +4,15 @@ import { useEffect, useState } from 'react';
 import { Container, ProductCard } from '@/components/ui';
 import axios from '@/lib/axios';
 
+type StatusMap = "PENDING" | "ACTIVE" | "ENDED" | "CANCELLED"
+
 interface Listing {
   id: string;
   image: string;
   title: string;
   subtitle: string;
   price: number;
-  status: 'online' | 'draft' | 'sold';
+  status: StatusMap;
   offersCount?: number;
 }
 
@@ -25,11 +27,11 @@ interface MyListingsProps {
   onBoost?: (id: string) => void;
 }
 
-const statusMap: Record<string, 'online' | 'draft' | 'sold'> = {
-  PUBLISHED: 'online',
-  DRAFT: 'draft',
-  SOLD: 'sold',
-  ARCHIVED: 'draft',
+const statusMap: Record<string, StatusMap> = {
+  PUBLISHED: 'ACTIVE',
+  DRAFT: 'PENDING',
+  SOLD: 'ENDED',
+  ARCHIVED: 'CANCELLED',
 };
 
 export default function MyListings({

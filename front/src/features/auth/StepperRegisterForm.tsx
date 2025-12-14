@@ -38,7 +38,7 @@ interface StepperRegisterFormProps {
   onBack?: () => void;
 }
 
-export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
+export function StepperRegisterForm({}: StepperRegisterFormProps) {
   const { registerUser, isLoading, error } = useAuth();
   const [currentStep, setCurrentStep] = useState<StepType>("email");
   const [emailValue, setEmailValue] = useState("");
@@ -164,7 +164,7 @@ export function StepperRegisterForm({ onBack }: StepperRegisterFormProps) {
     // useAuth hook handles redirect on success
   };
 
-  const selectedType = watchPassword("type");
+  // const selectedType = watchPassword("type");
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-WhiteC px-4 py-8">

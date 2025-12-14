@@ -12,7 +12,7 @@ interface Listing {
   title: string;
   subtitle: string;
   price: number;
-  status: 'online' | 'draft' | 'sold';
+  status: "PENDING" | "ACTIVE" | "CANCELLED";
   offersCount?: number;
 }
 

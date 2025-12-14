@@ -5,6 +5,8 @@ import { Container, ProductCard } from '@/components/ui';
 import NavBarDashboard from '@/components/layout/NavBarDashboard/NavBarDashboard';
 import { useAuth } from '@/hooks/useAuth';
 
+type StatusMap = "PENDING" | "ACTIVE" | "ENDED" | "CANCELLED";
+
 interface Auction {
   id: string;
   image: string;
@@ -13,7 +15,7 @@ interface Auction {
   currentBid: number;
   bidsCount: number;
   timeLeft: string;
-  status: 'auction' | 'sold' | 'draft';
+  status: StatusMap;
 }
 
 interface MyAuctionsProps {
