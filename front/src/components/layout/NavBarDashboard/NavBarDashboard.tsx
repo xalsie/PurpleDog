@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { FaRegHeart , FaRegClock } from "react-icons/fa";
 import Notificationlink from "@/components/ui/NotificationLink/NotificationLink";
 import Avatar from "@/components/ui/Avatar/Avatar";
@@ -20,10 +21,16 @@ export default function NavBarDashboard({ UserType,logOut }: INavBarDashboard) {
         <div className="w-full mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex-1 md:text-center">
             <Link
-                href="#"
+                href="/"
                 className="text-xl font-regular tracking-wide md:text-3xl font-gamora"
             >
-                Purple Dog
+                <Image 
+                    src="/Logo-noir.png" 
+                    alt="Purple Dog Logo" 
+                    width={70} 
+                    height={60}
+                    className="md:w-25 md:h-15"
+                />
             </Link>
             </div>
             

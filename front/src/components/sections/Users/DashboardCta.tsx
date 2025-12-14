@@ -16,7 +16,7 @@ export default function DashboardCTA({
   title = "Mettez en vente vos pièces d'exception",
   description = "Partagez vos trésors avec une communauté de passionnés. Simple, élégant, efficace.",
   ctaText = "Créer une annonce",
-  ctaHref = "/dashboard/particulier/vendre",
+  ctaHref = "/dashboard/particulier/mise-en-vente",
   image = "https://storage.googleapis.com/uxpilot-auth.appspot.com/59cbe99951-ebe187b223c777fd31b6.png",
   imageAlt = "Elegant luxury fashion items on marble surface",
   onCtaClick,

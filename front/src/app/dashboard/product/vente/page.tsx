@@ -4,6 +4,7 @@ import React, { useState,useEffect } from 'react';
 import Image from 'next/image';
 import { Container, Button } from '@/components/ui';
 import { PhotoGallery, ProductHeader, ProductDetails, SellerInfos } from '@/components/sections/Index';
+import { CheckoutFlow } from '@/components/sections/Payment';
 import NavBarDashboard from '@/components/layout/NavBarDashboard/NavBarDashboard';
 import { useAuth } from '@/hooks/useAuth';
 import axiosInstance from '@/lib/axios';
@@ -39,7 +40,8 @@ export default function ProductPage({ productId }: ProductPageProps) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-    const { user, logout } = useAuth();
+  const [showCheckout, setShowCheckout] = useState(false);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -66,17 +68,13 @@ export default function ProductPage({ productId }: ProductPageProps) {
 
   const handleBuy = async () => {
     if (!product) return;
+    
+    setShowCheckout(true);
+  };
 
-    try {
-      await axiosInstance.post('/purchases', {
-        productId: product.id
-      });
-
-      console.log('Achat initié');
-      // Rediriger vers paiement
-    } catch (err) {
-      console.error('Error buying product:', err);
-    }
+  const handleCheckoutComplete = () => {
+    setShowCheckout(false);
+    console.log('Payment completed successfully');
   };
 
   const defaultProduct: Product = {
@@ -224,6 +222,16 @@ export default function ProductPage({ productId }: ProductPageProps) {
           </div>
         </main>
         </Container>
+
+        {showCheckout && product && (
+          <CheckoutFlow
+            productId={product.id}
+            productPrice={product.price}
+            productTitle={product.title}
+            onPaymentComplete={handleCheckoutComplete}
+            onClose={() => setShowCheckout(false)}
+          />
+        )}
       </>
   );
 }

@@ -122,7 +122,7 @@ export default function MyListings({
               onClick={handleViewAll}
               className="text-purple-dark text-sm sm:text-base hover:underline flex items-center gap-2"
             >
-              voir tout
+              Voir tout
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>

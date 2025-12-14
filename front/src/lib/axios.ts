@@ -7,8 +7,23 @@ import { clearUser, setUserRole } from "@/store/slices/userSlice";
 
 const fallbackBaseUrl = "http://localhost:3001";
 
+const normalizeBaseUrl = (rawUrl: string) => {
+  try {
+    const parsed = new URL(rawUrl);
+    const isLocal = ["localhost", "127.0.0.1", "::1"].includes(parsed.hostname);
+    if (!isLocal && parsed.protocol === "http:" && process.env.NODE_ENV === "production") {
+      parsed.protocol = "https:";
+    }
+    return parsed.toString().replace(/\/$/, "");
+  } catch {
+    return rawUrl;
+  }
+};
+
+const baseApiUrl = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_URL || fallbackBaseUrl);
+
 export const axiosInstance: AxiosInstance = axios.create({
-  baseURL: (process.env.NEXT_PUBLIC_API_URL || fallbackBaseUrl) + "/api",
+  baseURL: `${baseApiUrl}/api`,
   timeout: 60000, // 60 secondes pour permettre l'analyse IA
   headers: {
     "Content-Type": "application/json",
