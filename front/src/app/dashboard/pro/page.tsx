@@ -1,12 +1,10 @@
-'use client';
-import MyListings from '@/components/sections/Users/MyListings';
-import ReviewBanner from '@/components/sections/Users/ReviewBanner';
-import DashboardProCta from '@/components/sections/Users/DashboardProCta';
-import MyAuctions from '@/components/sections/Users/MyAuctions';
+'use client'
+
+import React, { useState } from 'react';
+import { MyListings, ReviewBanner,  DashboardProCta, MyAuctions, CategoriesSection } from '@/components/sections/Index';
 import { SearchBar } from '@/components/ui';
 import NavBarDashboard from '@/components/layout/NavBarDashboard/NavBarDashboard';
 import { useAuth } from '@/hooks/useAuth';
-import CategoriesSection from '@/components/sections/Categories';
 
 export default function DashboardParticulierHome() {
   const { user, logout } = useAuth()

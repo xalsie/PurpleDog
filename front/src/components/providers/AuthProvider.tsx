@@ -20,9 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (hasRestored.current) return;
     hasRestored.current = true;
 
-    console.log("[AuthProvider] Starting restoreSession...");
     restoreSession().finally(() => {
-      console.log("[AuthProvider] restoreSession complete, authReady = true");
       setAuthReady(true);
     });
   }, [restoreSession]);

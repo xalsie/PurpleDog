@@ -1,235 +1,264 @@
-'use client'
+'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Container, Button } from '@/components/ui';
-import { AuctionHeader, AuctionDetails, PhotoGallery, SellerInfos } from '@/components/sections/Index';
+import { useEffect, useState, useCallback } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Button } from '@/components/ui';
+import {
+    AuctionHeader,
+    AuctionDetails,
+    PhotoGallery,
+    SellerInfos,
+} from '@/components/sections/Index';
 import NavBarDashboard from '@/components/layout/NavBarDashboard/NavBarDashboard';
 import { useAuth } from '@/hooks/useAuth';
 import axiosInstance from '@/lib/axios';
+import { io, Socket } from 'socket.io-client';
 
-interface AuctionProduct {
-  id: string;
-  brand: string;
-  title: string;
-  subtitle: string;
-  currentBid: number;
-  timeLeft: string;
-  bidsCount: number;
-  model: string;
-  material: string;
-  color: string;
-  year: string;
-  condition: string;
-  authenticated: boolean;
-  description: string;
-  images: string[];
-  status: 'auction' | 'sold';
-  seller: {
+interface AuctionData {
     id: string;
-    name: string;
-    avatar: string;
-    verified: boolean;
-  };
+    item: {
+        id: string;
+        name: string;
+        description: string;
+        brand: string;
+        model: string;
+        material: string;
+        color: string;
+        year: string;
+        condition: string;
+        authenticated: boolean;
+        medias: { url: string; isPrimary: boolean }[];
+        seller: {
+            id: string;
+            name: string;
+            avatar: string;
+            verified: boolean;
+        };
+    };
+    startTime: string;
+    endTime: string;
+    currentPrice: number;
+    bids: any[];
+    status: 'PENDING' | 'ACTIVE' | 'ENDED' | 'CANCELLED';
 }
 
-interface AuctionProductPageProps {
-  productId?: string;
-}
+export default function AuctionProductPage() {
+    const [auction, setAuction] = useState<AuctionData | null>(null);
+    const [timeLeft, setTimeLeft] = useState('');
+    const [bidAmount, setBidAmount] = useState(0);
+    const [maxBidAmount, setMaxBidAmount] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const { user, logout } = useAuth();
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const [socket, setSocket] = useState<Socket | null>(null);
+    const [isHighestBidder, setIsHighestBidder] = useState(false);
 
-export default function AuctionProductPage({ productId }: AuctionProductPageProps) {
-  const [product, setProduct] = useState<AuctionProduct | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { user, logout } = useAuth();
+    useEffect(() => {
+        if (auction && user) {
+            const sortedBids = [...auction.bids].sort((a, b) => new Date(b.createDateTime).getTime() - new Date(a.createDateTime).getTime());
+            if (sortedBids.length > 0 && sortedBids[0].bidderId === user.id) {
+                setIsHighestBidder(true);
+            } else {
+                setIsHighestBidder(false);
+            }
+        }
+    }, [auction, user]);
 
-  const defaultAuctionProduct: AuctionProduct = {
-   id: '1',
-   brand: 'Hermès',
-   title: 'Kelly 32 Vintage',
-   subtitle: 'Sac iconique en cuir Box bordeaux, circa 1995',
-   currentBid: 3450,
-   timeLeft: '2j 14h',
-   bidsCount: 23,
-   model: 'Kelly 32',
-   material: 'Cuir Box',
-   color: 'Bordeaux',
-   year: '1995',
-   condition: 'Excellent',
-   authenticated: true,
-   description: "Sac Kelly 32 en cuir Box bordeaux, datant de 1995. Pièce authentique en excellent état vintage avec patine naturelle du cuir. Fermoir et cadenas plaqué or en parfait état de fonctionnement. Intérieur en cuir chevreau bordeaux impeccable.",
-  images: [
-   'https://storage.googleapis.com/uxpilot-auth.appspot.com/2fe8b912ae-08939be41498732d673b.png',
-   'https://storage.googleapis.com/uxpilot-auth.appspot.com/1e3b7ae36f-b6e656608b5dadff4ad3.png',
-    'https://storage.googleapis.com/uxpilot-auth.appspot.com/ed117302db-0ef9383370e382c2d72e.png',
-    'https://storage.googleapis.com/uxpilot-auth.appspot.com/e9a4bda1e5-f4d3ebee959865a69b05.png',
-    'https://storage.googleapis.com/uxpilot-auth.appspot.com/af06b0b441-ca4c42dfa004d446f8e1.png',
-    'https://storage.googleapis.com/uxpilot-auth.appspot.com/830672da53-e24cd66178d57a9437ca.png',
-    'https://storage.googleapis.com/uxpilot-auth.appspot.com/921ffbcb1f-8afe17bd773098fd479a.png',
-    'https://storage.googleapis.com/uxpilot-auth.appspot.com/197b360499-9a468a952a417a295627.png',
-    'https://storage.googleapis.com/uxpilot-auth.appspot.com/f28079d9fb-70f9ed420956375029a2.png',
-    'https://storage.googleapis.com/uxpilot-auth.appspot.com/543f7a6df4-62b7f39390fb849ed71f.png',
-  ],
-  status: 'auction',
-  seller: {
-    id: 'seller-2',
-    name: 'Jean L.',
-    avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg',
-    verified: true,
-  },
-};
+    const calculateTimeLeft = useCallback(() => {
+        if (!auction) return;
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      if (!productId) {
-        setProduct(defaultAuctionProduct);
-        setLoading(false);
-        return;
-      }
+        const now = new Date().getTime();
+        const endTime = new Date(auction.endTime).getTime();
+        const distance = endTime - now;
 
-      try {
-        setLoading(true);
-        const { data } = await axiosInstance.get(`/auctions/${productId}`);
-        setProduct(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erreur de chargement');
-        console.error('Error fetching auction:', err);
-      } finally {
-        setLoading(false);
-      }
+        if (distance < 0) {
+            setTimeLeft('Terminée');
+            if (auction.status !== 'ENDED') {
+                setAuction(prevAuction => prevAuction ? { ...prevAuction, status: 'ENDED' } : null);
+            }
+            return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(
+            (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        );
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        setTimeLeft(`${days}j ${hours}h ${minutes}m ${seconds}s`);
+    }, [auction]);
+
+    useEffect(() => {
+        const itemId = searchParams.get('id');
+        if (!itemId) {
+            router.push('/dashboard');
+            return;
+        }
+
+        const fetchAuction = async () => {
+            try {
+                const { data } = await axiosInstance.get(`/auctions/item/${itemId}`);
+                if (data) {
+                    setAuction(data);
+                    const nextBid = Number(data.currentPrice) + getBidIncrement(Number(data.currentPrice));
+                    setBidAmount(nextBid);
+                    setMaxBidAmount(nextBid);
+                }
+            } catch (err) {
+                setError('Failed to load auction data.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAuction();
+
+    }, [searchParams, router]);
+
+    useEffect(() => {
+        if (!auction) return;
+
+        const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001');
+        setSocket(newSocket);
+
+        newSocket.on('connect', () => {
+            newSocket.emit('joinAuction', auction.id);
+        });
+
+        newSocket.on('auctionUpdate', (updatedAuction: AuctionData) => {
+            setAuction(updatedAuction);
+        });
+
+        return () => {
+            newSocket.off('connect');
+            newSocket.off('auctionUpdate');
+            newSocket.disconnect();
+        };
+    }, [auction?.id]);
+
+    useEffect(() => {
+        const timer = setInterval(calculateTimeLeft, 1000);
+        return () => clearInterval(timer);
+    }, [calculateTimeLeft]);
+
+    const getBidIncrement = (price: number): number => {
+        if (price < 100) return 10;
+        if (price < 500) return 50;
+        if (price < 1000) return 100;
+        if (price < 5000) return 200;
+        return 500;
     };
 
-    fetchProduct();
-  }, [productId]);
+    const handleBid = async (amount: number, maxAmount?: number) => {
+        if (!auction) return;
+        try {
+            await axiosInstance.post('/bids', {
+                auctionId: auction.id,
+                amount: amount,
+                maxAmount: maxAmount,
+            });
+        } catch (err: any) {
+            setError(err.response?.data?.message ||'Failed to place bid.');
+        }
+    };
+    
+    const quickBidOptions = () => {
+        if (!auction) return [];
+        const increment = getBidIncrement(Number(auction.currentPrice));
+        const nextBid = Number(auction.currentPrice) + increment;
+        return [nextBid, nextBid + increment, nextBid + 2 * increment];
+    };
 
-  const handleBid = async (amount: number) => {
-    if (!product) return;
-
-    try {
-      const { data: updatedProduct } = await axiosInstance.post('/bids', {
-        auctionId: product.id,
-        amount
-      });
-
-      console.log('Enchère placée:', amount);
-      setProduct(updatedProduct);
-    } catch (err) {
-      console.error('Error placing bid:', err);
-    }
-  };
-
-  const handleLike = async () => {
-    if (!product) return;
-
-    try {
-      await axiosInstance.post('/favorite', {
-        auctionId: product.id
-      });
-      console.log('Ajouté aux favoris');
-    } catch (err) {
-      console.error('Error liking auction:', err);
-    }
-  };
-
-  const handleMessage = async () => {
-    if (!product) return;
-
-    try {
-      const { data } = await axiosInstance.post('/conversations', {
-        sellerId: product.seller.id,
-        auctionId: product.id
-      });
-
-      if (data?.conversationId) {
-        window.location.href = `/messages/${data.conversationId}`;
-      }
-    } catch (err) {
-      console.error('Error starting conversation:', err);
-    }
-  };
-
-  const handleContactSeller = async (sellerId: string) => {
-    handleMessage();
-  };
-
-  if (loading) {
-    return (
-      <main className="pt-16 sm:pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center">
-            <p className="text-purple-dark">Chargement...</p>
-          </div>
+    if (loading) return <div>Chargement...</div>;
+    if (error) return <div>{error}</div>;
+    if (!auction) return (
+        <div className="text-center mt-10">
+            <p>Aucune enchère n'a été trouvée pour cet article.</p>
+            {/* TODO: Add a button here to create an auction */}
         </div>
-      </main>
     );
-  }
 
-  if (error || !product) {
+    const { item } = auction;
+    const images = item.medias?.map((m) => `${process.env.NEXT_PUBLIC_API_URL}/api/medias${m.url}`) || [];
+
     return (
-      <main className="pt-16 sm:pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center">
-            <p className="text-red-600">{error || 'Enchère non trouvée'}</p>
-          </div>
-        </div>
-      </main>
+        <>
+            <NavBarDashboard UserType={user?.role} logOut={logout} />
+            <main className="pt-16 sm:pt-20">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+                        <section className="order-1">
+                            <PhotoGallery images={images} title={item.name} status={auction.status} />
+                        </section>
+                        <section className="order-2">
+                            <div className="sticky top-24">
+                                <AuctionHeader
+                                    brand={item.brand}
+                                    title={item.name}
+                                    subtitle={item.description.substring(0, 50) + '...'}
+                                    currentBid={Number(auction.currentPrice)}
+                                    timeLeft={timeLeft}
+                                    status={auction.status}
+                                    bidsCount={auction.bids.length}
+                                    isHighestBidder={isHighestBidder}
+                                    onBid={() => handleBid(bidAmount)}
+                                    onLike={() => {}}
+                                    onMessage={() => {}}
+                                />
+                                {auction.status === 'ACTIVE' ? (
+                                    <div className="mt-4">
+                                        <h3 className="text-lg font-medium text-gray-900">Placer une enchère</h3>
+                                        <div className="mt-2 flex gap-2">
+                                            {quickBidOptions().map(amount => (
+                                                <Button key={amount} onClick={() => handleBid(amount)}>
+                                                    {amount} €
+                                                </Button>
+                                            ))}
+                                        </div>
+                                        <div className="mt-4">
+                                            <input
+                                                type="number"
+                                                value={bidAmount}
+                                                onChange={(e) => setBidAmount(Number(e.target.value))}
+                                                className="border-gray-300 rounded-md shadow-sm"
+                                                placeholder="Votre enchère"
+                                            />
+                                            <Button
+                                                onClick={() => handleBid(bidAmount, maxBidAmount)}
+                                                className="ml-2"
+                                            >
+                                                Enchérir
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="mt-4">
+                                        <h3 className="text-lg font-medium text-gray-900">Enchère terminée</h3>
+                                        <p>Cette enchère est terminée. Vous ne pouvez plus placer d'offres.</p>
+                                    </div>
+                                )}
+                                <SellerInfos
+                                    seller={item.seller}
+                                    onContact={() => {}}
+                                />
+                                <AuctionDetails
+                                    brand={item.brand}
+                                    model={item.model}
+                                    material={item.material}
+                                    color={item.color}
+                                    year={item.year}
+                                    condition={item.condition}
+                                    authenticated={item.authenticated}
+                                    description={item.description}
+                                />
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </main>
+        </>
     );
-  }
-
-  return (
-  <>
-  <NavBarDashboard 
-                  UserType={user?.role}
-                  logOut={logout}
-                />
-    <main className="pt-16 sm:pt-20">
-        
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-          
-          <section className="order-1">
-            <PhotoGallery
-              images={product.images}
-              title={product.title}
-              status={product.status}
-            />
-          </section>
-
-          <section className="order-2">
-            <div className="sticky top-24">
-              <AuctionHeader
-                brand={product.brand}
-                title={product.title}
-                subtitle={product.subtitle}
-                currentBid={product.currentBid}
-                timeLeft={product.timeLeft}
-                bidsCount={product.bidsCount}
-                onBid={handleBid}
-                onLike={handleLike}
-                onMessage={handleMessage}
-              />
-
-              <SellerInfos
-                seller={product.seller}
-                onContact={handleContactSeller}
-              />
-
-              <AuctionDetails
-                brand={product.brand}
-                model={product.model}
-                material={product.material}
-                color={product.color}
-                year={product.year}
-                condition={product.condition}
-                authenticated={product.authenticated}
-                description={product.description}
-              />
-            </div>
-          </section>
-        </div>
-      </div>
-    </main>
-    </>
-  );
 }
-
- 

@@ -11,9 +11,7 @@ export default function ProfilePage() {
   const [avatarUrl, setAvatarUrl] = useState('https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg');
   
   const handleAvatarChange = () => {
-    // Logique pour changer l'avatar
-    console.log('Change avatar');
-  };
+    // Logique pour changer l'avatar  };
 
     const { user, logout } = useAuth();
   return (<>

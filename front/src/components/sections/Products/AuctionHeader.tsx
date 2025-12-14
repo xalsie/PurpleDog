@@ -10,6 +10,8 @@ interface AuctionHeaderProps {
   currentBid: number;
   timeLeft: string;
   bidsCount: number;
+  status?: 'PENDING' | 'ACTIVE' | 'ENDED' | 'CANCELLED';
+  isHighestBidder?: boolean;
   onBid?: (amount: number) => void;
   onLike?: () => void;
   onMessage?: () => void;
@@ -22,6 +24,8 @@ export default function AuctionHeader({
   currentBid,
   timeLeft,
   bidsCount,
+  status,
+  isHighestBidder,
   onBid,
   onLike,
   onMessage,
@@ -37,7 +41,7 @@ export default function AuctionHeader({
     <div>
       <div className="mb-6 sm:mb-8">
         <p className="text-sm sm:text-base text-purple-dark mb-2 tracking-wide">
-          {brand.toUpperCase()}
+          {brand && brand.toUpperCase()}
         </p>
         <h1 className="font-cormorant text-3xl sm:text-4xl lg:text-5xl text-black-deep mb-3 sm:mb-4">
           {title}
@@ -53,9 +57,16 @@ export default function AuctionHeader({
             <p className="text-xs sm:text-sm text-black-deep/60 mb-2">
               Enchère actuelle
             </p>
-            <p className="font-raleway text-2xl sm:text-3xl lg:text-4xl text-purple-dark">
-              {currentBid.toLocaleString('fr-FR')} €
-            </p>
+            <div className="flex items-center">
+              <p className="font-raleway text-2xl sm:text-3xl lg:text-4xl text-purple-dark">
+                {currentBid.toLocaleString('fr-FR')} €
+              </p>
+              {isHighestBidder && (
+                <span className="ml-4 bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">
+                  Meilleure offre
+                </span>
+              )}
+            </div>
           </div>
           <div>
             <p className="text-xs sm:text-sm text-black-deep/60 mb-2">
@@ -73,15 +84,6 @@ export default function AuctionHeader({
       </div>
 
       <div className="space-y-3 sm:space-y-4 mb-8 sm:mb-10">
-        <Button
-          variant="primary"
-          size="lg"
-          onClick={() => onBid?.(currentBid + 50)}
-          className="w-full tracking-wide"
-        >
-          Enchérir
-        </Button>
-
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <button
             onClick={handleLike}

@@ -29,9 +29,6 @@ export const Feedback: React.FC<FeedbackProps> = ({ onSubmit }) => {
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Feedback submitted:', formData);
-    
-    // Appeler la fonction callback du parent
     if (onSubmit) {
       onSubmit(formData);
     }

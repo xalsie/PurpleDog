@@ -8,6 +8,7 @@ import {
     ValidateNested,
     IsUrl,
     IsOptional,
+    IsBoolean,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { SaleType } from '../domain/entities/item.entity';
@@ -96,4 +97,39 @@ export class CreateItemDto {
     @ApiProperty({ enum: SaleType })
     @IsEnum(SaleType)
     sale_type: SaleType;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
+    brand?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
+    model?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
+    material?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
+    color?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
+    year?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
+    condition?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsBoolean()
+    authenticated?: boolean;
 }

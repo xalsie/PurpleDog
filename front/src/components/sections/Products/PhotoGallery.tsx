@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui';
 interface ProductGalleryProps {
   images: string[];
   title: string;
-  status: 'online' | 'auction' | 'sold' | 'draft';
+  status: "PENDING" | "ACTIVE" | "ENDED" | "CANCELLED";
 }
 
 export default function ProductGallery({ images, title, status }: ProductGalleryProps) {
@@ -32,10 +32,10 @@ export default function ProductGallery({ images, title, status }: ProductGallery
 
         <div className="absolute bottom-4 left-4">
           <Badge variant={status}>
-            {status === 'online' && 'EN VENTE'}
-            {status === 'auction' && 'ENCHÈRE'}
-            {status === 'sold' && 'VENDU'}
-            {status === 'draft' && 'BROUILLON'}
+            {status === 'PENDING' && 'À venir'}
+            {status === 'ACTIVE' && 'En cours'}
+            {status === 'ENDED' && 'Terminée'}
+            {status === 'CANCELLED' && 'Annulée'}
           </Badge>
         </div>
       </div>

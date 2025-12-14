@@ -1,129 +1,144 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { Subject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { CreateBidDto } from './dto/create-bid.dto';
-import { UpdateBidDto } from './dto/update-bid.dto';
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+    ForbiddenException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { Bid } from './entities/bid.entity';
-import { ItemSchema } from '../items/infrastructure/typeorm/item.schema';
-import { ItemStatus, SaleType } from '../items/domain/entities/item.entity';
+import { Auction, AuctionStatus } from './entities/auction.entity';
+import { CreateBidDto } from './dto/create-bid.dto';
+import { AuctionsService } from '../auctions/auctions.service';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { User } from '../user';
+import { AuctionsGateway } from '../auctions/auctions.gateway';
 
 @Injectable()
 export class BidsService {
-    private bidStreams: Map<string, Subject<any>> = new Map();
-
     constructor(
         @InjectRepository(Bid)
-        private readonly bidRepo: Repository<Bid>,
-        @InjectRepository(ItemSchema)
-        private readonly itemRepo: Repository<ItemSchema>,
+        private readonly bidRepository: Repository<Bid>,
+        @InjectRepository(Auction)
+        private readonly auctionRepository: Repository<Auction>,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
+        private readonly auctionsService: AuctionsService,
+        private schedulerRegistry: SchedulerRegistry,
+        private readonly auctionsGateway: AuctionsGateway,
     ) {}
 
-    async create(createBidDto: CreateBidDto) {
-        const item = await this.itemRepo.findOneBy({ id: createBidDto.itemId });
+    async create(dto: CreateBidDto, bidderId: string): Promise<Auction> {
+        const auction = await this.auctionsService.findOne(dto.auctionId);
 
-        if (!item || item.status !== ItemStatus.PUBLISHED) {
-            throw new BadRequestException({
-                statusCode: 400,
-                code: 'ITEM_NOT_AVAILABLE',
-                message: 'Item not found or not available for bidding',
-                itemId: createBidDto.itemId,
-            });
+        if (!auction) {
+            throw new NotFoundException('Auction not found');
+        }
+        if (auction.status !== AuctionStatus.ACTIVE) {
+            throw new BadRequestException('Auction is not active');
+        }
+        if (new Date() >= auction.endTime) {
+            throw new BadRequestException('Auction has already ended');
+        }
+        if (auction.item.sellerId === bidderId) {
+            throw new ForbiddenException('Seller cannot bid on their own item');
         }
 
-        if (item.sale_type !== SaleType.AUCTION) {
-            throw new BadRequestException({
-                statusCode: 400,
-                code: 'ITEM_NOT_AUCTION',
-                message: 'Item is not available for auction',
-                itemId: createBidDto.itemId,
-            });
+        const bidAmount = dto.amount;
+        const currentPrice = Number(auction.currentPrice);
+
+        if (bidAmount <= currentPrice) {
+            throw new BadRequestException(
+                `Your bid must be higher than the current price of ${currentPrice}`,
+            );
         }
 
-        const existingBid = await this.bidRepo.findOneBy(createBidDto);
+        const newBid = this.bidRepository.create({
+            auctionId: dto.auctionId,
+            bidderId: bidderId,
+            amount: bidAmount,
+        });
 
-        if (existingBid) {
-            throw new BadRequestException({
-                statusCode: 400,
-                code: 'BID_ALREADY_EXISTS',
-                message: 'You have already placed a bid with this amount',
-                itemId: createBidDto.itemId,
-                amount: createBidDto.amount,
-            });
+        await this.bidRepository.save(newBid);
+
+        await this.auctionRepository.update(auction.id, {
+            currentPrice: bidAmount,
+            winnerId: bidderId,
+        });
+
+        const updatedAuction = await this.auctionsService.findOne(auction.id);
+        if (!updatedAuction) {
+            throw new NotFoundException(
+                'Auction not found after processing bid',
+            );
         }
 
-        const highestBid = await this.bidRepo
-            .createQueryBuilder('b')
-            .where('b.itemId = :itemId', { itemId: createBidDto.itemId })
-            .orderBy('b.amount', 'DESC')
-            .getOne();
+        this.extendAuctionTime(updatedAuction);
+        this.auctionsGateway.broadcastAuctionUpdate(updatedAuction);
 
-        if (highestBid && createBidDto.amount <= Number(highestBid.amount)) {
-            throw new BadRequestException({
-                statusCode: 400,
-                code: 'BID_TOO_LOW',
-                message: 'There is already a higher or equal bid for this item',
-                itemId: createBidDto.itemId,
-                highestBid: highestBid.amount,
-            });
-        }
+        return updatedAuction;
+    }
 
-        const b = this.bidRepo.create(createBidDto);
-        const saved = await this.bidRepo.save(b);
+    private getBidIncrement(price: number): number {
+        const percent =
+            price < 100
+                ? 0.1
+                : price < 500
+                  ? 0.05
+                  : price < 1000
+                    ? 0.02
+                    : price < 5000
+                      ? 0.01
+                      : 0.005;
 
-        const subject = this.bidStreams.get(String(createBidDto.itemId));
-        if (subject) {
+        const increment = Math.ceil(price * percent);
+        return Math.max(1, increment);
+    }
+
+    private async getHighestBid(auctionId: string): Promise<Bid | null> {
+        return this.bidRepository.findOne({
+            where: { auctionId },
+            order: { amount: 'DESC' },
+        });
+    }
+
+    private extendAuctionTime(auction: Auction): void {
+        const now = new Date();
+        const timeLeft = new Date(auction.endTime).getTime() - now.getTime();
+        const oneHour = 60 * 60 * 1000;
+
+        if (timeLeft < oneHour && timeLeft > 0) {
+            const newEndTime = new Date(
+                auction.endTime.getTime() + 10 * 60 * 1000,
+            );
+            auction.endTime = newEndTime;
+            this.auctionRepository.save(auction);
+
+            const jobName = `end_auction_${auction.id}`;
             try {
-                subject.next(saved);
-            } catch (err) {
-                console.error('Error emitting bid to stream subscribers:', err);
+                const job = this.schedulerRegistry.getCronJob(jobName);
+                job.setTime(new (require('cron').CronTime)(newEndTime));
+                job.start();
+            } catch (e) {
+                const newEndJob = new (require('cron').CronTime)(
+                    newEndTime,
+                    async () => {
+                        const finalAuction = await this.auctionsService.findOne(
+                            auction.id,
+                        );
+                        if (!finalAuction) return;
+
+                        finalAuction.status = AuctionStatus.ENDED;
+                        const updatedAuction =
+                            await this.auctionRepository.save(finalAuction);
+                        this.auctionsGateway.broadcastAuctionUpdate(
+                            updatedAuction,
+                        );
+                    },
+                );
+                this.schedulerRegistry.addCronJob(jobName, newEndJob);
+                newEndJob.start();
             }
         }
-
-        return saved;
-    }
-
-    getBidStream(itemId: string): Observable<any> {
-        let s = this.bidStreams.get(itemId);
-        if (!s) {
-            s = new Subject<any>();
-            this.bidStreams.set(itemId, s);
-        }
-        return s.asObservable().pipe(map((data) => ({ data })));
-    }
-
-    findAll(userId: string) {
-        const bids = this.bidRepo.find({
-            where: { userId },
-            relations: ['item'],
-            order: { createDateTime: 'DESC' },
-        });
-        return bids;
-    }
-
-    findOne(id: string) {
-        const bid = this.bidRepo.findOneBy({ id: id });
-        return bid;
-    }
-
-    async update(id: string, updateBidDto: UpdateBidDto) {
-        const bid = await this.bidRepo.preload({
-            id: id,
-            ...updateBidDto,
-        });
-        if (!bid) {
-            throw new BadRequestException({
-                statusCode: 400,
-                code: 'BID_NOT_FOUND',
-                message: 'Bid not found',
-                id,
-            });
-        }
-        return this.bidRepo.save(bid);
-    }
-
-    async remove(id: string) {
-        return await this.bidRepo.delete(id);
     }
 }

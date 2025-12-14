@@ -16,10 +16,7 @@ export default function ReviewModal({ isOpen, onClose }: ReviewModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // TODO: Envoyer l'avis au backend
-    console.log('Avis soumis:', { rating, comment });
-    
+
     setIsSubmitted(true);
   
     setTimeout(() => {

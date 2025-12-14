@@ -18,6 +18,9 @@ import { ImageAnalysisModule } from './image-analysis/image-analysis.module';
 import { CategoryModule } from './category';
 import { PaymentsModule } from './payments/payments.module';
 
+import { ScheduleModule } from '@nestjs/schedule';
+import { AuctionsModule } from './auctions/auctions.module';
+
 @Module({
     imports: [
         UserModule,
@@ -31,6 +34,8 @@ import { PaymentsModule } from './payments/payments.module';
         MediasModule,
         ImageAnalysisModule,
         CategoryModule,
+        ScheduleModule.forRoot(),
+        AuctionsModule,
         PaymentsModule,
         ThrottlerModule.forRoot({
             throttlers: [

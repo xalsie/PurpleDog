@@ -1,4 +1,5 @@
 import { Item, ItemMedia, SaleType } from '../domain/entities/item.entity';
+import { MediaType } from '../domain/entities/media.type';
 import { ItemSchema } from './typeorm/item.schema';
 import { Media } from '../../medias/entities/media.entity';
 
@@ -12,7 +13,17 @@ export class ItemMapper {
                 const isPrimary = !!m.isPrimary;
                 const mid = m.id as string | undefined;
                 if (mid) medias.push(new ItemMedia(url, type, isPrimary, mid));
+                else medias.push(new ItemMedia(url, type, isPrimary));
             }
+        }
+
+        const imageMedias = medias.filter(
+            (m) => m.mediaType === MediaType.IMAGE,
+        );
+        if (imageMedias.length === 0) {
+            medias.push(
+                new ItemMedia('/images/placeholder.png', MediaType.IMAGE, true),
+            );
         }
 
         let weight_kg: number | undefined = undefined;
@@ -87,6 +98,13 @@ export class ItemMapper {
             sale_type: sale_type,
             status: schema.status,
             medias: medias,
+            brand: schema.brand ?? null,
+            model: schema.model ?? null,
+            material: schema.material ?? null,
+            color: schema.color ?? null,
+            year: schema.year ?? null,
+            condition: schema.condition ?? null,
+            authenticated: schema.authenticated ?? false,
             createDateTime: schema.createDateTime,
             createdBy: schema.createdBy,
             internalComment: schema.internalComment,
@@ -112,6 +130,13 @@ export class ItemMapper {
         s.min_price_accepted = item.min_price_accepted ?? null;
         s.sale_type = item.sale_type;
         s.status = item.status;
+        s.brand = item.brand ?? null;
+        s.model = item.model ?? null;
+        s.material = item.material ?? null;
+        s.color = item.color ?? null;
+        s.year = item.year ?? null;
+        s.condition = item.condition ?? null;
+        s.authenticated = item.authenticated ?? false;
         const mediasToPersist: ItemMedia[] = item.medias || [];
         s.medias = mediasToPersist.map((m: ItemMedia) => {
             const mm = new Media();

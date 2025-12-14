@@ -4,15 +4,9 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { env } from './env.type';
-import { join } from 'path';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
-    const uploadsPath = join(__dirname, '..', '..', 'uploads');
-    app.useStaticAssets(uploadsPath, {
-        prefix: '/uploads',
-    });
 
     app.enableCors({
         origin: env.FRONT_URL || 'http://localhost:3000',

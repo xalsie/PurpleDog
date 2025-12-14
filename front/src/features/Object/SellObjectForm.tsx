@@ -37,7 +37,7 @@ export default function SellObjectForm() {
     });
 
     const onSubmit = (data: ObjectFormType) => {
-        console.log("Form Data:", data);
+      console.log("Form Data Submitted:", data);
     };
 
     return (

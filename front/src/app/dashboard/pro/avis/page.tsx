@@ -50,8 +50,6 @@ export default function AvisPage() {
     
     // Ajouter le nouvel avis en début de liste
     setAvis([nouvelAvis, ...avis]);
-    
-    console.log('Données reçues du composant Feedback:', data);
   };
 
   const { user, logout } = useAuth()

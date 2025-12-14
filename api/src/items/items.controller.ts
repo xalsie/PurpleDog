@@ -52,6 +52,16 @@ export class ItemsController {
         return this.itemsService.findTopFavorited(10);
     }
 
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth()
+    @Get()
+    @ApiOperation({ summary: 'Get current user items' })
+    @ApiResponse({ status: 200, description: 'User items retrieved' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    findBySellerId(@CurrentUser() user: User) {
+        return this.itemsService.findBySellerId(user.id);
+    }
+
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.itemsService.findOne(id);
